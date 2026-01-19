@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
 import ProductCard from "@/components/products/ProductCard";
 import CreateProjectModal from "@/components/products/CreateProjectModal";
 import TopTabs from "@/components/navigation/TopTabs";
@@ -59,7 +58,13 @@ export default function ProductsPage() {
 
           <div className="mt-16 space-y-10">
             {products.map((p) => (
-              <ProductCard key={p.id} {...p} />
+              <div
+                key={p.id}
+                onClick={() => navigate(`/products/${p.id}`)}
+                className="cursor-pointer"
+              >
+                <ProductCard key={p.id} {...p} />
+              </div>
             ))}
           </div>
         </div>
