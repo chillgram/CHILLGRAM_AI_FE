@@ -12,13 +12,11 @@ export default function QnAPage() {
         <h1 className="text-5xl font-extrabold text-[#3b312b]">Q&amp;A</h1>
         <div className="mt-10 space-y-10">
           {items.map((q) => (
-            <Card
-              key={q.id}
-              title={q.title}
-              category={q.category}
-              createdAt={q.createdAt}
-              onClick={() => console.log("go detail", q.id)}
-            />
+            <Card onClick={() => navigate(`/qna/${q.id}`)}>
+              <h3 className="text-2xl font-extrabold text-[#3b312b]">{q.title}</h3>
+              <p className="mt-3 text-base text-gray-600">{q.category}</p>
+              <div className="mt-16 text-sm text-gray-500">생성 일시 {q.createdAt}</div>
+            </Card>
           ))}
         </div>
       </div>

@@ -10,7 +10,7 @@ export function Header() {
 
   const brand = { logoSrc: Logo, name: "chillgram", href: "/" };
   const links = [
-    { label: "프로젝트 생성", href: "/projects/new" },
+    { label: "프로젝트 생성", href: "/products" },
     { label: "Q&A", href: "/qna" },
   ];
   const cta = { label: "가입하기", href: "/signup" };
