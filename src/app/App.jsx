@@ -1,7 +1,10 @@
-import HomePage from "../pages/HomePage";
+import { Layout } from "@/components/layout/Layout";
+import HomePage from "@/pages/HomePage";
 
-function App() {
-  return <HomePage />;
+export default function App() {
+  return (
+    <Layout>
+      <HomePage />
+    </Layout>
+  );
 }
-
-export default App;
