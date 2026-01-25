@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Container from "../components/common/Container";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
@@ -69,6 +70,7 @@ const FILTER_LABEL_MAP = {
 
 export default function QnAPage() {
   const [activeFilter, setActiveFilter] = useState("all");
+  const navigate = useNavigate();
 
   const stats = useMemo(() => {
     const pending = QUESTIONS.filter((question) => question.status === "답변 대기")
@@ -183,7 +185,7 @@ export default function QnAPage() {
               <Button
                 className="h-10 gap-2 bg-green-500 px-5 text-white hover:bg-green-600 focus:ring-green-500"
                 onClick={() => {
-                  window.location.hash = "#/qna/new";
+                  navigate("/qna/new");
                 }}
               >
                 <span className="flex h-5 w-5 items-center justify-center rounded-full border border-white">
