@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Container from "../components/common/Container";
-import Button from "../components/common/Button";
+import Container from "@/components/common/Container";
+import Button from "@/components/common/Button";
 
 export default function QnaWritePage() {
   const [fileName, setFileName] = useState("");

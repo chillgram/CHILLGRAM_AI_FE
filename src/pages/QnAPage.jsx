@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Container from "../components/common/Container";
-import Card from "../components/common/Card";
-import Button from "../components/common/Button";
+import Container from "@/components/common/Container";
+import Card from "@/components/common/Card";
+import Button from "@/components/common/Button";
 
 const QUESTIONS = [
   {

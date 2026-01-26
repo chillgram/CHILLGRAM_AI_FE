@@ -6,13 +6,16 @@ import { Layout } from "@/components/layout/Layout";
 import ProductsPage from "@/pages/ProductsPage";
 import DashboardPage from "@/pages/DashboardPage";
 import ProductDetailPage from "@/pages/ProductDetailPage";
-import CreateADPage from "../pages/createADPage";
+import CreateADPage from "@/pages/createADPage";
 
 export default function App() {
   return (
     <Layout>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/privacy/consent" element={<PrivacyConsentPage />} />
         <Route path="/qna" element={<QnAPage />} />
         <Route path="/qna/new" element={<QnaWritePage />} />
         <Route path="/products" element={<ProductsPage />} />
