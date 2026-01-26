@@ -12,8 +12,10 @@ import {
 
 import Container from "../components/common/Container";
 import Card from "../components/common/Card";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardPage() {
+  const navigator = useNavigate();
   const activities = [
     { title: "초콜릿 신제품 광고", desc: "광고 생성", time: "2시간 전" },
     { title: "인스타그램 캠페인", desc: "SNS 게시", time: "5시간 전" },
@@ -97,7 +99,10 @@ export default function DashboardPage() {
                 빠른 작업을 시작하세요
               </p>
               <div className="flex flex-col gap-4">
-                <button className="w-full py-5 bg-[#5BF22F] text-black rounded-2xl font-black text-lg flex items-center justify-center gap-3 hover:brightness-95 transition-all shadow-sm">
+                <button
+                  onClick={() => navigator("./createAD")}
+                  className="w-full py-5 bg-[#5BF22F] text-black rounded-2xl font-black text-lg flex items-center justify-center gap-3 hover:brightness-95 transition-all shadow-sm"
+                >
                   <PlusCircle size={22} strokeWidth={2.5} /> AI 광고 생성
                 </button>
                 <QuickButton icon={Package} label="제품 관리" />
