@@ -13,18 +13,18 @@ import PrivacyConsentPage from "@/pages/PrivacyPolicyPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 
 export default function App() {
-  // 초기값을 로컬 스토리지에서 가져와 새로고침 시에도 상태 유지 시킴
+  // sessionStorage에서 가져와 탭 유지 시에만 로그인 유지(탭 닫으면 로그인 풀림)
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return localStorage.getItem("isLoggedIn") === "true";
+    return sessionStorage.getItem("isLoggedIn") === "true";
   });
 
-  // 로그인 상태 로컬 스토리지 업데이트
+  // 로그인 상태 세션 스토리지 업데이트 핸들러
   const handleLoginState = (status) => {
     setIsLoggedIn(status);
     if (status) {
-      localStorage.setItem("isLoggedIn", "true");
+      sessionStorage.setItem("isLoggedIn", "true");
     } else {
-      localStorage.removeItem("isLoggedIn");
+      sessionStorage.removeItem("isLoggedIn");
     }
   };
 
