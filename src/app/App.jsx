@@ -6,6 +6,7 @@ import { Layout } from "@/components/layout/Layout";
 import ProductsPage from "@/pages/ProductsPage";
 import DashboardPage from "@/pages/DashboardPage";
 import ProductDetailPage from "@/pages/ProductDetailPage";
+import CreateADPage from "../pages/createADPage";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/products/:productId" element={<ProductDetailPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard/createAD" element={<CreateADPage />} />
       </Routes>
     </Layout>
   );
