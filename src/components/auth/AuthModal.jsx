@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export function AuthModal({ open, onClose, defaultView = "login" }) {
-  const [view, setView] = useState(defaultView); // "login" | "signup"
-
-  // 모달 열릴 때 기본 화면 세팅
-  useEffect(() => {
-    if (open) setView(defaultView);
-  }, [open, defaultView]);
+export function AuthModal({ open, onClose }) {
+  const navigate = useNavigate();
 
   // ESC로 닫기
   useEffect(() => {
@@ -20,17 +16,17 @@ export function AuthModal({ open, onClose, defaultView = "login" }) {
 
   if (!open) return null;
 
+  const goSignup = () => {
+    onClose?.();
+    navigate("/signup");
+  };
+
   return (
     <div className="fixed inset-0 z-50">
-      <div
-        className="absolute inset-0 bg-black/30"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
 
-      {/* modal */}
       <div className="absolute inset-0 flex items-center justify-center px-4 py-10">
         <div className="relative w-full max-w-5xl rounded-[48px] bg-white px-12 py-16 shadow-xl">
-          {/* close */}
           <button
             type="button"
             aria-label="close"
@@ -40,12 +36,7 @@ export function AuthModal({ open, onClose, defaultView = "login" }) {
             ×
           </button>
 
-          {/* content */}
-          {view === "login" ? (
-            <LoginView onSwitch={() => setView("signup")} />
-          ) : (
-            <SignupView onSwitch={() => setView("login")} />
-          )}
+          <LoginView onGoSignup={goSignup} />
         </div>
       </div>
     </div>
@@ -61,7 +52,7 @@ function TitleBlock({ title }) {
   );
 }
 
-function Field({ label, required, type = "text" }) {
+function Field({ label, required, type = "text", value, onChange }) {
   return (
     <label className="block">
       <div className="mb-3 text-lg font-semibold text-black">
@@ -69,71 +60,73 @@ function Field({ label, required, type = "text" }) {
       </div>
       <input
         type={type}
+        value={value}
+        onChange={onChange}
         className="h-16 w-full rounded-lg bg-[#E9FBE4] px-6 text-lg outline-none ring-0 focus:ring-2 focus:ring-[#66FF2A]"
       />
     </label>
   );
 }
 
-function PrimaryButton({ children }) {
+function PrimaryButton({ children, disabled, onClick }) {
   return (
     <button
       type="button"
-      className="mt-10 h-16 w-full rounded-lg bg-[#66FF2A] text-2xl font-extrabold text-black hover:brightness-95"
+      disabled={disabled}
+      onClick={onClick}
+      className={[
+        "mt-10 h-16 w-full rounded-lg text-2xl font-extrabold text-black",
+        disabled
+          ? "bg-gray-200 cursor-not-allowed"
+          : "bg-[#66FF2A] hover:brightness-95",
+      ].join(" ")}
     >
       {children}
     </button>
   );
 }
 
-function LoginView({ onSwitch }) {
+function LoginView({ onGoSignup }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const canSubmit = email.trim().length > 0 && password.trim().length > 0;
+
+  const onLogin = () => {
+    // TODO: 로그인 API 붙일 자리
+    // 절대 password를 console.log로 찍지 마라.
+  };
+
   return (
     <div className="mx-auto max-w-3xl">
       <TitleBlock title="로그인" />
 
       <div className="mt-12 space-y-10">
-        <Field label="아이디 (이메일)" />
-        <Field label="비밀번호" type="password" />
+        <Field
+          label="아이디 (이메일)"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Field
+          label="비밀번호"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
       </div>
 
-      <PrimaryButton>로그인</PrimaryButton>
+      <PrimaryButton disabled={!canSubmit} onClick={onLogin}>
+        로그인
+      </PrimaryButton>
 
       <div className="mt-10 text-center text-lg text-black/70">
         아직 계정이 없으신가요?{" "}
         <button
           type="button"
-          onClick={onSwitch}
+          onClick={onGoSignup}
           className="font-semibold text-black underline underline-offset-4"
         >
           가입하기
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function SignupView({ onSwitch }) {
-  return (
-    <div className="mx-auto max-w-3xl">
-      <TitleBlock title="회원가입" />
-
-      <div className="mt-12 space-y-10">
-        <Field label="이메일" required />
-        <Field label="이름" required />
-        <Field label="비밀번호" required type="password" />
-        <Field label="비밀번호 확인" required type="password" />
-      </div>
-
-      <PrimaryButton>회원가입</PrimaryButton>
-
-      <div className="mt-10 text-center text-lg text-black/70">
-        이미 계정이 있으신가요?{" "}
-        <button
-          type="button"
-          onClick={onSwitch}
-          className="font-semibold text-black underline underline-offset-4"
-        >
-          로그인
         </button>
       </div>
     </div>
