@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export function AuthModal({ open, onClose }) {
+export function AuthModal({ open, onClose, onLoginSuccess }) {
   const navigate = useNavigate();
 
-  // ESC로 닫기
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (e) => {
@@ -36,7 +35,12 @@ export function AuthModal({ open, onClose }) {
             ×
           </button>
 
-          <LoginView onGoSignup={goSignup} />
+          {/* LoginView 에서 사용하는 props 들입니다 */}
+          <LoginView
+            onGoSignup={goSignup}
+            onClose={onClose}
+            onLoginSuccess={onLoginSuccess}
+          />
         </div>
       </div>
     </div>
@@ -52,7 +56,14 @@ function TitleBlock({ title }) {
   );
 }
 
-function Field({ label, required, type = "text", value, onChange }) {
+function Field({
+  label,
+  required,
+  type = "text",
+  value,
+  onChange,
+  placeholder,
+}) {
   return (
     <label className="block">
       <div className="mb-3 text-lg font-semibold text-black">
@@ -62,6 +73,7 @@ function Field({ label, required, type = "text", value, onChange }) {
         type={type}
         value={value}
         onChange={onChange}
+        placeholder={placeholder}
         className="h-16 w-full rounded-lg bg-[#E9FBE4] px-6 text-lg outline-none ring-0 focus:ring-2 focus:ring-[#66FF2A]"
       />
     </label>
@@ -86,15 +98,35 @@ function PrimaryButton({ children, disabled, onClick }) {
   );
 }
 
-function LoginView({ onGoSignup }) {
+function LoginView({ onGoSignup, onClose, onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const DUMMY_USER = {
+    email: "test@test.com",
+    password: "1234",
+  };
 
   const canSubmit = email.trim().length > 0 && password.trim().length > 0;
 
   const onLogin = () => {
     // TODO: 로그인 API 붙일 자리
     // 절대 password를 console.log로 찍지 마라.
+    if (email === DUMMY_USER.email && password === DUMMY_USER.password) {
+      alert("로그인 성공!");
+
+      // 헤더 상태 변경 모달 닫기
+      if (onLoginSuccess) onLoginSuccess();
+
+      if (onClose) onClose();
+
+      navigate("/dashboard"); // 대쉬보드로 바로 이동
+    } else {
+      alert(
+        "아이디 또는 비밀번호가 일치하지 않습니다.\n(힌트: test@test.com / 1234)",
+      );
+    }
   };
 
   return (
@@ -105,12 +137,14 @@ function LoginView({ onGoSignup }) {
         <Field
           label="아이디 (이메일)"
           value={email}
+          placeholder="test@test.com"
           onChange={(e) => setEmail(e.target.value)}
         />
         <Field
           label="비밀번호"
           type="password"
           value={password}
+          placeholder="1234"
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>

@@ -4,8 +4,9 @@ import { Brand } from "../common/Brand";
 import { NavMenu } from "../common/NavMenu";
 import { CtaButton } from "../common/CtaButton";
 import { AuthModal } from "../auth/AuthModal";
+import Button from "../common/Button";
 
-export function Header() {
+export function Header({ isLoggedIn, setIsLoggedIn }) {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   const brand = { logoSrc: Logo, name: "chillgram", href: "/" };
@@ -13,6 +14,16 @@ export function Header() {
     { label: "프로젝트 생성", href: "/products" },
     { label: "Q&A", href: "/qna" },
   ];
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    setIsAuthOpen(false);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    alert("로그아웃 되었습니다.");
+  };
 
   return (
     <>
@@ -22,7 +33,14 @@ export function Header() {
 
           <div className="flex items-center gap-8">
             <NavMenu links={links} />
-            <CtaButton label="로그인" onClick={() => setIsAuthOpen(true)} />
+
+            {isLoggedIn ? (
+              <Button variant="secondary" size="sm" onClick={handleLogout}>
+                로그아웃
+              </Button>
+            ) : (
+              <CtaButton label="로그인" onClick={() => setIsAuthOpen(true)} />
+            )}
           </div>
         </div>
         <div className="h-px w-full bg-gray-200" />
@@ -30,8 +48,8 @@ export function Header() {
 
       <AuthModal
         open={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
-        defaultView="login"
+        onClose={() => setIsAuthOpen(false)} // handleLoginSuccess를 onLoginSuccess prop으로 전달하는 부분이고
+        onLoginSuccess={handleLoginSuccess} // handleLoginSuccess 는 상단에 있는 로그인 성공 시 호출하던 함수입니다
       />
     </>
   );

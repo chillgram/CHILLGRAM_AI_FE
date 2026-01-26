@@ -12,7 +12,6 @@ import {
 
 import Container from "../components/common/Container";
 import Card from "../components/common/Card";
-import TopTabs from "../components/navigation/TopTabs";
 
 export default function DashboardPage() {
   const activities = [
@@ -21,18 +20,10 @@ export default function DashboardPage() {
     { title: "유기농 과자 시리즈", desc: "제품 추가", time: "1일 전" },
   ];
 
+  // TopTabs 있던 부분 제거 했습니다
   return (
     <div className="min-h-full bg-[#F9FAFB] py-12">
       <Container>
-        <div className="mb-10 flex justify-end">
-          <TopTabs
-            tabs={[
-              { label: "상품", value: "products", path: "/products" },
-              { label: "대시보드", value: "dashboard", path: "/dashboard" },
-            ]}
-          />
-        </div>
-
         <div className="mb-12">
           <h1 className="text-5xl font-black text-[#3b312b] mb-3">대시보드</h1>
           <p className="text-lg text-gray-500 font-medium">
