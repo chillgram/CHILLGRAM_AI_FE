@@ -1,55 +1,10 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
+import { QUESTIONS } from "@/data/qnaData";
 
-const QUESTIONS = [
-  {
-    id: 1,
-    category: "이용 방법",
-    status: "답변 완료",
-    title: "대시보드에서 프로젝트 생성은 어떻게 하나요?",
-    excerpt:
-      "처음 사용하는데 프로젝트 생성 버튼을 어디서 찾으면 되나요? 위치 안내 부탁드립니다.",
-    author: "김철수",
-    date: "2024-01-24 10:30",
-    replies: 1,
-  },
-  {
-    id: 2,
-    category: "기술 지원",
-    status: "답변 완료",
-    title: "파일 업로드가 50%에서 멈춰요",
-    excerpt:
-      "이미지 업로드 진행률이 50%에서 멈춥니다. 해결 방법이 있을까요?",
-    author: "박영희",
-    date: "2024-01-24 14:20",
-    replies: 2,
-  },
-  {
-    id: 3,
-    category: "결제/환불",
-    status: "답변 대기",
-    title: "결제 영수증은 어디서 확인하나요?",
-    excerpt:
-      "결제 내역과 영수증을 확인할 수 있는 메뉴가 있는지 궁금합니다.",
-    author: "이민수",
-    date: "2024-01-25 09:15",
-    replies: 0,
-  },
-  {
-    id: 4,
-    category: "버그 리포트",
-    status: "답변 대기",
-    title: "알림 설정이 저장되지 않아요",
-    excerpt:
-      "알림 설정을 변경해도 새로고침하면 이전 값으로 돌아갑니다.",
-    author: "최지우",
-    date: "2024-01-25 11:40",
-    replies: 0,
-  },
-];
 
 const STATUS_TONE = {
   "답변 완료": "bg-green-100 text-green-700",
@@ -267,7 +222,12 @@ export default function QnAPage() {
 
             <div className="mt-6 space-y-4">
               {filteredQuestions.map((question) => (
-                <Card key={question.id} className="border-gray-100">
+                <Link
+                  key={question.id}
+                  to={`/qna/${question.id}`}
+                  className="block"
+                >
+                <Card className="border-gray-100">
                   <div className="flex flex-wrap items-center gap-2 text-xs">
                     <span className="rounded-full border border-gray-200 px-2 py-0.5 text-gray-600">
                       {question.category}
@@ -299,6 +259,7 @@ export default function QnAPage() {
                     </span>
                   </div>
                 </Card>
+              </Link>
               ))}
             </div>
 
