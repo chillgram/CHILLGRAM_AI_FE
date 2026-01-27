@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-:root {
+ /* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -22,7 +22,7 @@
 }
 a:hover {
   color: #9ca3af;
-} */ */
+} */
 
 body {
   display: block;
@@ -54,7 +54,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 } */
 
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
   :root {
     color: #111827;
     background-color: #f5f7fa;
@@ -64,5 +64,5 @@ button:focus-visible {
   }
   button {
     background-color: #5bf22f;
-  } */
-} 
+  }
+}  */
