@@ -106,7 +106,11 @@ export default function DashboardPage() {
                   <PlusCircle size={22} strokeWidth={2.5} /> AI 광고 생성
                 </button>
                 <QuickButton icon={Package} label="제품 관리" />
-                <QuickButton icon={Share2} label="SNS 관리" />
+                <QuickButton
+                  icon={Share2}
+                  label="SNS 관리"
+                  onClick={() => navigator("/dashboard/sns")}
+                />
                 <QuickButton icon={FileText} label="분석 & 리포트" />
               </div>
             </Card>
@@ -131,9 +135,12 @@ function StatItem({ title, value, icon: Icon, color }) {
   );
 }
 
-function QuickButton({ icon: Icon, label }) {
+function QuickButton({ icon: Icon, label, onClick }) {
   return (
-    <button className="w-full py-5 bg-white border border-gray-200 rounded-2xl font-bold text-gray-700 flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors">
+    <button
+      onClick={onClick}
+      className="w-full py-5 bg-white border border-gray-200 rounded-2xl font-bold text-gray-700 flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors"
+    >
       {Icon && <Icon size={20} className="text-gray-400" />}
       {label}
     </button>

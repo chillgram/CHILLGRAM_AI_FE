@@ -12,6 +12,7 @@ import CreateADPage from "@/pages/createADPage";
 import SignupPage from "@/pages/SignupPage";
 import PrivacyConsentPage from "@/pages/PrivacyPolicyPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
+import SnsManagementPage from "@/pages/SnsManagement.jsx";
 
 export default function App() {
   // sessionStorage에서 가져와 탭 유지 시에만 로그인 유지(탭 닫으면 로그인 풀림)
@@ -43,6 +44,7 @@ export default function App() {
         <Route path="/products/:productId" element={<ProductDetailPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/dashboard/createAD" element={<CreateADPage />} />
+        <Route path="/dashboard/sns" element={<SnsManagementPage />} />
       </Routes>
     </Layout>
   );
