@@ -1,33 +1,30 @@
-export default function StepProgress({ currentStep }) {
-  const steps = [
-    "정보 입력",
-    "트렌드 분석",
-    "가이드 선택",
-    "문구 선택",
-    "콘텐츠 생성",
-  ];
+﻿const DEFAULT_STEPS = [
+  "정보 입력",
+  "트렌드 분석",
+  "가이드 선택",
+  "광고 문구 선택",
+  "콘텐츠 생성",
+];
 
-  const progressPercent = (currentStep / steps.length) * 100;
+export default function StepProgress({ currentStep, steps = DEFAULT_STEPS }) {
+  const progressPercent = Math.round((currentStep / steps.length) * 100);
 
   return (
-    <div className="mt-10 mb-10 w-full ">
-      {/* 상단 텍스트 */}
-      <div className="h-3 mb-5 relative">
+    <div className="mb-10 mt-10 w-full">
+      <div className="relative mb-5 flex items-center text-xs text-gray-500">
         <span>
           Step {currentStep} / {steps.length}
         </span>
         <span className="absolute right-0">{progressPercent}% 완료</span>
       </div>
 
-      {/* 상단 프로그레스 바 */}
-      <div className="h-2 bg-gray-200 rounded-full mb-6 overflow-hidden">
+      <div className="mb-8 h-2 overflow-hidden rounded-full bg-gray-200">
         <div
           className="h-full bg-black transition-all duration-300"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
 
-      {/* StepProgress */}
       <div className="flex items-center justify-between">
         {steps.map((label, index) => {
           const stepNumber = index + 1;
@@ -36,9 +33,8 @@ export default function StepProgress({ currentStep }) {
 
           return (
             <div key={label} className="relative flex flex-col items-center">
-              {/* Circle */}
               <div
-                className={`w-16 h-16 flex items-center justify-center rounded-full text-sm font-semibold
+                className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold
                   ${
                     isCompleted
                       ? "bg-green-400 text-black"
@@ -50,21 +46,13 @@ export default function StepProgress({ currentStep }) {
                 {stepNumber}
               </div>
 
-              {/* Label */}
               <div
-                className={`mt-5 text-sm whitespace-nowrap
-                  ${isActive ? "text-black font-medium" : "text-gray-500"}`}
+                className={`mt-4 whitespace-nowrap text-xs
+                  ${isActive ? "font-semibold text-black" : "text-gray-500"}`}
               >
                 {label}
               </div>
 
-              {/* Line */}
-              {stepNumber !== steps.length && (
-                <div
-                  className={`absolute top-8 left-30 h-1 w-20
-                    ${isCompleted ? "bg-green-400" : "bg-gray-200"}`}
-                />
-              )}
             </div>
           );
         })}
