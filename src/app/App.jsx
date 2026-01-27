@@ -9,11 +9,6 @@ import ProductsPage from "@/pages/ProductsPage";
 import DashboardPage from "@/pages/DashboardPage";
 import ProductDetailPage from "@/pages/ProductDetailPage";
 import CreateADPage from "@/pages/createAD/CreateADPage";
-import CreateADStep1Page from "@/pages/createAD/CreateADStep1Page";
-import CreateADStep2Page from "@/pages/createAD/CreateADStep2Page";
-import CreateADStep3Page from "@/pages/createAD/CreateADStep3Page";
-import CreateADStep4Page from "@/pages/createAD/CreateADStep4Page";
-import CreateADStep5Page from "@/pages/createAD/CreateADStep5Page";
 import SignupPage from "@/pages/SignupPage";
 import PrivacyConsentPage from "@/pages/PrivacyPolicyPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
@@ -48,11 +43,6 @@ export default function App() {
         <Route path="/products/:productId" element={<ProductDetailPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/dashboard/createAD" element={<CreateADPage />} />
-        <Route path="/dashboard/createAD/step-1" element={<CreateADStep1Page />} />
-        <Route path="/dashboard/createAD/step-2" element={<CreateADStep2Page />} />
-        <Route path="/dashboard/createAD/step-3" element={<CreateADStep3Page />} />
-        <Route path="/dashboard/createAD/step-4" element={<CreateADStep4Page />} />
-        <Route path="/dashboard/createAD/step-5" element={<CreateADStep5Page />} />
         <Route path="/dashboard/sns" element={<SnsManagementPage />} />
       </Routes>
     </Layout>
