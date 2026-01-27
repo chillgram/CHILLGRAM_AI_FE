@@ -27,7 +27,7 @@ function ProgressBar({ value = 70 }) {
 
 export default function ProductCard({ name, category, progress = 50 }) {
     return (
-        <Card className="w-[520px] p-10">
+        <Card className="w-130 p-10">
         <StatusPill />
 
         <h3 className="mt-6 text-3xl font-extrabold text-[#3b312b]">{name}</h3>
