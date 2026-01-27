@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
- /* :root {
+:root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -15,14 +15,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
+/* a {
   font-weight: 500;
   color: #111827;
   text-decoration: inherit;
 }
 a:hover {
   color: #9ca3af;
-} */
+} */ */
 
 body {
   display: block;
@@ -54,15 +54,15 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 } */
 
-/* @media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: light) {
   :root {
     color: #111827;
     background-color: #f5f7fa;
   }
-  a:hover {
+  /* a:hover {
     color: #9ca3af;
   }
   button {
     background-color: #5bf22f;
-  }
-}  */
+  } */
+} 
