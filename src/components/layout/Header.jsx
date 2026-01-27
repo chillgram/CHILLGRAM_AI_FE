@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import Logo from "@/assets/image/chillgram_logo_sv.png";
 import { Brand } from "../common/Brand";
 import { NavMenu } from "../common/NavMenu";
@@ -10,8 +10,20 @@ export function Header({ isLoggedIn, setIsLoggedIn }) {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   const brand = { logoSrc: Logo, name: "chillgram", href: "/" };
+
+  const handleDashboardClick = (event) => {
+    if (!isLoggedIn) {
+      event.preventDefault();
+      setIsAuthOpen(true);
+    }
+  };
+
   const links = [
-    { label: "프로젝트 생성", href: "/products" },
+    {
+      label: "대시보드",
+      href: isLoggedIn ? "/dashboard" : "#",
+      onClick: handleDashboardClick,
+    },
     { label: "Q&A", href: "/qna" },
   ];
 
@@ -48,8 +60,8 @@ export function Header({ isLoggedIn, setIsLoggedIn }) {
 
       <AuthModal
         open={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)} // handleLoginSuccess를 onLoginSuccess prop으로 전달하는 부분이고
-        onLoginSuccess={handleLoginSuccess} // handleLoginSuccess 는 상단에 있는 로그인 성공 시 호출하던 함수입니다
+        onClose={() => setIsAuthOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
       />
     </>
   );
