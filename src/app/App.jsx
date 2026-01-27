@@ -1,9 +1,14 @@
-﻿import { useState } from "react";
+﻿import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { useAuthStore } from "@/stores/authStore";
+import { refreshApi } from "@/data/authApi";
+import PrivateRoute from "@/routes/PrivateRoute";
+
 import SignupPage from "@/pages/SignupPage";
-import PrivacyConsentPage from "@/pages/PrivacyPolicyPage";
+import SignupEmailSentPage from "@/pages/SignupEmailSentPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
+import PrivacyConsentPage from "@/pages/PrivacyConsentPage";
 
 import HomePage from "@/pages/HomePage";
 import QnAPage from "@/pages/qna/QnAPage";
@@ -20,24 +25,29 @@ import ProductManagementPage from "@/pages/ProductManagement";
 import ProductAdStatusPage from "@/pages/ProductAdStatus";
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return sessionStorage.getItem("isLoggedIn") === "true";
-  });
+  const login = useAuthStore((s) => s.login);
+  const setBootstrapped = useAuthStore((s) => s.setBootstrapped);
 
-  const handleLoginState = (status) => {
-    setIsLoggedIn(status);
-    if (status) {
-      sessionStorage.setItem("isLoggedIn", "true");
-    } else {
-      sessionStorage.removeItem("isLoggedIn");
-    }
-  };
+  // 앱 시작 시 silent refresh (중요)
+  useEffect(() => {
+    (async () => {
+      try {
+        const { accessToken } = await refreshApi();
+        login(accessToken);
+      } catch {
+        // refresh 없으면 비로그인
+      } finally {
+        setBootstrapped(true);
+      }
+    })();
+  }, [login, setBootstrapped]);
 
   return (
-    <Layout isLoggedIn={isLoggedIn} setIsLoggedIn={handleLoginState}>
+    <Layout>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/signup/sent" element={<SignupEmailSentPage />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/privacy/consent" element={<PrivacyConsentPage />} />
         <Route path="/qna" element={<QnAPage />} />
@@ -45,15 +55,22 @@ export default function App() {
         <Route path="/qna/:questionId" element={<QnaDetailPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/products/:productId" element={<ProductDetailPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/dashboard/createAD" element={<CreateADPage />} />
-        <Route path="/dashboard/createAD/result" element={<CreateADResultPage />} />
-        <Route path="/dashboard/sns" element={<SnsManagementPage />} />
-        <Route path="/dashboard/products" element={<ProductManagementPage />} />
-        <Route
-          path="/dashboard/products/:productId"
-          element={<ProductAdStatusPage />}
-        />
+
+        {/* 로그인 라우트 */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard/createAD" element={<CreateADPage />} />
+          <Route
+            path="/dashboard/createAD/result"
+            element={<CreateADResultPage />}
+          />
+          <Route path="/dashboard/sns" element={<SnsManagementPage />} />
+          <Route path="/dashboard/products" element={<ProductManagementPage />} />
+          <Route
+            path="/dashboard/products/:productId"
+            element={<ProductAdStatusPage />}
+          />
+        </Route>
       </Routes>
     </Layout>
   );

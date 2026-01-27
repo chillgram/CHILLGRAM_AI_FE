@@ -1,18 +1,24 @@
 ﻿import { useState } from "react";
 import Logo from "@/assets/image/chillgram_logo_sv.png";
-import { Brand } from "../common/Brand";
-import { NavMenu } from "../common/NavMenu";
-import { CtaButton } from "../common/CtaButton";
-import { AuthModal } from "../auth/AuthModal";
-import Button from "../common/Button";
+import { Brand } from "@/components/common/Brand";
+import { NavMenu } from "@/components/common/NavMenu";
+import { CtaButton } from "@/components/common/CtaButton";
+import AuthModal from "@/components/auth/AuthModal";
+import Button from "@/components/common/Button";
 
-export function Header({ isLoggedIn, setIsLoggedIn }) {
+import { useAuthStore } from "@/stores/authStore";
+import { logoutApi } from "@/data/authApi";
+
+export function Header() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const logout = useAuthStore((s) => s.logout);
 
   const brand = { logoSrc: Logo, name: "chillgram", href: "/" };
 
   const handleDashboardClick = (event) => {
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       event.preventDefault();
       setIsAuthOpen(true);
     }
@@ -21,19 +27,15 @@ export function Header({ isLoggedIn, setIsLoggedIn }) {
   const links = [
     {
       label: "대시보드",
-      href: isLoggedIn ? "/dashboard" : "#",
+      href: isAuthenticated ? "/dashboard" : "#",
       onClick: handleDashboardClick,
     },
     { label: "Q&A", href: "/qna" },
   ];
 
-  const handleLoginSuccess = () => {
-    setIsLoggedIn(true);
-    setIsAuthOpen(false);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await logoutApi(); // refresh 쿠키 무효화
+    logout();          // accessToken 메모리 제거
     alert("로그아웃 되었습니다.");
   };
 
@@ -46,7 +48,7 @@ export function Header({ isLoggedIn, setIsLoggedIn }) {
           <div className="flex items-center gap-8">
             <NavMenu links={links} />
 
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <Button variant="secondary" size="sm" onClick={handleLogout}>
                 로그아웃
               </Button>
@@ -58,11 +60,7 @@ export function Header({ isLoggedIn, setIsLoggedIn }) {
         <div className="h-px w-full bg-gray-200" />
       </header>
 
-      <AuthModal
-        open={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
+      <AuthModal open={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </>
   );
 }

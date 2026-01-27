@@ -1,16 +1,20 @@
-export function PrimaryButton({ children, disabled, onClick, className = "" }) {
+export function PrimaryButton({
+  children,
+  className = "",
+  type = "submit",
+  ...props
+}) {
   return (
     <button
-      type="button"
-      disabled={disabled}
-      onClick={onClick}
+      type={type}
       className={[
         "mt-10 h-16 w-full rounded-lg text-2xl font-extrabold text-black",
-        disabled
+        props.disabled
           ? "bg-gray-200 cursor-not-allowed"
           : "bg-[#66FF2A] hover:brightness-95",
         className,
       ].join(" ")}
+      {...props}
     >
       {children}
     </button>
