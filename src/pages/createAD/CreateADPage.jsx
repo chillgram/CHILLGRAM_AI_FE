@@ -1,4 +1,5 @@
 ﻿import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import CreateADStepLayout from "@/components/layout/CreateADStepLayout";
 import CreateADStep1Page from "@/pages/createAD/CreateADStep1Page";
 import CreateADStep2Page from "@/pages/createAD/CreateADStep2Page";
@@ -7,6 +8,7 @@ import CreateADStep4Page from "@/pages/createAD/CreateADStep4Page";
 import CreateADStep5Page from "@/pages/createAD/CreateADStep5Page";
 
 export default function CreateADPage() {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
 
   const [productId, setProductId] = useState("");
@@ -48,14 +50,16 @@ export default function CreateADPage() {
     if (!canProceed()) return;
 
     if (currentStep === 5) {
-      console.log("광고 생성 시작", {
-        productId,
-        adGoal,
-        requestText,
-        selectedKeywords,
-        selectedGuide,
-        selectedCopy,
-        selectedTypes,
+      navigate("/dashboard/createAD/result", {
+        state: {
+          selectedTypes,
+          productId,
+          adGoal,
+          requestText,
+          selectedKeywords,
+          selectedGuide,
+          selectedCopy,
+        },
       });
       return;
     }

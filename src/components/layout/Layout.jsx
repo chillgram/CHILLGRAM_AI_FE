@@ -6,7 +6,7 @@ import { CreateADHeader } from "./CreateADHeader";
 export function Layout({ children, isLoggedIn, setIsLoggedIn }) {
   const { pathname } = useLocation();
 
-  const isAdCreatePage = pathname.startsWith("/dashboard/createAD");
+  const isAdCreatePage = pathname === "/dashboard/createAD";
 
   return (
     // 선우님과 충돌 해결을 위해 min-h-dvh로 수정 했습니다

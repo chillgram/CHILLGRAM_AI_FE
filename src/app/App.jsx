@@ -14,6 +14,7 @@ import ProductsPage from "@/pages/ProductsPage";
 import ProductDetailPage from "@/pages/ProductDetailPage";
 import DashboardPage from "@/pages/DashboardPage";
 import CreateADPage from "@/pages/createAD/CreateADPage";
+import CreateADResultPage from "@/pages/createAD/CreateADResultPage";
 import SnsManagementPage from "@/pages/SnsManagement.jsx";
 import ProductManagementPage from "@/pages/ProductManagement";
 import ProductAdStatusPage from "@/pages/ProductAdStatus";
@@ -46,6 +47,7 @@ export default function App() {
         <Route path="/products/:productId" element={<ProductDetailPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/dashboard/createAD" element={<CreateADPage />} />
+        <Route path="/dashboard/createAD/result" element={<CreateADResultPage />} />
         <Route path="/dashboard/sns" element={<SnsManagementPage />} />
         <Route path="/dashboard/products" element={<ProductManagementPage />} />
         <Route
