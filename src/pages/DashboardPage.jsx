@@ -9,10 +9,9 @@ import {
   Share2,
   FileText,
 } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 import Container from "../components/common/Container";
 import Card from "../components/common/Card";
-import { useNavigate } from "react-router-dom";
 
 export default function DashboardPage() {
   const navigator = useNavigate();
@@ -22,7 +21,6 @@ export default function DashboardPage() {
     { title: "유기농 과자 시리즈", desc: "제품 추가", time: "1일 전" },
   ];
 
-  // TopTabs 있던 부분 제거 했습니다
   return (
     <div className="min-h-full bg-[#F9FAFB] py-12">
       <Container>
@@ -105,7 +103,11 @@ export default function DashboardPage() {
                 >
                   <PlusCircle size={22} strokeWidth={2.5} /> AI 광고 생성
                 </button>
-                <QuickButton icon={Package} label="제품 관리" />
+                <QuickButton
+                  icon={Package}
+                  label="제품 관리"
+                  onClick={() => navigator("/dashboard/products")}
+                />
                 <QuickButton
                   icon={Share2}
                   label="SNS 관리"
@@ -139,7 +141,7 @@ function QuickButton({ icon: Icon, label, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="w-full py-5 bg-white border border-gray-200 rounded-2xl font-bold text-gray-700 flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors"
+      className="w-full py-5 bg-white border border-gray-200 rounded-2xl font-bold text-gray-700 flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors shadow-sm"
     >
       {Icon && <Icon size={20} className="text-gray-400" />}
       {label}

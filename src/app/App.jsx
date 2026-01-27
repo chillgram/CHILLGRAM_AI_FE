@@ -1,21 +1,24 @@
 ﻿import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
+import { Layout } from "@/components/layout/Layout";
+import SignupPage from "@/pages/SignupPage";
+import PrivacyConsentPage from "@/pages/PrivacyPolicyPage";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
+
 import HomePage from "@/pages/HomePage";
 import QnAPage from "@/pages/qna/QnAPage";
 import QnaWritePage from "@/pages/qna/QnaWritePage";
 import QnaDetailPage from "@/pages/qna/QnaDetailPage";
-import { Layout } from "@/components/layout/Layout";
+
 import ProductsPage from "@/pages/ProductsPage";
-import DashboardPage from "@/pages/DashboardPage";
 import ProductDetailPage from "@/pages/ProductDetailPage";
+import DashboardPage from "@/pages/DashboardPage";
 import CreateADPage from "@/pages/createAD/CreateADPage";
-import SignupPage from "@/pages/SignupPage";
-import PrivacyConsentPage from "@/pages/PrivacyPolicyPage";
-import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import SnsManagementPage from "@/pages/SnsManagement.jsx";
+import ProductManagementPage from "@/pages/ProductManagement";
+import ProductAdStatusPage from "@/pages/ProductAdStatus";
 
 export default function App() {
-  // sessionStorage에서 로그인 상태를 유지
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return sessionStorage.getItem("isLoggedIn") === "true";
   });
@@ -44,6 +47,11 @@ export default function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/dashboard/createAD" element={<CreateADPage />} />
         <Route path="/dashboard/sns" element={<SnsManagementPage />} />
+        <Route path="/dashboard/products" element={<ProductManagementPage />} />
+        <Route
+          path="/dashboard/products/:productId"
+          element={<ProductAdStatusPage />}
+        />
       </Routes>
     </Layout>
   );
