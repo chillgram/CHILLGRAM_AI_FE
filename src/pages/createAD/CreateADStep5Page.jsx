@@ -10,9 +10,17 @@ import {
 } from "lucide-react";
 
 const CONTENT_TYPE_OPTIONS = [
-  { title: "제품 이미지 AI", description: "제품 사진을 AI로 생성", icon: Image },
+  {
+    title: "제품 이미지 AI",
+    description: "제품 사진을 AI로 생성",
+    icon: Image,
+  },
   { title: "패키지 시안 AI", description: "패키지 디자인 시안", icon: Package },
-  { title: "SNS 이미지 AI", description: "소셜미디어용 이미지", icon: Smartphone },
+  {
+    title: "SNS 이미지 AI",
+    description: "소셜미디어용 이미지",
+    icon: Smartphone,
+  },
   { title: "숏츠 AI", description: "짧은 영상 콘텐츠", icon: Clapperboard },
   { title: "배너 이미지 AI", description: "광고 배너 이미지", icon: ImageUp },
 ];
@@ -33,7 +41,9 @@ export default function CreateADStep5Page({ selectedTypes, onToggleType }) {
           <Sparkles className="mt-0.5 h-5 w-5" />
           <div>
             <p className="font-semibold">광고 콘텐츠 생성 준비 완료</p>
-            <p className="mt-1">선택한 옵션으로 다양한 형태의 광고 콘텐츠를 생성합니다.</p>
+            <p className="mt-1">
+              선택한 옵션으로 다양한 형태의 광고 콘텐츠를 생성합니다.
+            </p>
           </div>
         </div>
 
@@ -50,12 +60,16 @@ export default function CreateADStep5Page({ selectedTypes, onToggleType }) {
                 type="button"
                 onClick={() => onToggleType(type.title)}
                 className={`rounded-xl border px-4 py-3 text-left transition ${
-                  isSelected ? "border-green-300 bg-green-50" : "border-gray-100"
+                  isSelected
+                    ? "border-green-300 bg-green-50"
+                    : "border-gray-100"
                 }`}
               >
                 <Icon className="mb-2 h-5 w-5 text-gray-700" />
                 <p className="text-sm font-bold text-[#111827]">{type.title}</p>
-                <p className="mt-1 text-xs text-[#9CA3AF]">{type.description}</p>
+                <p className="mt-1 text-xs text-[#9CA3AF]">
+                  {type.description}
+                </p>
               </button>
             );
           })}
@@ -69,5 +83,3 @@ export default function CreateADStep5Page({ selectedTypes, onToggleType }) {
     </section>
   );
 }
-
-

@@ -25,7 +25,9 @@ export function Field({
           "h-16 w-full rounded-lg px-6 text-lg outline-none ring-0",
           "bg-[#E9FBE4]",
           "focus:ring-2",
-          showError ? "ring-2 ring-red-400 focus:ring-red-400" : "focus:ring-[#66FF2A]",
+          showError
+            ? "ring-2 ring-red-400 focus:ring-red-400"
+            : "focus:ring-[#66FF2A]",
         ].join(" ")}
         aria-invalid={showError ? "true" : "false"}
       />

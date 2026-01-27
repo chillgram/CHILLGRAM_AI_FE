@@ -6,9 +6,7 @@ import { queryClient } from "./queryClient";
 export default function Providers({ children }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
+      <BrowserRouter>{children}</BrowserRouter>
       {/* devtools는 개발할 때만 */}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

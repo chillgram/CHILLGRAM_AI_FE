@@ -17,7 +17,9 @@ export default function QnaWritePage() {
             <span className="text-base">←</span>
             Q&amp;A로 돌아가기
           </Link>
-          <span className="text-base font-semibold text-green-500">CHILL GRAM</span>
+          <span className="text-base font-semibold text-green-500">
+            CHILL GRAM
+          </span>
           <div className="flex items-center gap-3">
             <span className="text-gray-400">메뉴</span>
             <Link
@@ -43,7 +45,9 @@ export default function QnaWritePage() {
             <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
               <div className="space-y-6">
                 <div className="space-y-3">
-                  <p className="text-sm font-semibold text-gray-800">질문 정보</p>
+                  <p className="text-sm font-semibold text-gray-800">
+                    질문 정보
+                  </p>
 
                   <div className="space-y-3">
                     <div>
@@ -88,7 +92,9 @@ export default function QnaWritePage() {
                         <ul className="mt-2 list-disc space-y-1 pl-4">
                           <li>어떤 상황에서 문제가 발생하나요?</li>
                           <li>어떤 결과를 기대하고 있나요?</li>
-                          <li>스크린샷이나 에러 메시지가 있다면 첨부해주세요.</li>
+                          <li>
+                            스크린샷이나 에러 메시지가 있다면 첨부해주세요.
+                          </li>
                         </ul>
                       </div>
                       <div className="mt-1 text-right text-xs text-gray-400">
@@ -162,7 +168,9 @@ export default function QnaWritePage() {
                       />
                     </label>
                     <p className="mt-3 text-xs text-gray-500">
-                      {fileName ? `선택된 파일: ${fileName}` : "선택된 파일 없음"}
+                      {fileName
+                        ? `선택된 파일: ${fileName}`
+                        : "선택된 파일 없음"}
                     </p>
                   </div>
                 </div>

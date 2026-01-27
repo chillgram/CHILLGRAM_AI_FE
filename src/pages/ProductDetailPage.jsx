@@ -18,7 +18,7 @@ export default function ProductDetailPage() {
       { label: "목업", type: "mockup" },
       { label: "배너", type: "banner" },
     ],
-    []
+    [],
   );
 
   const selectedType = useProductDetailStore((s) => s.selectedType);
@@ -27,11 +27,12 @@ export default function ProductDetailPage() {
   // hello 호출 일때는 img 쿼리 안 타게
   const isHelloMode = selectedType === "hello";
 
-  const { objectUrl, isLoading, isError, error, refetch } = useProductImageQuery({
-    productId,
-    type: selectedType,
-    enabled: !isHelloMode, 
-  });
+  const { objectUrl, isLoading, isError, error, refetch } =
+    useProductImageQuery({
+      productId,
+      type: selectedType,
+      enabled: !isHelloMode,
+    });
 
   const runHello = async () => {
     setHelloLoading(true);
@@ -48,7 +49,6 @@ export default function ProductDetailPage() {
       setHelloLoading(false);
     }
   };
-
 
   return (
     <section className="w-full bg-white">
@@ -96,10 +96,12 @@ export default function ProductDetailPage() {
               })}
             </div>
 
-             {/* 콘텐츠 영역 */}
+            {/* 콘텐츠 영역 */}
             <div className="mt-6 overflow-hidden rounded-2xl bg-gray-100">
               <div className="flex items-center justify-between px-4 py-3">
-                <div className="text-sm font-bold text-[#3b312b]">선택: {selectedType}</div>
+                <div className="text-sm font-bold text-[#3b312b]">
+                  선택: {selectedType}
+                </div>
 
                 {/* 이미지 모드일 때만 다시 시도 */}
                 {!isHelloMode && isError && (
@@ -128,7 +130,11 @@ export default function ProductDetailPage() {
                 {/* ✅ HELLO 모드 UI */}
                 {isHelloMode ? (
                   <div className="w-full px-6">
-                    {helloLoading && <div className="text-sm text-gray-600">hello 호출 중...</div>}
+                    {helloLoading && (
+                      <div className="text-sm text-gray-600">
+                        hello 호출 중...
+                      </div>
+                    )}
 
                     {helloError && (
                       <div className="text-sm text-red-600">
@@ -149,7 +155,11 @@ export default function ProductDetailPage() {
                 ) : (
                   <>
                     {/* 기존 이미지 로딩 UI */}
-                    {isLoading && <div className="text-sm text-gray-600">불러오는 중...</div>}
+                    {isLoading && (
+                      <div className="text-sm text-gray-600">
+                        불러오는 중...
+                      </div>
+                    )}
 
                     {isError && (
                       <div className="text-sm text-red-600">

@@ -3,7 +3,7 @@ import { cn } from "../../utils/cn";
 export default function Button({
   className,
   variant = "primary", // primary | secondary | ghost
-  size = "md",         // sm | md | lg
+  size = "md", // sm | md | lg
   type = "button",
   disabled,
   children,
@@ -14,7 +14,8 @@ export default function Button({
 
   const variants = {
     primary: "bg-black text-white hover:bg-black/90 focus:ring-black",
-    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-300",
+    secondary:
+      "bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-300",
     ghost: "bg-transparent text-gray-900 hover:bg-gray-100 focus:ring-gray-300",
   };
 

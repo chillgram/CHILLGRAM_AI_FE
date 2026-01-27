@@ -39,8 +39,8 @@ export default function StepProgress({ currentStep, steps = DEFAULT_STEPS }) {
                     isCompleted
                       ? "bg-[#5BF22F] text-black"
                       : isActive
-                      ? "bg-black text-white"
-                      : "bg-gray-200 text-gray-500"
+                        ? "bg-black text-white"
+                        : "bg-gray-200 text-gray-500"
                   }`}
               >
                 {stepNumber}
@@ -52,7 +52,6 @@ export default function StepProgress({ currentStep, steps = DEFAULT_STEPS }) {
               >
                 {label}
               </div>
-
             </div>
           );
         })}
@@ -60,5 +59,3 @@ export default function StepProgress({ currentStep, steps = DEFAULT_STEPS }) {
     </div>
   );
 }
-
-

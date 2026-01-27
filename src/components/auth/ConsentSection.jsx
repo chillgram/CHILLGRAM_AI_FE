@@ -11,7 +11,8 @@ export function ConsentSection({ value, onChange }) {
           className="mt-1 h-5 w-5 accent-[#66FF2A]"
         />
         <span className="text-base text-black">
-          <span className="font-semibold">[필수]</span> 개인정보 수집·이용에 동의합니다.{" "}
+          <span className="font-semibold">[필수]</span> 개인정보 수집·이용에
+          동의합니다.{" "}
           <Link
             to="/privacy"
             className="font-semibold underline underline-offset-4"

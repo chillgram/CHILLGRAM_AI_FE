@@ -15,7 +15,9 @@ export default function CreateADStep3Page({ selectedGuide, onSelectGuide }) {
           <Sparkles className="mt-0.5 h-5 w-5" />
           <div>
             <p className="font-semibold">AI 가이드 생성 완료</p>
-            <p className="mt-1">선택한 트렌드를 바탕으로 맞춤형 광고 가이드를 생성했습니다.</p>
+            <p className="mt-1">
+              선택한 트렌드를 바탕으로 맞춤형 광고 가이드를 생성했습니다.
+            </p>
           </div>
         </div>
 
@@ -43,5 +45,3 @@ export default function CreateADStep3Page({ selectedGuide, onSelectGuide }) {
     </section>
   );
 }
-
-

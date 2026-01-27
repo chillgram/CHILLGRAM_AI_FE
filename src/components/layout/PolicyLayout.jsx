@@ -32,7 +32,10 @@ export default function PolicyLayout({ title, updatedAt, sections }) {
       (entries) => {
         const visible = entries
           .filter((e) => e.isIntersecting)
-          .sort((a, b) => (a.boundingClientRect.top ?? 0) - (b.boundingClientRect.top ?? 0));
+          .sort(
+            (a, b) =>
+              (a.boundingClientRect.top ?? 0) - (b.boundingClientRect.top ?? 0),
+          );
 
         if (visible[0]?.target?.id) setActiveId(visible[0].target.id);
       },
@@ -40,7 +43,7 @@ export default function PolicyLayout({ title, updatedAt, sections }) {
         root: null,
         rootMargin: "-20% 0px -70% 0px",
         threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5],
-      }
+      },
     );
 
     normalizedSections.forEach((s) => {
@@ -62,10 +65,13 @@ export default function PolicyLayout({ title, updatedAt, sections }) {
     <section className="w-full bg-white">
       <div className="mx-auto max-w-6xl px-6 py-12">
         <header className="border-b pb-6">
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">{title}</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+            {title}
+          </h1>
           {updatedAt && (
             <p className="mt-2 text-sm text-gray-600">
-              시행일자/최종 업데이트: <span className="font-medium">{updatedAt}</span>
+              시행일자/최종 업데이트:{" "}
+              <span className="font-medium">{updatedAt}</span>
             </p>
           )}
         </header>

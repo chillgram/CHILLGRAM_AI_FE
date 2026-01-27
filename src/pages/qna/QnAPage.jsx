@@ -5,7 +5,6 @@ import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
 import { QUESTIONS } from "@/data/qnaData";
 
-
 const STATUS_TONE = {
   "답변 완료": "bg-green-100 text-green-700",
   "답변 대기": "bg-orange-100 text-orange-700",
@@ -28,10 +27,12 @@ export default function QnAPage() {
   const navigate = useNavigate();
 
   const stats = useMemo(() => {
-    const pending = QUESTIONS.filter((question) => question.status === "답변 대기")
-      .length;
-    const done = QUESTIONS.filter((question) => question.status === "답변 완료")
-      .length;
+    const pending = QUESTIONS.filter(
+      (question) => question.status === "답변 대기",
+    ).length;
+    const done = QUESTIONS.filter(
+      (question) => question.status === "답변 완료",
+    ).length;
     return {
       total: QUESTIONS.length,
       pending,
@@ -131,7 +132,9 @@ export default function QnAPage() {
           <section className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
             <div className="flex flex-col gap-6 border-b border-gray-100 pb-8 md:flex-row md:items-start md:justify-between">
               <div>
-                <p className="text-sm font-semibold text-green-500">CHILL GRAM</p>
+                <p className="text-sm font-semibold text-green-500">
+                  CHILL GRAM
+                </p>
                 <h1 className="mt-3 text-2xl font-bold">Q&amp;A 게시판</h1>
                 <p className="mt-2 text-sm text-gray-500">
                   궁금한 점을 질문하고 답변을 받아보세요.
@@ -161,7 +164,9 @@ export default function QnAPage() {
                       {stat.icon}
                     </div>
                   </div>
-                  <div className="mt-4 text-2xl font-semibold">{stat.value}</div>
+                  <div className="mt-4 text-2xl font-semibold">
+                    {stat.value}
+                  </div>
                 </Card>
               ))}
             </div>
@@ -227,39 +232,41 @@ export default function QnAPage() {
                   to={`/qna/${question.id}`}
                   className="block"
                 >
-                <Card className="border-gray-100">
-                  <div className="flex flex-wrap items-center gap-2 text-xs">
-                    <span className="rounded-full border border-gray-200 px-2 py-0.5 text-gray-600">
-                      {question.category}
-                    </span>
-                    <span
-                      className={`rounded-full px-2 py-0.5 font-semibold ${
-                        STATUS_TONE[question.status]
-                      }`}
-                    >
-                      {question.status}
-                    </span>
-                  </div>
-                  <h3 className="mt-3 text-base font-semibold text-gray-900">
-                    {question.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-gray-500">{question.excerpt}</p>
-                  <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-gray-400">
-                    <span className="flex items-center gap-1">
-                      <span className="h-4 w-4 rounded-full bg-gray-100" />
-                      {question.author}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="h-4 w-4 rounded-full bg-gray-100" />
-                      {question.date}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="h-4 w-4 rounded-full bg-gray-100" />
-                      답변 {question.replies}개
-                    </span>
-                  </div>
-                </Card>
-              </Link>
+                  <Card className="border-gray-100">
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      <span className="rounded-full border border-gray-200 px-2 py-0.5 text-gray-600">
+                        {question.category}
+                      </span>
+                      <span
+                        className={`rounded-full px-2 py-0.5 font-semibold ${
+                          STATUS_TONE[question.status]
+                        }`}
+                      >
+                        {question.status}
+                      </span>
+                    </div>
+                    <h3 className="mt-3 text-base font-semibold text-gray-900">
+                      {question.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-500">
+                      {question.excerpt}
+                    </p>
+                    <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-gray-400">
+                      <span className="flex items-center gap-1">
+                        <span className="h-4 w-4 rounded-full bg-gray-100" />
+                        {question.author}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="h-4 w-4 rounded-full bg-gray-100" />
+                        {question.date}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="h-4 w-4 rounded-full bg-gray-100" />
+                        답변 {question.replies}개
+                      </span>
+                    </div>
+                  </Card>
+                </Link>
               ))}
             </div>
 

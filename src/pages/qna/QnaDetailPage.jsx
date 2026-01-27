@@ -31,7 +31,9 @@ export default function QnaDetailPage() {
             <span className="text-base">←</span>
             Q&amp;A로 돌아가기
           </Link>
-          <span className="text-base font-semibold text-green-500">CHILL GRAM</span>
+          <span className="text-base font-semibold text-green-500">
+            CHILL GRAM
+          </span>
           <div className="flex items-center gap-3">
             <span className="text-gray-400">메뉴</span>
             <Link
@@ -112,14 +114,17 @@ export default function QnaDetailPage() {
                         </span>
                         <span
                           className={`rounded-full px-2 py-0.5 font-semibold ${
-                            ROLE_TONE[answer.role] || "bg-gray-100 text-gray-600"
+                            ROLE_TONE[answer.role] ||
+                            "bg-gray-100 text-gray-600"
                           }`}
                         >
                           {answer.role}
                         </span>
                         <span>{answer.date}</span>
                       </div>
-                      <p className="mt-3 text-sm text-gray-600">{answer.content}</p>
+                      <p className="mt-3 text-sm text-gray-600">
+                        {answer.content}
+                      </p>
                     </Card>
                   ))}
 
@@ -131,7 +136,9 @@ export default function QnaDetailPage() {
                 </div>
 
                 <Card className="border-gray-100">
-                  <h2 className="text-sm font-semibold text-gray-800">답변 작성</h2>
+                  <h2 className="text-sm font-semibold text-gray-800">
+                    답변 작성
+                  </h2>
                   <textarea
                     rows={4}
                     className="mt-3 w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100"

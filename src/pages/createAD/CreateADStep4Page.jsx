@@ -15,7 +15,9 @@ export default function CreateADStep4Page({ selectedCopy, onSelectCopy }) {
           <Sparkles className="mt-0.5 h-5 w-5" />
           <div>
             <p className="font-semibold">AI 광고 문구 생성 완료</p>
-            <p className="mt-1">선택한 가이드 "감성적 스토리텔링"에 맞춘 광고 문구를 추천합니다.</p>
+            <p className="mt-1">
+              선택한 가이드 "감성적 스토리텔링"에 맞춘 광고 문구를 추천합니다.
+            </p>
           </div>
         </div>
 
@@ -40,5 +42,3 @@ export default function CreateADStep4Page({ selectedCopy, onSelectCopy }) {
     </section>
   );
 }
-
-

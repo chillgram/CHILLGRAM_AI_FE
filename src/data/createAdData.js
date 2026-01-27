@@ -63,7 +63,6 @@ export const AD_COPY_OPTIONS = [
   },
   {
     title: "일상의 여유",
-    description:
-      "바쁜 하루 속 작은 쉼표. 달콤한 여유로 일상을 채워보세요.",
+    description: "바쁜 하루 속 작은 쉼표. 달콤한 여유로 일상을 채워보세요.",
   },
 ];

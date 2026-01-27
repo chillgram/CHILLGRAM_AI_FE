@@ -1,4 +1,11 @@
-export function SelectField({ label, required, value, onChange, options, placeholder, }) {
+export function SelectField({
+  label,
+  required,
+  value,
+  onChange,
+  options,
+  placeholder,
+}) {
   return (
     <label className="block">
       <div className="mb-3 text-lg font-semibold text-black">
