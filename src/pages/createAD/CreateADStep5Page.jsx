@@ -23,10 +23,10 @@ const CONTENT_TIP =
 export default function CreateADStep5Page({ selectedTypes, onToggleType }) {
   return (
     <section>
-      <Card className="rounded-2xl border border-gray-100 bg-white p-8">
+      <Card className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
         <div className="mb-6">
-          <h2 className="text-sm font-semibold text-gray-900">콘텐츠 생성</h2>
-          <p className="mt-1 text-xs text-gray-500">최종 광고 콘텐츠 생성</p>
+          <h2 className="text-xl font-black text-[#3b312b]">콘텐츠 생성</h2>
+          <p className="mt-1 text-sm text-[#9CA3AF]">최종 광고 콘텐츠 생성</p>
         </div>
 
         <div className="mb-6 flex gap-3 rounded-lg bg-green-50 p-4 text-green-700">
@@ -37,7 +37,9 @@ export default function CreateADStep5Page({ selectedTypes, onToggleType }) {
           </div>
         </div>
 
-        <p className="mb-3 font-semibold">생성할 콘텐츠 타입 선택 (복수 선택 가능)</p>
+        <p className="mb-3 text-sm font-bold text-[#111827]">
+          생성할 콘텐츠 타입 선택 (복수 선택 가능)
+        </p>
         <div className="grid grid-cols-2 gap-3">
           {CONTENT_TYPE_OPTIONS.map((type) => {
             const isSelected = selectedTypes.includes(type.title);
@@ -47,19 +49,19 @@ export default function CreateADStep5Page({ selectedTypes, onToggleType }) {
                 key={type.title}
                 type="button"
                 onClick={() => onToggleType(type.title)}
-                className={`rounded-lg border px-4 py-3 text-left transition ${
+                className={`rounded-xl border px-4 py-3 text-left transition ${
                   isSelected ? "border-green-300 bg-green-50" : "border-gray-100"
                 }`}
               >
                 <Icon className="mb-2 h-5 w-5 text-gray-700" />
-                <p className="text-sm font-medium text-gray-900">{type.title}</p>
-                <p className="mt-1 text-xs text-gray-500">{type.description}</p>
+                <p className="text-sm font-bold text-[#111827]">{type.title}</p>
+                <p className="mt-1 text-xs text-[#9CA3AF]">{type.description}</p>
               </button>
             );
           })}
         </div>
 
-        <div className="mt-6 flex items-start gap-2 rounded-lg bg-yellow-50 p-4 text-xs text-yellow-700">
+        <div className="mt-6 flex items-start gap-2 rounded-xl bg-yellow-50 p-4 text-sm text-yellow-700">
           <Lightbulb className="mt-0.5 h-4 w-4" />
           <span>Tip: {CONTENT_TIP}</span>
         </div>
@@ -67,3 +69,5 @@ export default function CreateADStep5Page({ selectedTypes, onToggleType }) {
     </section>
   );
 }
+
+

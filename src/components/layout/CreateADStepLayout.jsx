@@ -20,39 +20,45 @@ export default function CreateADStepLayout({
   const labels = DEFAULT_STEPS;
 
   return (
-    <Container className="relative mt-10 space-y-16 text-xs">
-      <div className="sticky top-0 z-20 bg-white pb-4">
-        <StepProgress currentStep={step} steps={labels} />
-      </div>
-
-      <div className="space-y-24 pb-24">{children}</div>
-
-      <div className="sticky bottom-0 z-20 border-t bg-white pt-4">
-        <div className="flex justify-between">
-          <button
-            type="button"
-            onClick={onPrev}
-            disabled={step === 1}
-            className="flex h-10 items-center gap-2 rounded-lg bg-gray-100 px-6 disabled:opacity-50"
-          >
-            <span>←</span>
-            이전
-          </button>
-
-          <button
-            type="button"
-            onClick={onNext}
-            disabled={disableNext}
-            className={`flex h-10 items-center gap-2 rounded-lg px-6 font-medium ${
-              disableNext ? "bg-gray-300 text-gray-500" : "bg-green-400 text-black"
-            }`}
-          >
-            {nextLabel ?? "다음"}
-            <span>→</span>
-          </button>
+    <div className="min-h-full bg-[#F9FAFB] py-12">
+      <Container className="relative space-y-16">
+        <div className="sticky top-0 z-20 bg-[#F9FAFB] pb-4">
+          <StepProgress currentStep={step} steps={labels} />
         </div>
-      </div>
-    </Container>
+
+        <div className="space-y-24 pb-24">{children}</div>
+
+        <div className="sticky bottom-0 z-20 border-t bg-[#F9FAFB] pt-4">
+          <div className="flex justify-between">
+            <button
+              type="button"
+              onClick={onPrev}
+              disabled={step === 1}
+              className="flex h-12 items-center gap-2 rounded-2xl border border-gray-200 bg-white px-6 font-bold text-gray-700 shadow-sm disabled:opacity-50"
+            >
+              <span>←</span>
+              이전
+            </button>
+
+            <button
+              type="button"
+              onClick={onNext}
+              disabled={disableNext}
+              className={`flex h-12 items-center gap-2 rounded-2xl px-6 font-black shadow-sm ${
+                disableNext
+                  ? "bg-gray-300 text-gray-500"
+                  : "bg-[#5BF22F] text-black hover:brightness-95"
+              }`}
+            >
+              {nextLabel ?? "다음"}
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      </Container>
+    </div>
   );
 }
+
+
 

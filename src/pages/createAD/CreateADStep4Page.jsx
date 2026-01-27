@@ -5,10 +5,10 @@ import { AD_COPY_OPTIONS } from "@/data/createAdData";
 export default function CreateADStep4Page({ selectedCopy, onSelectCopy }) {
   return (
     <section>
-      <Card className="rounded-2xl border border-gray-100 bg-white p-8">
+      <Card className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
         <div className="mb-6">
-          <h2 className="text-sm font-semibold text-gray-900">광고 문구 선택</h2>
-          <p className="mt-1 text-xs text-gray-500">맞춤형 광고 문구 선택</p>
+          <h2 className="text-xl font-black text-[#3b312b]">광고 문구 선택</h2>
+          <p className="mt-1 text-sm text-[#9CA3AF]">맞춤형 광고 문구 선택</p>
         </div>
 
         <div className="mb-6 flex gap-3 rounded-lg bg-indigo-50 p-4 text-indigo-700">
@@ -25,14 +25,14 @@ export default function CreateADStep4Page({ selectedCopy, onSelectCopy }) {
               key={copy.title}
               type="button"
               onClick={() => onSelectCopy(copy.title)}
-              className={`w-full rounded-lg border px-4 py-3 text-left transition ${
+              className={`w-full rounded-xl border px-4 py-3 text-left transition ${
                 selectedCopy === copy.title
                   ? "border-indigo-300 bg-indigo-50"
-                  : "border-gray-100"
+                  : "border-gray-200"
               }`}
             >
-              <p className="font-medium text-gray-900">{copy.title}</p>
-              <p className="mt-2 text-xs text-gray-500">{copy.description}</p>
+              <p className="font-bold text-[#111827]">{copy.title}</p>
+              <p className="mt-2 text-sm text-[#9CA3AF]">{copy.description}</p>
             </button>
           ))}
         </div>
@@ -40,3 +40,5 @@ export default function CreateADStep4Page({ selectedCopy, onSelectCopy }) {
     </section>
   );
 }
+
+

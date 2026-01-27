@@ -37,7 +37,7 @@ export default function StepProgress({ currentStep, steps = DEFAULT_STEPS }) {
                 className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold
                   ${
                     isCompleted
-                      ? "bg-green-400 text-black"
+                      ? "bg-[#5BF22F] text-black"
                       : isActive
                       ? "bg-black text-white"
                       : "bg-gray-200 text-gray-500"
@@ -60,3 +60,5 @@ export default function StepProgress({ currentStep, steps = DEFAULT_STEPS }) {
     </div>
   );
 }
+
+

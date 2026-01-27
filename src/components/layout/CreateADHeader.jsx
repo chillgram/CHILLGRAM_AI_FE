@@ -5,18 +5,18 @@ import Container from "../common/Container";
 export function CreateADHeader() {
   return (
     <header className="w-full border-b bg-white">
-      <Container className="flex h-14 items-center justify-between text-xs">
+      <Container className="flex h-16 items-center justify-between text-sm">
         <Link
           to="/dashboard"
-          className="flex w-24 items-center gap-2 font-semibold text-gray-600 hover:text-gray-800"
+          className="flex w-28 items-center gap-2 font-bold text-[#111827] hover:text-[#3b312b]"
         >
           <img src={leftArrow} alt="뒤로" className="h-3 opacity-70" />
           대시보드로
         </Link>
-        <h1 className="text-base font-bold text-gray-900">AI 광고 생성</h1>
+        <h1 className="text-xl font-black text-[#3b312b]">AI 광고 생성</h1>
         <Link
           to="/"
-          className="rounded-md border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-600"
+          className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-[#6B7280] hover:bg-gray-50"
         >
           메인으로
         </Link>
