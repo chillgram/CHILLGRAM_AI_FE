@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { Field } from "@/components/common/Field";
 import { SelectField } from "@/components/common/SelectField";
 import { PrimaryButton } from "@/components/common/PrimaryButton";
@@ -7,18 +8,19 @@ import { ConsentSection } from "./ConsentSection";
 import { isEmail, isPasswordOk, isPasswordMatch } from "@/utils/validators";
 import { useFormField } from "@/hooks/useFormField";
 import { fetchCompanies } from "@/services/api/companies";
+import { signup } from "@/services/api/auth";
 
-export function SignupForm({ onSuccess }) {
+export function SignupForm() {
+  const navigate = useNavigate();
+
   const company = useFormField("");
   const email = useFormField("");
   const name = useFormField("");
   const password = useFormField("");
   const passwordConfirm = useFormField("");
 
-  // consent
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [privacyTouched, setPrivacyTouched] = useState(false);
-
   const [globalError, setGlobalError] = useState("");
 
   const {
@@ -33,32 +35,17 @@ export function SignupForm({ onSuccess }) {
   });
 
   const companiesError = companiesIsError
-    ? (companiesErrorObj?.message ?? "회사 목록을 불러오지 못했습니다.")
+    ? companiesErrorObj?.message ?? "회사 목록을 불러오지 못했습니다."
     : "";
 
-  // validation
   const errors = useMemo(() => {
     return {
       companyError: company.value ? null : "회사를 선택하세요.",
       nameError: name.value.trim() ? null : "이름은 필수입니다.",
-      emailError: !email.value.trim()
-        ? "이메일을 입력하세요."
-        : !isEmail(email.value)
-          ? "이메일 형식이 올바르지 않습니다."
-          : null,
-      passwordError: !password.value
-        ? "비밀번호를 입력하세요."
-        : !isPasswordOk(password.value)
-          ? "비밀번호 규칙을 확인하세요."
-          : null,
-      passwordConfirmError: !passwordConfirm.value
-        ? "비밀번호 확인을 입력하세요."
-        : !isPasswordMatch(password.value, passwordConfirm.value)
-          ? "비밀번호가 일치하지 않습니다."
-          : null,
-      consentError: privacyConsent
-        ? null
-        : "개인정보 수집·이용 동의는 필수입니다.",
+      emailError: !email.value.trim() ? "이메일을 입력하세요." : !isEmail(email.value) ? "이메일 형식이 올바르지 않습니다." : null,
+      passwordError: !password.value ? "비밀번호를 입력하세요." : !isPasswordOk(password.value) ? "비밀번호 규칙을 확인하세요." : null,
+      passwordConfirmError: !passwordConfirm.value ? "비밀번호 확인을 입력하세요." : !isPasswordMatch(password.value, passwordConfirm.value) ? "비밀번호가 일치하지 않습니다." : null,
+      consentError: privacyConsent ? null : "개인정보 수집·이용 동의는 필수입니다.",
     };
   }, [
     company.value,
@@ -70,14 +57,9 @@ export function SignupForm({ onSuccess }) {
   ]);
 
   const canSubmit = useMemo(() => {
-    return (
-      Object.values(errors).every((e) => !e) &&
-      !companiesLoading &&
-      !companiesError
-    );
+    return Object.values(errors).every((e) => !e) && !companiesLoading && !companiesError;
   }, [errors, companiesLoading, companiesError]);
 
-  //  handlers
   const touchAll = () => {
     company.setTouched(true);
     email.setTouched(true);
@@ -92,8 +74,18 @@ export function SignupForm({ onSuccess }) {
     email: email.value.trim(),
     name: name.value.trim(),
     password: password.value,
-    passwordConfirm: passwordConfirm.value,
-    privacyConsent: true,
+    privacyConsent,
+  });
+
+  const signupMutation = useMutation({
+    mutationFn: signup,
+    onSuccess: (data) => {
+      // 성공 페이지 이동
+      navigate("/signup/sent", { state: { message: data?.message } });
+    },
+    onError: (err) => {
+      setGlobalError(err?.response?.data?.message ?? err?.message ?? "회원가입에 실패했습니다.");
+    },
   });
 
   const onSubmit = async (e) => {
@@ -106,16 +98,7 @@ export function SignupForm({ onSuccess }) {
     const companyId = Number(company.value);
     if (!Number.isFinite(companyId) || companyId <= 0) return;
 
-    try {
-      const payload = buildPayload();
-
-      // TODO: 회원가입 API
-      // await signup(payload);
-
-      onSuccess?.(payload);
-    } catch (err) {
-      setGlobalError(err?.message ?? "회원가입에 실패했습니다.");
-    }
+    signupMutation.mutate(buildPayload());
   };
 
   return (
@@ -130,18 +113,14 @@ export function SignupForm({ onSuccess }) {
             value: String(c.companyId),
             label: c.name,
           }))}
-          placeholder={
-            companiesLoading ? "회사 목록 로딩 중..." : "회사를 선택하세요"
-          }
+          placeholder={companiesLoading ? "회사 목록 로딩 중..." : "회사를 선택하세요"}
           touched={company.touched}
           error={company.touched ? errors.companyError : null}
           disabled={companiesLoading || !!companiesError}
         />
 
         {companiesError && (
-          <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
-            {companiesError}
-          </p>
+          <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{companiesError}</p>
         )}
 
         <Field
@@ -202,21 +181,17 @@ export function SignupForm({ onSuccess }) {
             }}
           />
           {privacyTouched && errors.consentError && (
-            <p className="mt-2 text-sm font-medium text-red-600">
-              {errors.consentError}
-            </p>
+            <p className="mt-2 text-sm font-medium text-red-600">{errors.consentError}</p>
           )}
         </div>
 
         {globalError && (
-          <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
-            {globalError}
-          </p>
+          <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{globalError}</p>
         )}
       </div>
 
-      <PrimaryButton type="submit" disabled={!canSubmit}>
-        회원가입
+      <PrimaryButton type="submit" disabled={!canSubmit || signupMutation.isPending}>
+        {signupMutation.isPending ? "처리 중..." : "회원가입"}
       </PrimaryButton>
     </form>
   );
