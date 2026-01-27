@@ -7,19 +7,27 @@ export default function StepProgress({ currentStep }) {
     "콘텐츠 생성",
   ];
 
-  const progressPercent =
-    ((currentStep + 1 - 1) / (steps.length - 1)) * 100;
+  const progressPercent = (currentStep / steps.length) * 100;
 
   return (
-    <div className="mb-10">
-      <div className="w-full h-2 bg-gray-200 rounded-full mb-6 overflow-hidden">
+    <div className="mt-10 mb-10 w-full ">
+      {/* 상단 텍스트 */}
+      <div className="h-3 mb-5 relative">
+        <span>
+          Step {currentStep} / {steps.length}
+        </span>
+        <span className="absolute right-0">{progressPercent}% 완료</span>
+      </div>
+
+      {/* 상단 프로그레스 바 */}
+      <div className="h-2 bg-gray-200 rounded-full mb-6 overflow-hidden">
         <div
-          className="h-full bg-green-400 transition-all duration-300"
+          className="h-full bg-black transition-all duration-300"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
 
-      {/* 🔹 기존 StepProgress 그대로 */}
+      {/* StepProgress */}
       <div className="flex items-center justify-between">
         {steps.map((label, index) => {
           const stepNumber = index + 1;
@@ -27,9 +35,10 @@ export default function StepProgress({ currentStep }) {
           const isCompleted = stepNumber < currentStep;
 
           return (
-            <div key={label} className="flex items-center w-full">
+            <div key={label} className="relative flex flex-col items-center">
+              {/* Circle */}
               <div
-                className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold
+                className={`w-16 h-16 flex items-center justify-center rounded-full text-sm font-semibold
                   ${
                     isCompleted
                       ? "bg-green-400 text-black"
@@ -42,26 +51,18 @@ export default function StepProgress({ currentStep }) {
               </div>
 
               {/* Label */}
-              <span
-                className={`ml-3 text-sm whitespace-nowrap
-                  ${
-                    isActive
-                      ? "text-black font-medium"
-                      : "text-gray-500"
-                  }`}
+              <div
+                className={`mt-5 text-sm whitespace-nowrap
+                  ${isActive ? "text-black font-medium" : "text-gray-500"}`}
               >
                 {label}
-              </span>
+              </div>
 
               {/* Line */}
               {stepNumber !== steps.length && (
                 <div
-                  className={`flex-1 h-[2px] mx-4
-                    ${
-                      isCompleted
-                        ? "bg-green-400"
-                        : "bg-gray-200"
-                    }`}
+                  className={`absolute top-8 left-30 h-1 w-20
+                    ${isCompleted ? "bg-green-400" : "bg-gray-200"}`}
                 />
               )}
             </div>
