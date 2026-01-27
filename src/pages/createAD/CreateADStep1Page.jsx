@@ -56,7 +56,7 @@ export default function CreateADStep1Page({
         <div className="mb-4">
           <label className="mb-2 block text-sm font-bold text-[#111827]">요청사항</label>
           <textarea
-            className="min-h-[120px] w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-[#111827]"
+            className="min-h-30 w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-[#111827]"
             placeholder="광고에 포함하고 싶은 내용을 입력하세요..."
             value={requestText}
             onChange={(event) => onChangeRequestText(event.target.value)}

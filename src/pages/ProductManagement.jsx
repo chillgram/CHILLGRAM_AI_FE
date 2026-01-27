@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Package,
   Plus,
@@ -215,7 +215,7 @@ function ProductModal({ title, confirmLabel, onClose, initialData }) {
   );
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-[32px] w-full max-w-lg p-10 relative">
+      <div className="bg-white rounded-4xl w-full max-w-lg p-10 relative">
         <button
           onClick={onClose}
           className="absolute top-8 right-8 text-gray-400 hover:text-black"
@@ -237,12 +237,12 @@ function ProductModal({ title, confirmLabel, onClose, initialData }) {
           <div className="flex gap-4 pt-4">
             <Button
               variant="secondary"
-              className="flex-1 !h-16 rounded-xl font-bold"
+              className="flex-1 h-16! rounded-xl font-bold"
               onClick={onClose}
             >
               취소
             </Button>
-            <PrimaryButton className="flex-1 !mt-0 !h-16" onClick={onClose}>
+            <PrimaryButton className="flex-1 mt-0! h-16!" onClick={onClose}>
               {confirmLabel}
             </PrimaryButton>
           </div>

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   LayoutGrid,
   Image as ImageIcon,
@@ -71,7 +70,7 @@ export default function DashboardPage() {
                 {activities.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex justify-between items-center p-6 bg-[#F9FAFB] rounded-[24px] hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="flex justify-between items-center p-6 bg-[#F9FAFB] rounded-3xl hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     <div>
                       <div className="font-bold text-gray-800 text-lg">

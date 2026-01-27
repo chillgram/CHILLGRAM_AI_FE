@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -133,7 +133,7 @@ export default function ProductAdStatusPage() {
           {stats.map((stat, idx) => (
             <div
               key={idx}
-              className="bg-white p-8 rounded-[24px] border border-gray-100 shadow-sm"
+              className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm"
             >
               <div className="flex justify-between items-start mb-6">
                 <span className="text-gray-500 font-bold text-sm tracking-tight">

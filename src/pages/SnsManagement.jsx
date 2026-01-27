@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Calendar,
   TrendingUp,
@@ -104,7 +104,7 @@ export default function SnsManagementPage() {
           ))}
         </div>
 
-        <Card className="min-h-[500px] border-gray-200 p-10">
+        <Card className="min-h-125 border-gray-200 p-10">
           {activeTab === "scheduled" && <ScheduledSection />}
           {activeTab === "published" && <PublishedSection />}
           {activeTab === "analytics" && <AnalyticsSection />}
@@ -123,7 +123,7 @@ function ScheduleModal({ onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-[32px] w-full max-w-lg p-10 relative animate-in fade-in zoom-in duration-200">
+      <div className="bg-white rounded-4xl w-full max-w-lg p-10 relative animate-in fade-in zoom-in duration-200">
         <button
           onClick={onClose}
           className="absolute top-8 right-8 text-gray-400 hover:text-black"
@@ -183,13 +183,13 @@ function ScheduleModal({ onClose }) {
           <div className="flex gap-4 pt-4">
             <Button
               variant="secondary"
-              className="flex-1 !h-16 rounded-lg font-bold text-lg"
+              className="flex-1 h-16! rounded-lg font-bold text-lg"
               onClick={onClose}
             >
               취소
             </Button>
             <PrimaryButton
-              className="flex-1 !mt-0"
+              className="flex-1 mt-0!"
               onClick={() => {
                 alert("게시물이 예약되었습니다!");
                 onClose();
@@ -210,7 +210,7 @@ const ScheduledSection = () => (
     <p className="text-[#9CA3AF] font-medium mb-8">
       예약 대기 중인 SNS 게시물 목록
     </p>
-    <div className="bg-[#F9FAFB] border border-gray-200 rounded-[24px] p-6 flex items-center justify-between">
+    <div className="bg-[#F9FAFB] border border-gray-200 rounded-3xl p-6 flex items-center justify-between">
       <div className="flex items-center gap-5">
         <div className="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center text-pink-500">
           <Instagram size={32} />
@@ -255,7 +255,7 @@ const PublishedSection = () => (
       ].map((post, i) => (
         <div
           key={i}
-          className="bg-[#F9FAFB] border border-gray-200 rounded-[24px] p-8"
+          className="bg-[#F9FAFB] border border-gray-200 rounded-3xl p-8"
         >
           <div className="flex items-center justify-between mb-4">
             <span
