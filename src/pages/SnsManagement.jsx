@@ -12,11 +12,11 @@ import {
   Youtube,
 } from "lucide-react";
 
-import Container from "../components/common/Container";
-import Card from "../components/common/Card";
-import Button from "../components/common/Button";
-import { Field } from "../components/common/Field";
-import { PrimaryButton } from "../components/common/PrimaryButton";
+import Container from "@/components/common/Container";
+import Card from "@/components/common/Card";
+import Button from "@/components/common/Button";
+import { Field } from "@/components/common/Field";
+import { PrimaryButton } from "@/components/common/PrimaryButton";
 
 export default function SnsManagementPage() {
   const [activeTab, setActiveTab] = useState("scheduled");
