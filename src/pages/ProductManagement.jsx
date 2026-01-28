@@ -10,11 +10,11 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import Container from "../components/common/Container";
-import Card from "../components/common/Card";
-import Button from "../components/common/Button";
-import { Field } from "../components/common/Field";
-import { PrimaryButton } from "../components/common/PrimaryButton";
+import Container from "@/components/common/Container";
+import Card from "@/components/common/Card";
+import Button from "@/components/common/Button";
+import { Field } from "@/components/common/Field";
+import { PrimaryButton } from "@/components/common/PrimaryButton";
 
 export default function ProductManagementPage() {
   const navigate = useNavigate();

@@ -12,9 +12,9 @@ import {
   Instagram,
 } from "lucide-react";
 
-import Container from "../components/common/Container";
-import Card from "../components/common/Card";
-import Button from "../components/common/Button";
+import Container from "@/components/common/Container";
+import Card from "@/components/common/Card";
+import Button from "@/components/common/Button";
 
 export default function ProductAdStatusPage() {
   const { productId } = useParams();
