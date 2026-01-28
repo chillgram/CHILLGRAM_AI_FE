@@ -74,6 +74,10 @@ export default function App() {
             path="/dashboard/products/:productId"
             element={<ProductAdStatusPage />}
           />
+          <Route
+            path="/dashboard/analytics"
+            element={<AnalyticsReportPage />}
+          />
         </Route>
       </Routes>
     </Layout>
