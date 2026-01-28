@@ -9,8 +9,8 @@ import {
   FileText,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Container from "../components/common/Container";
-import Card from "../components/common/Card";
+import Container from "@/components/common/Container";
+import Card from "@/components/common/Card";
 
 export default function DashboardPage() {
   const navigator = useNavigate();

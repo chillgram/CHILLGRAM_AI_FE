@@ -26,9 +26,9 @@ import {
   Cell,
 } from "recharts";
 
-import Container from "../components/common/Container";
-import Card from "../components/common/Card";
-import Button from "../components/common/Button";
+import Container from "@/components/common/Container";
+import Card from "@/components/common/Card";
+import Button from "@/components/common/Button";
 
 // --- 로컬 실행을 위한 완결된 더미 데이터 ---
 const lineData = [
