@@ -1,7 +1,7 @@
 import { Header } from "./Header";
 import Footer from "./Footer";
 import { useLocation } from "react-router-dom";
-import { CreateADHeader } from "./CreateADHeader";
+import { ADHeader } from "./ADHeader";
 
 export function Layout({ children, isLoggedIn, setIsLoggedIn }) {
   const { pathname } = useLocation();
@@ -14,7 +14,7 @@ export function Layout({ children, isLoggedIn, setIsLoggedIn }) {
     <div className="min-h-dvh flex flex-col bg-white w-full">
       {!isAuthOnlyPage &&
         (isAdCreatePage ? (
-          <CreateADHeader />
+          <ADHeader />
         ) : (
           <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         ))}

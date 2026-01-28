@@ -2,7 +2,7 @@
 import leftArrow from "@/assets/image/left-arrow.png";
 import Container from "../common/Container";
 
-export function CreateADHeader() {
+export function ADHeader() {
   return (
     <header className="w-full border-b bg-white">
       <Container className="flex h-16 items-center justify-between text-sm">

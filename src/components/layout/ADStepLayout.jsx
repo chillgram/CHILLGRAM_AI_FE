@@ -9,7 +9,7 @@ const DEFAULT_STEPS = [
   "콘텐츠 생성",
 ];
 
-export default function CreateADStepLayout({
+export default function ADStepLayout({
   step,
   children,
   onPrev,

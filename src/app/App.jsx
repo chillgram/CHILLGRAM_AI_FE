@@ -18,8 +18,8 @@ import QnaDetailPage from "@/pages/qna/QnaDetailPage";
 import ProductsPage from "@/pages/ProductsPage";
 import ProductDetailPage from "@/pages/ProductDetailPage";
 import DashboardPage from "@/pages/DashboardPage";
-import CreateADPage from "@/pages/createAD/CreateADPage";
-import CreateADResultPage from "@/pages/createAD/CreateADResultPage";
+import ADPage from "@/pages/ad/ADPage";
+import ADResultPage from "@/pages/ad/ADResultPage";
 import SnsManagementPage from "@/pages/SnsManagement.jsx";
 import ProductManagementPage from "@/pages/ProductManagement";
 import ProductAdStatusPage from "@/pages/ProductAdStatus";
@@ -60,10 +60,10 @@ export default function App() {
         {/* 로그인 라우트 */}
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/dashboard/createAD" element={<CreateADPage />} />
+          <Route path="/dashboard/createAD" element={<ADPage />} />
           <Route
             path="/dashboard/createAD/result"
-            element={<CreateADResultPage />}
+            element={<ADResultPage />}
           />
           <Route path="/dashboard/sns" element={<SnsManagementPage />} />
           <Route
