@@ -91,7 +91,7 @@ const DUMMY_RESULTS = [
   },
 ];
 
-export default function CreateADResultPage() {
+export default function ADResultPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const selectedTypes = location.state?.selectedTypes ?? [];
