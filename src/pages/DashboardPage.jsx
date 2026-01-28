@@ -112,7 +112,11 @@ export default function DashboardPage() {
                   label="SNS 관리"
                   onClick={() => navigator("/dashboard/sns")}
                 />
-                <QuickButton icon={FileText} label="분석 & 리포트" />
+                <QuickButton
+                  icon={FileText}
+                  label="분석 & 리포트"
+                  onClick={() => navigator("/dashboard/analytics")}
+                />
               </div>
             </Card>
           </div>
