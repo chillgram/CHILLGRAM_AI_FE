@@ -1,6 +1,14 @@
 ﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Lightbulb, Clapperboard, Image, ImageUp, Package, Smartphone } from "lucide-react";
+import {
+  Sparkles,
+  Lightbulb,
+  Clapperboard,
+  Image,
+  ImageUp,
+  Package,
+  Smartphone,
+} from "lucide-react";
 import ADStepLayout from "@/components/layout/ADStepLayout";
 import Card from "@/components/common/Card";
 import {
@@ -13,6 +21,7 @@ import {
   GUIDE_OPTIONS,
   AD_COPY_OPTIONS,
 } from "@/data/createAdData";
+import { createAd } from "@/services/api/ad";
 
 const CONTENT_TYPE_OPTIONS = [
   {
@@ -76,18 +85,25 @@ export default function ADPage() {
     if (!canProceed()) return;
 
     if (currentStep === 5) {
-      navigate("/dashboard/createAD/result", {
-        state: {
-          selectedTypes,
-          productId,
-          adGoal,
-          requestText,
-          selectedKeywords,
-          selectedGuide,
-          selectedCopy,
-        },
-      });
-      return;
+      createAd({
+        productId,
+        adGoal,
+        requestText,
+        selectedKeywords,
+        selectedGuide,
+        selectedCopy,
+        selectedTypes,
+        uploadFileName,
+      })
+        .then((result) => {
+          navigate("/dashboard/createAD/result", {
+            state: { result },
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          alert("광고 생성 중 오류가 발생했습니다.");
+        });
     }
 
     setCurrentStep((prev) => Math.min(5, prev + 1));
@@ -106,11 +122,15 @@ export default function ADPage() {
           <Card className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
             <div className="mb-6">
               <h2 className="text-xl font-black text-[#3b312b]">정보 입력</h2>
-              <p className="mt-1 text-sm text-[#9CA3AF]">제품 및 광고 목적 입력</p>
+              <p className="mt-1 text-sm text-[#9CA3AF]">
+                제품 및 광고 목적 입력
+              </p>
             </div>
 
             <div className="mb-4">
-              <label className="mb-2 block text-sm font-bold text-[#111827]">제품 선택</label>
+              <label className="mb-2 block text-sm font-bold text-[#111827]">
+                제품 선택
+              </label>
               <select
                 className="w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-[#111827]"
                 value={productId}
@@ -126,7 +146,9 @@ export default function ADPage() {
             </div>
 
             <div className="mb-4">
-              <label className="mb-2 block text-sm font-bold text-[#111827]">광고 목적</label>
+              <label className="mb-2 block text-sm font-bold text-[#111827]">
+                광고 목적
+              </label>
               <select
                 className="w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-[#111827]"
                 value={adGoal}
@@ -142,7 +164,9 @@ export default function ADPage() {
             </div>
 
             <div className="mb-4">
-              <label className="mb-2 block text-sm font-bold text-[#111827]">요청사항</label>
+              <label className="mb-2 block text-sm font-bold text-[#111827]">
+                요청사항
+              </label>
               <textarea
                 className="min-h-30 w-full rounded-xl border border-gray-200 bg-[#F9FAFB] px-4 py-3 text-sm text-[#111827]"
                 placeholder="광고에 포함하고 싶은 내용을 입력하세요..."
@@ -164,7 +188,8 @@ export default function ADPage() {
             {isUploadEnabled && (
               <div className="mt-4 rounded-2xl border border-gray-200 bg-[#F9FAFB] p-4">
                 <p className="text-sm text-[#9CA3AF]">
-                  제품 도면이나 디자인 시안을 업로드하면 더 정확한 광고를 생성할 수 있습니다.
+                  제품 도면이나 디자인 시안을 업로드하면 더 정확한 광고를 생성할
+                  수 있습니다.
                 </p>
                 <label className="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 bg-white px-6 py-10 text-sm text-[#9CA3AF] hover:border-gray-300">
                   <span className="text-2xl">?</span>
@@ -175,11 +200,15 @@ export default function ADPage() {
                     type="file"
                     accept=".jpg,.jpeg,.png,.pdf"
                     className="hidden"
-                    onChange={(event) => setUploadFileName(event.target.files?.[0]?.name ?? "")}
+                    onChange={(event) =>
+                      setUploadFileName(event.target.files?.[0]?.name ?? "")
+                    }
                   />
                 </label>
                 {uploadFileName && (
-                  <p className="mt-3 text-sm text-[#6B7280]">선택된 파일: {uploadFileName}</p>
+                  <p className="mt-3 text-sm text-[#6B7280]">
+                    선택된 파일: {uploadFileName}
+                  </p>
                 )}
               </div>
             )}
@@ -226,13 +255,17 @@ export default function ADPage() {
                   />
                   <div>
                     <p className="font-bold text-[#111827]">{keyword.title}</p>
-                    <p className="mt-1 text-sm text-[#9CA3AF]">{keyword.description}</p>
+                    <p className="mt-1 text-sm text-[#9CA3AF]">
+                      {keyword.description}
+                    </p>
                   </div>
                 </label>
               ))}
             </div>
 
-            <p className="mb-2 text-sm font-bold text-[#111827]">추천 해시태그</p>
+            <p className="mb-2 text-sm font-bold text-[#111827]">
+              추천 해시태그
+            </p>
             <div className="mb-6 flex flex-wrap gap-2">
               {TREND_HASHTAGS.map((tag) => (
                 <span
@@ -265,7 +298,9 @@ export default function ADPage() {
               <Sparkles className="mt-0.5 h-5 w-5" />
               <div>
                 <p className="font-semibold">AI 가이드 생성 완료</p>
-                <p className="mt-1">선택한 트렌드를 바탕으로 맞춤형 광고 가이드를 생성했습니다.</p>
+                <p className="mt-1">
+                  선택한 트렌드를 바탕으로 맞춤형 광고 가이드를 생성했습니다.
+                </p>
               </div>
             </div>
 
@@ -282,7 +317,9 @@ export default function ADPage() {
                   }`}
                 >
                   <p className="font-bold text-[#111827]">{guide.title}</p>
-                  <p className="mt-1 text-sm text-[#9CA3AF]">{guide.description}</p>
+                  <p className="mt-1 text-sm text-[#9CA3AF]">
+                    {guide.description}
+                  </p>
                   <p className="mt-2 rounded-md bg-[#F9FAFB] px-3 py-2 text-[11px] text-[#6B7280]">
                     {guide.example}
                   </p>
@@ -297,15 +334,22 @@ export default function ADPage() {
         <section>
           <Card className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
             <div className="mb-6">
-              <h2 className="text-xl font-black text-[#3b312b]">광고 문구 선택</h2>
-              <p className="mt-1 text-sm text-[#9CA3AF]">맞춤형 광고 문구 선택</p>
+              <h2 className="text-xl font-black text-[#3b312b]">
+                광고 문구 선택
+              </h2>
+              <p className="mt-1 text-sm text-[#9CA3AF]">
+                맞춤형 광고 문구 선택
+              </p>
             </div>
 
             <div className="mb-6 flex gap-3 rounded-lg bg-indigo-50 p-4 text-indigo-700">
               <Sparkles className="mt-0.5 h-5 w-5" />
               <div>
                 <p className="font-semibold">AI 광고 문구 생성 완료</p>
-                <p className="mt-1">선택한 가이드 "감성적 스토리텔링"에 맞춘 광고 문구를 추천합니다.</p>
+                <p className="mt-1">
+                  선택한 가이드 "감성적 스토리텔링"에 맞춘 광고 문구를
+                  추천합니다.
+                </p>
               </div>
             </div>
 
@@ -322,7 +366,9 @@ export default function ADPage() {
                   }`}
                 >
                   <p className="font-bold text-[#111827]">{copy.title}</p>
-                  <p className="mt-2 text-sm text-[#9CA3AF]">{copy.description}</p>
+                  <p className="mt-2 text-sm text-[#9CA3AF]">
+                    {copy.description}
+                  </p>
                 </button>
               ))}
             </div>
@@ -335,14 +381,18 @@ export default function ADPage() {
           <Card className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
             <div className="mb-6">
               <h2 className="text-xl font-black text-[#3b312b]">콘텐츠 생성</h2>
-              <p className="mt-1 text-sm text-[#9CA3AF]">최종 광고 콘텐츠 생성</p>
+              <p className="mt-1 text-sm text-[#9CA3AF]">
+                최종 광고 콘텐츠 생성
+              </p>
             </div>
 
             <div className="mb-6 flex gap-3 rounded-lg bg-green-50 p-4 text-green-700">
               <Sparkles className="mt-0.5 h-5 w-5" />
               <div>
                 <p className="font-semibold">광고 콘텐츠 생성 준비 완료</p>
-                <p className="mt-1">선택한 옵션으로 다양한 형태의 광고 콘텐츠를 생성합니다.</p>
+                <p className="mt-1">
+                  선택한 옵션으로 다양한 형태의 광고 콘텐츠를 생성합니다.
+                </p>
               </div>
             </div>
 
@@ -371,8 +421,12 @@ export default function ADPage() {
                     }`}
                   >
                     <Icon className="mb-2 h-5 w-5 text-gray-700" />
-                    <p className="text-sm font-bold text-[#111827]">{type.title}</p>
-                    <p className="mt-1 text-xs text-[#9CA3AF]">{type.description}</p>
+                    <p className="text-sm font-bold text-[#111827]">
+                      {type.title}
+                    </p>
+                    <p className="mt-1 text-xs text-[#9CA3AF]">
+                      {type.description}
+                    </p>
                   </button>
                 );
               })}
@@ -388,4 +442,3 @@ export default function ADPage() {
     </ADStepLayout>
   );
 }
-
