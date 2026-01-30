@@ -26,7 +26,8 @@ export async function apiFetch(url, options = {}) {
   const { accessToken, logout } = useAuthStore.getState();
 
   const headers = new Headers(options.headers || {});
-  if (!headers.has("Content-Type") && options.body) {
+  // FormData는 Content-Type을 브라우저가 자동 설정해야 함
+  if (!headers.has("Content-Type") && options.body && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
   if (accessToken) {
@@ -46,7 +47,8 @@ export async function apiFetch(url, options = {}) {
     const newToken = await refreshAccessTokenOnce();
 
     const retryHeaders = new Headers(options.headers || {});
-    if (!retryHeaders.has("Content-Type") && options.body) {
+    // FormData는 Content-Type을 브라우저가 자동 설정해야 함
+    if (!retryHeaders.has("Content-Type") && options.body && !(options.body instanceof FormData)) {
       retryHeaders.set("Content-Type", "application/json");
     }
     retryHeaders.set("Authorization", `Bearer ${newToken}`);

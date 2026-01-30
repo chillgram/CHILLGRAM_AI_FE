@@ -37,6 +37,8 @@ function SimpleButton({ disabled, onClick, children }) {
 export default function LoginView({ onGoSignup, onClose }) {
   const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
+  const authRedirectTo = useAuthStore((s) => s.authRedirectTo);
+  const clearAuthRedirect = useAuthStore((s) => s.clearAuthRedirect);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -57,7 +59,11 @@ export default function LoginView({ onGoSignup, onClose }) {
       login(data.accessToken, data.user);
 
       onClose?.();
-      navigate("/dashboard");
+
+      // 리다이렉트 URL이 있으면 해당 URL로, 없으면 대시보드로
+      const redirectTo = authRedirectTo || "/dashboard";
+      clearAuthRedirect();
+      navigate(redirectTo);
     } catch (e) {
       setError(e?.message || "로그인 실패");
     } finally {

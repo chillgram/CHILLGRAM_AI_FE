@@ -52,13 +52,13 @@ export default function App() {
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/privacy/consent" element={<PrivacyConsentPage />} />
         <Route path="/qna" element={<QnAPage />} />
-        <Route path="/qna/new" element={<QnaWritePage />} />
         <Route path="/qna/:questionId" element={<QnaDetailPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/products/:productId" element={<ProductDetailPage />} />
 
         {/* 로그인 라우트 */}
         <Route element={<PrivateRoute />}>
+          <Route path="/qna/new" element={<QnaWritePage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/createAD" element={<ADPage />} />
           <Route

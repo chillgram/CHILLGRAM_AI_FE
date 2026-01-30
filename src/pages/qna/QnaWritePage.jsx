@@ -1,10 +1,43 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Container from "@/components/common/Container";
 import Button from "@/components/common/Button";
+import { createQuestion } from "@/services/api/qnaApi";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function QnaWritePage() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+
   const [fileName, setFileName] = useState("");
+  const [file, setFile] = useState(null); // 파일 상태 추가
+  const [category, setCategory] = useState("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  const mutation = useMutation({
+    mutationFn: createQuestion,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["questions"] });
+      navigate("/qna");
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!category || !title.trim() || !content.trim()) return;
+    mutation.mutate({
+      title,
+      content,
+      categoryId: Number(category), // 숫자로 변환
+      companyId: user?.companyId || 1, // 사용자 회사 ID
+      createdBy: user?.id || user?.userId || user?.user_id || 1, // 작성자 ID
+      file, // 첨부 파일 (선택)
+    });
+  };
+
+  const isFormValid = category && title.trim() && content.trim();
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900">
@@ -54,27 +87,34 @@ export default function QnaWritePage() {
                       <label className="text-xs font-medium text-gray-600">
                         카테고리 <span className="text-red-500">*</span>
                       </label>
-                      <select className="mt-2 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm text-gray-700 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100">
-                        <option>카테고리를 선택하세요.</option>
-                        <option>이용 방법</option>
-                        <option>기술 지원</option>
-                        <option>결제/환불</option>
-                        <option>기능 제안</option>
-                        <option>버그 리포트</option>
-                        <option>기타</option>
+                      <select
+                        className="mt-2 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm text-gray-700 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                      >
+                        <option value="">카테고리를 선택하세요.</option>
+                        <option value="1">이용 방법</option>
+                        <option value="2">기술 지원</option>
+                        <option value="3">결제/환불</option>
+                        <option value="4">기능 제안</option>
+                        <option value="5">버그 리포트</option>
+                        <option value="6">기타</option>
                       </select>
                     </div>
 
                     <div>
                       <label className="text-xs font-medium text-gray-600">
-                        제목
+                        제목 <span className="text-red-500">*</span>
                       </label>
                       <input
                         className="mt-2 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm text-gray-700 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100"
                         placeholder="질문 제목을 입력하세요."
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value.slice(0, 100))}
+                        maxLength={100}
                       />
                       <div className="mt-1 text-right text-xs text-gray-400">
-                        0 / 100
+                        {title.length} / 100
                       </div>
                     </div>
 
@@ -86,6 +126,9 @@ export default function QnaWritePage() {
                         rows={6}
                         className="mt-2 w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100"
                         placeholder="질문 내용을 자세히 입력해주세요."
+                        value={content}
+                        onChange={(e) => setContent(e.target.value.slice(0, 2000))}
+                        maxLength={2000}
                       />
                       <div className="mt-2 rounded-lg bg-gray-50 p-3 text-xs text-gray-500">
                         <p className="font-semibold text-gray-600">예시:</p>
@@ -98,7 +141,7 @@ export default function QnaWritePage() {
                         </ul>
                       </div>
                       <div className="mt-1 text-right text-xs text-gray-400">
-                        0 / 2000
+                        {content.length} / 2000
                       </div>
                     </div>
                   </div>
@@ -182,10 +225,19 @@ export default function QnaWritePage() {
                   >
                     취소
                   </Link>
-                  <Button className="h-9 bg-green-400 px-5 text-xs font-semibold text-white hover:bg-green-500 focus:ring-green-400">
-                    질문 등록
+                  <Button
+                    className="h-9 bg-green-400 px-5 text-xs font-semibold text-white hover:bg-green-500 focus:ring-green-400 disabled:opacity-50"
+                    onClick={handleSubmit}
+                    disabled={mutation.isPending || !isFormValid}
+                  >
+                    {mutation.isPending ? "등록 중..." : "질문 등록"}
                   </Button>
                 </div>
+                {mutation.isError && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-600">
+                    {mutation.error?.message || "질문 등록에 실패했습니다."}
+                  </div>
+                )}
 
                 <div className="rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-xs text-yellow-700">
                   답변 예상 시간: 영업일 기준 1-2일 이내 답변드립니다. 긴급한

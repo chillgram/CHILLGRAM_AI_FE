@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useState, useEffect } from "react";
 import Logo from "@/assets/image/chillgram_logo_sv.png";
 import { Brand } from "@/components/common/Brand";
 import { NavMenu } from "@/components/common/NavMenu";
@@ -14,6 +14,17 @@ export function Header() {
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const logout = useAuthStore((s) => s.logout);
+
+  // 전역 상태와 동기화 (다른 컴포넌트에서 모달 열기 가능)
+  const isAuthModalOpen = useAuthStore((s) => s.isAuthModalOpen);
+  const closeAuthModal = useAuthStore((s) => s.closeAuthModal);
+
+  useEffect(() => {
+    if (isAuthModalOpen) {
+      setIsAuthOpen(true);
+      closeAuthModal(); // 전역 상태 리셋
+    }
+  }, [isAuthModalOpen, closeAuthModal]);
 
   const brand = { logoSrc: Logo, name: "chillgram", href: "/" };
 

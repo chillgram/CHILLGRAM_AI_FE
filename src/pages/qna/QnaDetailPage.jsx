@@ -1,8 +1,11 @@
-﻿import Container from "@/components/common/Container";
+﻿import { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
-import { QUESTIONS } from "@/data/qnaData";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { fetchQuestion, createAnswer } from "@/services/api/qnaApi";
+import { useAuthStore } from "@/stores/authStore";
 
 const STATUS_TONE = {
   "답변 완료": "bg-green-100 text-green-700",
@@ -17,8 +20,32 @@ const ROLE_TONE = {
 export default function QnaDetailPage() {
   const { questionId } = useParams();
   const navigate = useNavigate();
-  const parsedId = Number(questionId);
-  const question = QUESTIONS.find((item) => item.id === parsedId);
+  const queryClient = useQueryClient();
+  const [answerContent, setAnswerContent] = useState("");
+  const bootstrapped = useAuthStore((s) => s.bootstrapped);
+
+  const {
+    data: question,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["question", questionId],
+    queryFn: () => fetchQuestion(questionId),
+    enabled: bootstrapped, // 토큰 복원 완료 후에만 API 호출
+  });
+
+  const answerMutation = useMutation({
+    mutationFn: (payload) => createAnswer(questionId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["question", questionId] });
+      setAnswerContent("");
+    },
+  });
+
+  const handleSubmitAnswer = () => {
+    if (!answerContent.trim()) return;
+    answerMutation.mutate({ content: answerContent });
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900">
@@ -49,16 +76,34 @@ export default function QnaDetailPage() {
       <main className="py-10">
         <Container>
           <div className="mx-auto max-w-3xl space-y-6">
-            {!question && (
+            {isLoading && (
+              <Card className="border-gray-100 text-center">
+                <p className="text-sm text-gray-500">
+                  질문을 불러오는 중...
+                </p>
+              </Card>
+            )}
+            {isError && (
+              <Card className="border-gray-100 text-center">
+                <p className="text-sm text-red-500">
+                  질문을 불러오지 못했습니다.
+                </p>
+                <Button
+                  className="mt-4 h-9 bg-green-500 px-4 text-xs font-semibold text-white hover:bg-green-600 focus:ring-green-500"
+                  onClick={() => navigate("/qna")}
+                >
+                  목록으로 돌아가기
+                </Button>
+              </Card>
+            )}
+            {!isLoading && !isError && !question && (
               <Card className="border-gray-100 text-center">
                 <p className="text-sm text-gray-500">
                   요청하신 질문을 찾을 수 없습니다.
                 </p>
                 <Button
                   className="mt-4 h-9 bg-green-500 px-4 text-xs font-semibold text-white hover:bg-green-600 focus:ring-green-500"
-                  onClick={() => {
-                    navigate("/qna");
-                  }}
+                  onClick={() => navigate("/qna")}
                 >
                   목록으로 돌아가기
                 </Button>
@@ -73,9 +118,8 @@ export default function QnaDetailPage() {
                       {question.category}
                     </span>
                     <span
-                      className={`rounded-full px-2 py-0.5 font-semibold ${
-                        STATUS_TONE[question.status]
-                      }`}
+                      className={`rounded-full px-2 py-0.5 font-semibold ${STATUS_TONE[question.status]
+                        }`}
                     >
                       {question.status}
                     </span>
@@ -113,10 +157,9 @@ export default function QnaDetailPage() {
                           {answer.author}
                         </span>
                         <span
-                          className={`rounded-full px-2 py-0.5 font-semibold ${
-                            ROLE_TONE[answer.role] ||
+                          className={`rounded-full px-2 py-0.5 font-semibold ${ROLE_TONE[answer.role] ||
                             "bg-gray-100 text-gray-600"
-                          }`}
+                            }`}
                         >
                           {answer.role}
                         </span>
@@ -143,10 +186,21 @@ export default function QnaDetailPage() {
                     rows={4}
                     className="mt-3 w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100"
                     placeholder="답변을 작성해주세요..."
+                    value={answerContent}
+                    onChange={(e) => setAnswerContent(e.target.value)}
                   />
-                  <Button className="mt-4 h-9 w-full bg-green-400 text-xs font-semibold text-white hover:bg-green-500 focus:ring-green-400">
-                    답변 등록
+                  <Button
+                    className="mt-4 h-9 w-full bg-green-400 text-xs font-semibold text-white hover:bg-green-500 focus:ring-green-400 disabled:opacity-50"
+                    onClick={handleSubmitAnswer}
+                    disabled={answerMutation.isPending || !answerContent.trim()}
+                  >
+                    {answerMutation.isPending ? "등록 중..." : "답변 등록"}
                   </Button>
+                  {answerMutation.isError && (
+                    <p className="mt-2 text-xs text-red-500">
+                      {answerMutation.error?.message || "답변 등록에 실패했습니다."}
+                    </p>
+                  )}
                 </Card>
               </>
             )}

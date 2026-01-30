@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
-import { QUESTIONS } from "@/data/qnaData";
+import { fetchQuestions } from "@/services/api/qnaApi";
+import { useAuthStore } from "@/stores/authStore";
 
 const STATUS_TONE = {
   "답변 완료": "bg-green-100 text-green-700",
@@ -25,30 +27,52 @@ const FILTER_LABEL_MAP = {
 export default function QnAPage() {
   const [activeFilter, setActiveFilter] = useState("all");
   const navigate = useNavigate();
+  const bootstrapped = useAuthStore((s) => s.bootstrapped);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const openAuthModal = useAuthStore((s) => s.openAuthModal);
+
+  const handleAskQuestion = () => {
+    if (!isAuthenticated) {
+      alert("로그인이 필요합니다.");
+      openAuthModal("/qna/new"); // 로그인 후 질문 작성 페이지로 이동
+      return;
+    }
+    navigate("/qna/new");
+  };
+
+  const {
+    data: questions = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["questions"],
+    queryFn: fetchQuestions,
+    enabled: bootstrapped, // 토큰 복원 완료 후에만 API 호출
+  });
 
   const stats = useMemo(() => {
-    const pending = QUESTIONS.filter(
+    const pending = questions.filter(
       (question) => question.status === "답변 대기",
     ).length;
-    const done = QUESTIONS.filter(
+    const done = questions.filter(
       (question) => question.status === "답변 완료",
     ).length;
     return {
-      total: QUESTIONS.length,
+      total: questions.length,
       pending,
       done,
     };
-  }, []);
+  }, [questions]);
 
   const filteredQuestions = useMemo(() => {
     if (activeFilter === "pending") {
-      return QUESTIONS.filter((question) => question.status === "답변 대기");
+      return questions.filter((question) => question.status === "답변 대기");
     }
     if (activeFilter === "done") {
-      return QUESTIONS.filter((question) => question.status === "답변 완료");
+      return questions.filter((question) => question.status === "답변 완료");
     }
-    return QUESTIONS;
-  }, [activeFilter]);
+    return questions;
+  }, [activeFilter, questions]);
 
   const statCards = [
     {
@@ -142,9 +166,7 @@ export default function QnAPage() {
               </div>
               <Button
                 className="h-10 gap-2 bg-green-500 px-5 text-white hover:bg-green-600 focus:ring-green-500"
-                onClick={() => {
-                  navigate("/qna/new");
-                }}
+                onClick={handleAskQuestion}
               >
                 <span className="flex h-5 w-5 items-center justify-center rounded-full border border-white">
                   +
@@ -212,11 +234,10 @@ export default function QnAPage() {
                     <button
                       key={filter.key}
                       onClick={() => setActiveFilter(filter.key)}
-                      className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-                        isActive
-                          ? "border border-gray-200 bg-white text-gray-700 shadow-sm"
-                          : "text-gray-500"
-                      }`}
+                      className={`rounded-full px-3 py-1 text-xs font-medium transition ${isActive
+                        ? "border border-gray-200 bg-white text-gray-700 shadow-sm"
+                        : "text-gray-500"
+                        }`}
                     >
                       {filter.label} ({countLabel})
                     </button>
@@ -226,7 +247,17 @@ export default function QnAPage() {
             </div>
 
             <div className="mt-6 space-y-4">
-              {filteredQuestions.map((question) => (
+              {isLoading && (
+                <div className="py-10 text-center text-sm text-gray-400">
+                  질문 목록을 불러오는 중...
+                </div>
+              )}
+              {isError && (
+                <div className="rounded-2xl border border-red-200 bg-red-50 py-10 text-center text-sm text-red-500">
+                  질문 목록을 불러오지 못했습니다.
+                </div>
+              )}
+              {!isLoading && !isError && filteredQuestions.map((question) => (
                 <Link
                   key={question.id}
                   to={`/qna/${question.id}`}
@@ -238,9 +269,8 @@ export default function QnAPage() {
                         {question.category}
                       </span>
                       <span
-                        className={`rounded-full px-2 py-0.5 font-semibold ${
-                          STATUS_TONE[question.status]
-                        }`}
+                        className={`rounded-full px-2 py-0.5 font-semibold ${STATUS_TONE[question.status]
+                          }`}
                       >
                         {question.status}
                       </span>
