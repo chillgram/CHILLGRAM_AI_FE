@@ -33,8 +33,8 @@ export default function App() {
   useEffect(() => {
     (async () => {
       try {
-        const { accessToken } = await refreshApi();
-        login(accessToken);
+        const { accessToken, user } = await refreshApi();
+        login(accessToken, user);
       } catch {
         // refresh 없으면 비로그인
       } finally {

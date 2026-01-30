@@ -11,9 +11,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function DashboardPage() {
   const navigator = useNavigate();
+  const user = useAuthStore((s) => s.user);
   const activities = [
     { title: "초콜릿 신제품 광고", desc: "광고 생성", time: "2시간 전" },
     { title: "인스타그램 캠페인", desc: "SNS 게시", time: "5시간 전" },
@@ -24,13 +26,16 @@ export default function DashboardPage() {
     <div className="min-h-full bg-[#F9FAFB] py-12">
       <Container>
         <div className="mb-12">
-          <h1 className="text-5xl font-black text-[#3b312b] mb-3">대시보드</h1>
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-5xl font-black text-[#3b312b]">대시보드</h1>
+
+          </div>
           <p className="text-lg text-gray-500 font-medium">
-            환영합니다, 황별감님!
+            환영합니다, {user?.name ?? "사용자"}님!
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <StatItem
             title="진행 중 프로젝트"
             value="3"
@@ -49,12 +54,7 @@ export default function DashboardPage() {
             icon={TrendingUp}
             color="text-purple-500"
           />
-          <StatItem
-            title="평균 성과 지표"
-            value="+15%"
-            icon={BarChart3}
-            color="text-orange-500"
-          />
+
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -96,12 +96,6 @@ export default function DashboardPage() {
                 빠른 작업을 시작하세요
               </p>
               <div className="flex flex-col gap-4">
-                <button
-                  onClick={() => navigator("./createAD")}
-                  className="w-full py-5 bg-[#5BF22F] text-black rounded-2xl font-black text-lg flex items-center justify-center gap-3 hover:brightness-95 transition-all shadow-sm"
-                >
-                  <PlusCircle size={22} strokeWidth={2.5} /> AI 광고 생성
-                </button>
                 <QuickButton
                   icon={Package}
                   label="제품 관리"

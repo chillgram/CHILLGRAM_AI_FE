@@ -54,7 +54,7 @@ export default function LoginView({ onGoSignup, onClose }) {
       const data = await loginApi({ email, password });
 
       // accessToken을 전역 상태에 저장
-      login(data.accessToken);
+      login(data.accessToken, data.user);
 
       onClose?.();
       navigate("/dashboard");
