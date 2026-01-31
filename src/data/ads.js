@@ -1,5 +1,11 @@
 // 제목에서 create 제거
-import { Clapperboard, ImageUp, Package, Smartphone } from "lucide-react";
+import {
+  Clapperboard,
+  Image,
+  ImageUp,
+  Package,
+  Smartphone,
+} from "lucide-react";
 
 // PRODUCT_OPTIONS는 PRODUCTS로 대체
 // - label >> name으로 대체
@@ -48,11 +54,11 @@ export const AD_COPY_OPTIONS = [
 
 // CONTENT_TYPE_OPTIONS >> ad.js로 분리
 export const AD_CONTENT_TYPE_OPTIONS = [
-  {
-    title: "제품 이미지 AI",
-    description: "제품 사진을 AI로 생성",
-    icon: Image,
-  },
+  // {
+  //   title: "제품 이미지 AI",
+  //   description: "제품 사진을 AI로 생성",
+  //   icon: Image,
+  // },
   { title: "패키지 시안 AI", description: "패키지 디자인 시안", icon: Package },
   {
     title: "SNS 이미지 AI",
