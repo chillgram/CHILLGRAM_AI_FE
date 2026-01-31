@@ -84,7 +84,7 @@ export default function ProductAdStatusPage() {
           </div>
           <div className="flex gap-3">
             <button
-              onClick={() => navigate("/dashboard/createAD")}
+              onClick={() => navigate("./addAD")}
               className="bg-[#60A5FA] hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95 text-sm"
             >
               <Sparkles size={18} fill="currentColor" className="text-white/20" /> 광고 생성

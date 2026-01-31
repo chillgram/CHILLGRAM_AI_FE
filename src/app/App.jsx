@@ -60,11 +60,6 @@ export default function App() {
         <Route element={<PrivateRoute />}>
           <Route path="/qna/new" element={<QnaWritePage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/dashboard/createAD" element={<ADPage />} />
-          <Route
-            path="/dashboard/createAD/result"
-            element={<ADResultPage />}
-          />
           <Route path="/dashboard/sns" element={<SnsManagementPage />} />
           <Route
             path="/dashboard/products"
@@ -74,6 +69,14 @@ export default function App() {
             path="/dashboard/products/:productId"
             element={<ProductAdStatusPage />}
           />
+          <Route
+          path="/dashboard/products/:productId/addAD"
+          element={<ADPage />}
+        />
+        <Route
+          path="/dashboard/products/:productId/addAD/result"
+          element={<ADResultPage />}
+        />
           <Route
             path="/dashboard/analytics"
             element={<AnalyticsReportPage />}

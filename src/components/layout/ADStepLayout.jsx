@@ -1,13 +1,7 @@
 ﻿import Container from "@/components/common/Container";
-import StepProgress from "@/components/common/StepProgress";
-
-const DEFAULT_STEPS = [
-  "정보 입력",
-  "트렌드 분석",
-  "가이드 선택",
-  "광고 문구 선택",
-  "콘텐츠 생성",
-];
+import leftArrow from "@/assets/image/left-arrow.png";
+import rightArrow from "@/assets/image/right-arrow.png";
+import { useNavigate } from "react-router-dom";
 
 export default function ADStepLayout({
   step,
@@ -17,45 +11,62 @@ export default function ADStepLayout({
   disableNext,
   nextLabel,
 }) {
-  const labels = DEFAULT_STEPS;
-
+  const navigate = useNavigate();
   return (
-    <div className="min-h-full bg-[#F9FAFB] py-12">
-      <Container className="relative space-y-16">
-        <div className="sticky top-0 z-20 bg-[#F9FAFB] pb-4">
-          <StepProgress currentStep={step} steps={labels} />
-        </div>
+    <Container className="relative py-8">
+      {/* 상단 네비게이션 */}
+      <div className="mb-8">
+        <button
+          onClick={() => navigate("/dashboard/products")}
+          className="flex items-center gap-1.5 px-4 py-2 bg-white rounded-lg border border-gray-200 text-gray-500 text-sm font-bold hover:bg-gray-50 transition-colors shadow-sm"
+        >
+          <img
+            src={leftArrow}
+            alt="left_arrow"
+            className={"max-h-3 opacity-40"}
+          />
+          제품관리
+        </button>
+      </div>
+      <div className="space-y-10 pb-24 border border-gray-200 bg-white rounded-3xl p-5 shadow-lg">
+        <h3 className="font-bold text-xl">AI 광고 생성</h3>
+        <p className="-mt-8 text-sm text-gray-400">제품 정보를 입력하세요</p>
+        {children}
+      </div>
 
-        <div className="space-y-24 pb-24">{children}</div>
+      <div className="flex justify-between mt-8">
+        <button
+          type="button"
+          onClick={onPrev}
+          disabled={step === 1}
+          className="flex items-center gap-1.5 px-4 py-2 bg-white rounded-lg border border-gray-200 text-gray-500 text-sm font-bold hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50"
+        >
+          <img
+            src={leftArrow}
+            alt="left_arrow"
+            className={"max-h-3 opacity-60"}
+          />
+          이전
+        </button>
 
-        <div className="sticky bottom-0 z-20 border-t bg-[#F9FAFB] pt-4">
-          <div className="flex justify-between">
-            <button
-              type="button"
-              onClick={onPrev}
-              disabled={step === 1}
-              className="flex h-12 items-center gap-2 rounded-2xl border border-gray-200 bg-white px-6 font-bold text-gray-700 shadow-sm disabled:opacity-50"
-            >
-              <span>←</span>
-              이전
-            </button>
-
-            <button
-              type="button"
-              onClick={onNext}
-              disabled={disableNext}
-              className={`flex h-12 items-center gap-2 rounded-2xl px-6 font-black shadow-sm ${
-                disableNext
-                  ? "bg-gray-300 text-gray-500"
-                  : "bg-[#5BF22F] text-black hover:brightness-95"
-              }`}
-            >
-              {nextLabel ?? "다음"}
-              <span>→</span>
-            </button>
-          </div>
-        </div>
-      </Container>
-    </div>
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={disableNext}
+          className={`flex items-center gap-1.5 rounded-2xl rounded-lg text-sm px-4 py-2 font-bold shadow-sm ${
+            disableNext
+              ? "bg-gray-300 text-gray-500"
+              : "bg-[#60A5FA] text-white hover:brightness-95"
+          }`}
+        >
+          {nextLabel ?? "다음"}
+          <img
+            src={rightArrow}
+            alt="left_arrow"
+            className={"max-h-3 opacity-60"}
+          />
+        </button>
+      </div>
+    </Container>
   );
 }

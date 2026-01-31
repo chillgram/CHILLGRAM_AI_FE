@@ -7,7 +7,7 @@ import {
   Image as ImageIcon,
   Layers,
   Megaphone,
-  Plus,
+  PlusCircle,
   Share2,
   Sparkles,
   Video,
@@ -125,16 +125,16 @@ export default function ADResultPage() {
       <Container>
         <div className="mb-10 flex flex-wrap items-start justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-black text-[#3b312b]">광고 콘텐츠 생성 결과</h1>
+            <h1 className="text-4xl font-black text-[#111827] mb-3 tracking-tight">광고 콘텐츠 생성 결과</h1>
             <p className="mt-2 text-sm font-medium text-[#9CA3AF]">
               AI가 생성한 다양한 광고 콘텐츠를 확인하세요.
             </p>
           </div>
           <button
-            onClick={() => navigate("/dashboard/createAD")}
-            className="flex items-center gap-2 rounded-2xl bg-[#5BF22F] px-5 py-3 text-sm font-black text-black shadow-sm hover:brightness-95"
+            onClick={() => navigate("./../")}
+            className="bg-[#60A5FA] hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95 text-sm"
           >
-            <Plus className="h-4 w-4" /> 새 광고 생성
+            <PlusCircle className="h-4 w-4 text-white" /> 새 광고 생성
           </button>
         </div>
 
@@ -201,7 +201,7 @@ export default function ADResultPage() {
                     <button className="flex items-center gap-2 rounded-xl border border-gray-200 px-3 py-2 text-xs font-bold text-[#6B7280] hover:bg-gray-50">
                       <Share2 className="h-4 w-4" /> 공유
                     </button>
-                    <button className="ml-auto flex items-center gap-2 rounded-xl bg-[#5BF22F] px-3 py-2 text-xs font-black text-black hover:brightness-95">
+                    <button className="ml-auto flex items-center gap-2 rounded-xl bg-[#60A5FA] px-3 py-2 text-xs font-black text-white hover:brightness-95">
                       <Sparkles className="h-4 w-4" /> 다운로드
                     </button>
                   </div>
