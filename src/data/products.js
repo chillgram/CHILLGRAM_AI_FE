@@ -1,7 +1,10 @@
+// 나중에 api로 받아올 데이터
+// 한조님의 ProductManagement에서 복사해, 별도의 데이터로 저장하였습니다.
+// - 광고 생성 : 제품명 사용용도
 export const PRODUCTS = [
   {
     id: 1,
-    type: "ad", 
+    type: "ad",
     badge: "광고 생성",
     title: "발렌타인데이 캠페인",
     date: "2024-01-20",
@@ -24,4 +27,3 @@ export const PRODUCTS = [
     contentCount: 8,
   },
 ];
-
