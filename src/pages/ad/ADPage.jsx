@@ -306,8 +306,8 @@ export default function ADPage() {
               <p className="mt-1 text-sm">제품 사진을 AI로 생성 준비 완료!</p>
             </div>
           </div>
-          <div className="mb-6">
-            <p className="text-lg font-bold text-[#3b312b]">
+          <div className="mb-3">
+            <p className="text-sm font-bold text-[#111827]">
               생성할 콘텐츠 타입 선택 생성 (복수 선택 가능)
             </p>
           </div>
