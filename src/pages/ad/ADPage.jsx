@@ -1,49 +1,26 @@
 ﻿import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Sparkles,
-  Lightbulb,
-  Clapperboard,
-  Image,
-  ImageUp,
-  Package,
-  Smartphone,
-} from "lucide-react";
+import { Sparkles, Lightbulb, Image } from "lucide-react";
 import StepProgress from "@/components/common/StepProgress";
 import ADStepLayout from "@/components/layout/ADStepLayout";
 import Card from "@/components/common/Card";
+
+// PRODUCT_OPTIONS에서 PRODUCTS의 name의 데이터로 데이터 관리
+import { PRODUCTS } from "@/data/products";
 import {
+  AD_CONTENT_TYPE_OPTIONS,
+  AD_COPY_OPTIONS,
   AD_GOAL_OPTIONS,
-  PRODUCT_OPTIONS,
+  CONTENT_TIP,
+  STEP_LABELS,
+  TREND_SUMMARY,
+} from "@/data/ads";
+import {
+  TREND_AI_GUIDE_OPTIONS,
   TREND_HASHTAGS,
   TREND_KEYWORDS,
   TREND_STYLE_SUMMARY,
-  TREND_SUMMARY,
-  GUIDE_OPTIONS,
-  AD_COPY_OPTIONS,
-} from "@/data/createAdData";
-import { PRODUCTS } from "@/data/products";
-
-const STEP_LABELS = [
-  "정보 입력",
-  "가이드 선택",
-  "광고 문구 선택",
-  "콘텐츠 생성",
-];
-
-const CONTENT_TYPE_OPTIONS = [
-  { title: "패키지 시안 AI", description: "패키지 디자인 시안", icon: Package },
-  {
-    title: "SNS 이미지 AI",
-    description: "소셜미디어용 이미지",
-    icon: Smartphone,
-  },
-  { title: "숏츠 AI", description: "짧은 영상 콘텐츠", icon: Clapperboard },
-  { title: "배너 이미지 AI", description: "광고 배너 이미지", icon: ImageUp },
-];
-
-const CONTENT_TIP =
-  "여러 타입을 선택하여 다양한 채널에 맞는 광고를 한 번에 생성할 수 있습니다.";
+} from "@/data/trend";
 
 export default function ADPage() {
   const navigate = useNavigate();
@@ -60,6 +37,7 @@ export default function ADPage() {
   const [selectedCopy, setSelectedCopy] = useState("");
   const [selectedTypes, setSelectedTypes] = useState([]);
 
+  // STEP_LABELS >> ad 데이터로 분리
   const label = STEP_LABELS;
 
   const canProceed = () => {
@@ -251,7 +229,7 @@ export default function ADPage() {
           </div>
 
           <div className="space-y-3">
-            {GUIDE_OPTIONS.map((guide) => (
+            {TREND_AI_GUIDE_OPTIONS.map((guide) => (
               <button
                 key={guide.title}
                 onClick={() => setSelectedGuide(guide.title)}
@@ -334,7 +312,7 @@ export default function ADPage() {
             </p>
           </div>
           <div className="grid grid-cols-4 gap-4">
-            {CONTENT_TYPE_OPTIONS.map((type) => {
+            {AD_CONTENT_TYPE_OPTIONS.map((type) => {
               const Icon = type.icon;
               const selected = selectedTypes.includes(type.title);
 
