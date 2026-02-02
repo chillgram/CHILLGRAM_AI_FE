@@ -88,7 +88,12 @@ export default function ProductAdStatusPage() {
               onClick={() => navigate("./addAD")}
               className="bg-[#60A5FA] hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95 text-sm"
             >
-              <Sparkles size={18} fill="currentColor" className="text-white/20" /> 광고 생성
+              <Sparkles
+                size={18}
+                fill="currentColor"
+                className="text-white/20"
+              />{" "}
+              광고 생성
             </button>
             <button className="bg-white hover:bg-gray-50 text-[#111827] border border-gray-200 px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-sm transition-all active:scale-95 text-sm">
               <FileText size={18} /> 도안 생성
@@ -119,7 +124,7 @@ export default function ProductAdStatusPage() {
             {filteredProjects.map((project) => (
               <div
                 key={project.id}
-                className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group cursor-pointer"
+                className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group"
               >
                 <div className="mb-8">
                   <span
@@ -144,7 +149,13 @@ export default function ProductAdStatusPage() {
                     <ImageIcon size={14} />
                     {project.contentCount}개 콘텐츠
                   </div>
-                  <div className="flex items-center gap-1.5 text-[#111827] text-xs font-black group-hover:text-blue-500 transition-colors">
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`./projectAdDetail/${project.id}`);
+                    }}
+                    className="flex items-center gap-1.5 text-[#111827] text-xs font-black group-hover:text-blue-500 transition-colors cursor-pointer hover:underline"
+                  >
                     <Eye size={14} />
                     상세보기
                   </div>

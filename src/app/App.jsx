@@ -25,6 +25,7 @@ import SnsManagementPage from "@/pages/SnsManagement.jsx";
 import ProductManagementPage from "@/pages/ProductManagement";
 import ProductAdStatusPage from "@/pages/ProductAdStatus";
 import AnalyticsReportPage from "@/pages/AnalyticsReportPage";
+import ProjectAdDetail from "@/pages/ProjectAdDetail";
 
 export default function App() {
   const login = useAuthStore((s) => s.login);
@@ -70,6 +71,10 @@ export default function App() {
             <Route
               path="/dashboard/products/:productId"
               element={<ProductAdStatusPage />}
+            />
+            <Route
+              path="/dashboard/products/:productId/projectAdDetail/:projectId"
+              element={<ProjectAdDetail />}
             />
             <Route
               path="/dashboard/products/:productId/addAD"
