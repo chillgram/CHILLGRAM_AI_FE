@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { useAuthStore } from "@/stores/authStore";
 import { refreshApi } from "@/data/authApi";
 import PrivateRoute from "@/routes/PrivateRoute";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 import SignupPage from "@/pages/SignupPage";
 import SignupEmailSentPage from "@/pages/SignupEmailSentPage";
@@ -45,44 +46,46 @@ export default function App() {
 
   return (
     <Layout>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/signup/sent" element={<SignupEmailSentPage />} />
-        <Route path="/privacy" element={<PrivacyPolicyPage />} />
-        <Route path="/privacy/consent" element={<PrivacyConsentPage />} />
-        <Route path="/qna" element={<QnAPage />} />
-        <Route path="/qna/:questionId" element={<QnaDetailPage />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products/:productId" element={<ProductDetailPage />} />
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/signup/sent" element={<SignupEmailSentPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/privacy/consent" element={<PrivacyConsentPage />} />
+          <Route path="/qna" element={<QnAPage />} />
+          <Route path="/qna/:questionId" element={<QnaDetailPage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/products/:productId" element={<ProductDetailPage />} />
 
-        {/* 로그인 라우트 */}
-        <Route element={<PrivateRoute />}>
-          <Route path="/qna/new" element={<QnaWritePage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/dashboard/sns" element={<SnsManagementPage />} />
-          <Route
-            path="/dashboard/products"
-            element={<ProductManagementPage />}
-          />
-          <Route
-            path="/dashboard/products/:productId"
-            element={<ProductAdStatusPage />}
-          />
-          <Route
-          path="/dashboard/products/:productId/addAD"
-          element={<ADPage />}
-        />
-        <Route
-          path="/dashboard/products/:productId/addAD/result"
-          element={<ADResultPage />}
-        />
-          <Route
-            path="/dashboard/analytics"
-            element={<AnalyticsReportPage />}
-          />
-        </Route>
-      </Routes>
+          {/* 로그인 라우트 */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/qna/new" element={<QnaWritePage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/dashboard/sns" element={<SnsManagementPage />} />
+            <Route
+              path="/dashboard/products"
+              element={<ProductManagementPage />}
+            />
+            <Route
+              path="/dashboard/products/:productId"
+              element={<ProductAdStatusPage />}
+            />
+            <Route
+              path="/dashboard/products/:productId/addAD"
+              element={<ADPage />}
+            />
+            <Route
+              path="/dashboard/products/:productId/addAD/result"
+              element={<ADResultPage />}
+            />
+            <Route
+              path="/dashboard/analytics"
+              element={<AnalyticsReportPage />}
+            />
+          </Route>
+        </Routes>
+      </ErrorBoundary>
     </Layout>
   );
 }

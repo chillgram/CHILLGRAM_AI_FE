@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import { useAuthStore } from "@/stores/authStore";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 export default function DashboardPage() {
   const navigator = useNavigate();
@@ -59,60 +60,64 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <Card className="h-full border-gray-200 shadow-sm">
-              <h2 className="text-2xl font-bold text-gray-800 mb-1">
-                최근 활동
-              </h2>
-              <p className="text-sm text-gray-400 mb-8">
-                최근에 수행한 작업들입니다
-              </p>
-              <div className="space-y-4">
-                {activities.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex justify-between items-center p-6 bg-[#F9FAFB] rounded-3xl hover:bg-gray-50 transition-colors cursor-pointer"
-                  >
-                    <div>
-                      <div className="font-bold text-gray-800 text-lg">
-                        {item.title}
+            <ErrorBoundary>
+              <Card className="h-full border-gray-200 shadow-sm">
+                <h2 className="text-2xl font-bold text-gray-800 mb-1">
+                  최근 활동
+                </h2>
+                <p className="text-sm text-gray-400 mb-8">
+                  최근에 수행한 작업들입니다
+                </p>
+                <div className="space-y-4">
+                  {activities.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex justify-between items-center p-6 bg-[#F9FAFB] rounded-3xl hover:bg-gray-50 transition-colors cursor-pointer"
+                    >
+                      <div>
+                        <div className="font-bold text-gray-800 text-lg">
+                          {item.title}
+                        </div>
+                        <div className="text-sm text-gray-400 mt-1">
+                          {item.desc}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-400 mt-1">
-                        {item.desc}
-                      </div>
+                      <div className="text-sm text-gray-400">{item.time}</div>
                     </div>
-                    <div className="text-sm text-gray-400">{item.time}</div>
-                  </div>
-                ))}
-              </div>
-            </Card>
+                  ))}
+                </div>
+              </Card>
+            </ErrorBoundary>
           </div>
 
           <div>
-            <Card className="h-full border-gray-200 shadow-sm">
-              <h2 className="text-2xl font-bold text-gray-800 mb-1">
-                바로 시작하기
-              </h2>
-              <p className="text-sm text-gray-400 mb-8">
-                빠른 작업을 시작하세요
-              </p>
-              <div className="flex flex-col gap-4">
-                <QuickButton
-                  icon={Package}
-                  label="제품 관리"
-                  onClick={() => navigator("/dashboard/products")}
-                />
-                <QuickButton
-                  icon={Share2}
-                  label="SNS 관리"
-                  onClick={() => navigator("/dashboard/sns")}
-                />
-                <QuickButton
-                  icon={FileText}
-                  label="분석 & 리포트"
-                  onClick={() => navigator("/dashboard/analytics")}
-                />
-              </div>
-            </Card>
+            <ErrorBoundary>
+              <Card className="h-full border-gray-200 shadow-sm">
+                <h2 className="text-2xl font-bold text-gray-800 mb-1">
+                  바로 시작하기
+                </h2>
+                <p className="text-sm text-gray-400 mb-8">
+                  빠른 작업을 시작하세요
+                </p>
+                <div className="flex flex-col gap-4">
+                  <QuickButton
+                    icon={Package}
+                    label="제품 관리"
+                    onClick={() => navigator("/dashboard/products")}
+                  />
+                  <QuickButton
+                    icon={Share2}
+                    label="SNS 관리"
+                    onClick={() => navigator("/dashboard/sns")}
+                  />
+                  <QuickButton
+                    icon={FileText}
+                    label="분석 & 리포트"
+                    onClick={() => navigator("/dashboard/analytics")}
+                  />
+                </div>
+              </Card>
+            </ErrorBoundary>
           </div>
         </div>
       </Container>

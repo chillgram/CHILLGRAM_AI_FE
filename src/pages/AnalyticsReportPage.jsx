@@ -29,6 +29,7 @@ import {
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 // --- 로컬 실행을 위한 완결된 더미 데이터 ---
 const lineData = [
@@ -174,63 +175,65 @@ export default function AnalyticsReportPage() {
               <p className="text-[#9CA3AF] font-medium mb-10">
                 최근 7일간의 조회수, 클릭, 전환 데이터
               </p>
-              <div className="h-[400px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={lineData}>
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      vertical={false}
-                      stroke="#F0F0F0"
-                    />
-                    <XAxis
-                      dataKey="name"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: "#9CA3AF", fontSize: 12 }}
-                      dy={10}
-                    />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: "#9CA3AF", fontSize: 12 }}
-                      dx={-10}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: "16px",
-                        border: "none",
-                        boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                      }}
-                    />
-                    <Legend
-                      iconType="circle"
-                      wrapperStyle={{ paddingTop: "20px" }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="조회수"
-                      stroke="#8884d8"
-                      strokeWidth={3}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="클릭"
-                      stroke="#5BF22F"
-                      strokeWidth={3}
-                      dot={{ r: 4 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="전환"
-                      stroke="#FFBB28"
-                      strokeWidth={3}
-                      dot={{ r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              <ErrorBoundary>
+                <div className="h-[400px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={lineData}>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        vertical={false}
+                        stroke="#F0F0F0"
+                      />
+                      <XAxis
+                        dataKey="name"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: "#9CA3AF", fontSize: 12 }}
+                        dy={10}
+                      />
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: "#9CA3AF", fontSize: 12 }}
+                        dx={-10}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          borderRadius: "16px",
+                          border: "none",
+                          boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                        }}
+                      />
+                      <Legend
+                        iconType="circle"
+                        wrapperStyle={{ paddingTop: "20px" }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="조회수"
+                        stroke="#8884d8"
+                        strokeWidth={3}
+                        dot={{ r: 4 }}
+                        activeDot={{ r: 6 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="클릭"
+                        stroke="#5BF22F"
+                        strokeWidth={3}
+                        dot={{ r: 4 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="전환"
+                        stroke="#FFBB28"
+                        strokeWidth={3}
+                        dot={{ r: 4 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </ErrorBoundary>
             </Card>
           )}
 
@@ -242,27 +245,33 @@ export default function AnalyticsReportPage() {
               <p className="text-[#9CA3AF] font-medium mb-10">
                 최근 6개월간의 매출, 광고비 추이
               </p>
-              <div className="h-[400px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={barData}>
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      vertical={false}
-                      stroke="#F0F0F0"
-                    />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                    <YAxis axisLine={false} tickLine={false} />
-                    <Tooltip cursor={{ fill: "#F9FAFB" }} />
-                    <Legend wrapperStyle={{ paddingTop: "20px" }} />
-                    <Bar dataKey="매출" fill="#9CA3AF" radius={[4, 4, 0, 0]} />
-                    <Bar
-                      dataKey="광고비"
-                      fill="#4B5563"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <ErrorBoundary>
+                <div className="h-[400px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={barData}>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        vertical={false}
+                        stroke="#F0F0F0"
+                      />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                      <YAxis axisLine={false} tickLine={false} />
+                      <Tooltip cursor={{ fill: "#F9FAFB" }} />
+                      <Legend wrapperStyle={{ paddingTop: "20px" }} />
+                      <Bar
+                        dataKey="매출"
+                        fill="#9CA3AF"
+                        radius={[4, 4, 0, 0]}
+                      />
+                      <Bar
+                        dataKey="광고비"
+                        fill="#4B5563"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </ErrorBoundary>
             </Card>
           )}
 
@@ -272,51 +281,55 @@ export default function AnalyticsReportPage() {
                 <h3 className="text-2xl font-black mb-10 text-center">
                   플랫폼별 참여도
                 </h3>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        innerRadius={80}
-                        outerRadius={120}
-                        paddingAngle={5}
-                        dataKey="value"
-                        animationDuration={1000}
-                      >
-                        {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend
-                        verticalAlign="middle"
-                        align="right"
-                        layout="vertical"
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
+                <ErrorBoundary>
+                  <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={pieData}
+                          innerRadius={80}
+                          outerRadius={120}
+                          paddingAngle={5}
+                          dataKey="value"
+                          animationDuration={1000}
+                        >
+                          {pieData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend
+                          verticalAlign="middle"
+                          align="right"
+                          layout="vertical"
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </ErrorBoundary>
               </Card>
               <Card className="p-10 border-gray-200 shadow-sm space-y-6 flex flex-col justify-center">
                 <h3 className="text-2xl font-black mb-4">주요 지표 요약</h3>
-                <MetricBar
-                  label="평균 체류 시간"
-                  value="2분 34초"
-                  icon={TrendingUp}
-                  color="bg-blue-50 text-blue-500"
-                />
-                <MetricBar
-                  label="클릭률 (CTR)"
-                  value="3.2%"
-                  icon={MousePointer2}
-                  color="bg-green-50 text-green-500"
-                />
-                <MetricBar
-                  label="신규 방문자"
-                  value="1,847명"
-                  icon={Users}
-                  color="bg-purple-50 text-purple-500"
-                />
+                <ErrorBoundary>
+                  <MetricBar
+                    label="평균 체류 시간"
+                    value="2분 34초"
+                    icon={TrendingUp}
+                    color="bg-blue-50 text-blue-500"
+                  />
+                  <MetricBar
+                    label="클릭률 (CTR)"
+                    value="3.2%"
+                    icon={MousePointer2}
+                    color="bg-green-50 text-green-500"
+                  />
+                  <MetricBar
+                    label="신규 방문자"
+                    value="1,847명"
+                    icon={Users}
+                    color="bg-purple-50 text-purple-500"
+                  />
+                </ErrorBoundary>
               </Card>
             </div>
           )}
@@ -324,54 +337,56 @@ export default function AnalyticsReportPage() {
           {activeTab === "제품별 성과" && (
             <Card className="p-10 border-gray-200 shadow-sm">
               <h3 className="text-2xl font-black mb-8">제품별 판매 성과</h3>
-              <div className="space-y-8">
-                {[
-                  {
-                    name: "초콜릿",
-                    value: 75,
-                    change: "+12%",
-                    color: "bg-[#5BF22F]",
-                  },
-                  {
-                    name: "쿠키",
-                    value: 62,
-                    change: "+8%",
-                    color: "bg-blue-500",
-                  },
-                  {
-                    name: "캔디",
-                    value: 35,
-                    change: "-2%",
-                    color: "bg-red-500",
-                  },
-                  {
-                    name: "스낵",
-                    value: 48,
-                    change: "+15%",
-                    color: "bg-purple-500",
-                  },
-                ].map((item, i) => (
-                  <div key={i}>
-                    <div className="flex justify-between font-bold mb-3">
-                      <span>
-                        {item.name}{" "}
-                        <span
-                          className={`ml-2 text-xs font-black ${item.change.startsWith("+") ? "text-green-500" : "text-red-500"}`}
-                        >
-                          {item.change}
+              <ErrorBoundary>
+                <div className="space-y-8">
+                  {[
+                    {
+                      name: "초콜릿",
+                      value: 75,
+                      change: "+12%",
+                      color: "bg-[#5BF22F]",
+                    },
+                    {
+                      name: "쿠키",
+                      value: 62,
+                      change: "+8%",
+                      color: "bg-blue-500",
+                    },
+                    {
+                      name: "캔디",
+                      value: 35,
+                      change: "-2%",
+                      color: "bg-red-500",
+                    },
+                    {
+                      name: "스낵",
+                      value: 48,
+                      change: "+15%",
+                      color: "bg-purple-500",
+                    },
+                  ].map((item, i) => (
+                    <div key={i}>
+                      <div className="flex justify-between font-bold mb-3">
+                        <span>
+                          {item.name}{" "}
+                          <span
+                            className={`ml-2 text-xs font-black ${item.change.startsWith("+") ? "text-green-500" : "text-red-500"}`}
+                          >
+                            {item.change}
+                          </span>
                         </span>
-                      </span>
-                      <span>{item.value}%</span>
+                        <span>{item.value}%</span>
+                      </div>
+                      <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                        <div
+                          className={`${item.color} h-full transition-all duration-1000`}
+                          style={{ width: `${item.value}%` }}
+                        ></div>
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-                      <div
-                        className={`${item.color} h-full transition-all duration-1000`}
-                        style={{ width: `${item.value}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </ErrorBoundary>
             </Card>
           )}
         </div>

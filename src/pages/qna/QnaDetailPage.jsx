@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 import { fetchQuestion, createAnswer } from "@/services/api/qnaApi";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -147,29 +148,31 @@ export default function QnaDetailPage() {
                 </div>
 
                 <div className="space-y-4">
-                  {question.answers.map((answer) => (
-                    <Card
-                      key={answer.id}
-                      className="border-l-4 border-l-blue-500 bg-blue-50/40"
-                    >
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
-                        <span className="rounded-full border border-gray-200 px-2 py-0.5 text-gray-600">
-                          {answer.author}
-                        </span>
-                        <span
-                          className={`rounded-full px-2 py-0.5 font-semibold ${ROLE_TONE[answer.role] ||
-                            "bg-gray-100 text-gray-600"
-                            }`}
-                        >
-                          {answer.role}
-                        </span>
-                        <span>{answer.date}</span>
-                      </div>
-                      <p className="mt-3 text-sm text-gray-600">
-                        {answer.content}
-                      </p>
-                    </Card>
-                  ))}
+                  <ErrorBoundary>
+                    {question.answers.map((answer) => (
+                      <Card
+                        key={answer.id}
+                        className="border-l-4 border-l-blue-500 bg-blue-50/40"
+                      >
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
+                          <span className="rounded-full border border-gray-200 px-2 py-0.5 text-gray-600">
+                            {answer.author}
+                          </span>
+                          <span
+                            className={`rounded-full px-2 py-0.5 font-semibold ${ROLE_TONE[answer.role] ||
+                              "bg-gray-100 text-gray-600"
+                              }`}
+                          >
+                            {answer.role}
+                          </span>
+                          <span>{answer.date}</span>
+                        </div>
+                        <p className="mt-3 text-sm text-gray-600">
+                          {answer.content}
+                        </p>
+                      </Card>
+                    ))}
+                  </ErrorBoundary>
 
                   {question.answers.length === 0 && (
                     <Card className="border-dashed border-gray-200 bg-gray-50 text-center text-sm text-gray-400">

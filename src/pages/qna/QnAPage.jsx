@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 import { fetchQuestions } from "@/services/api/qnaApi";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -176,21 +177,23 @@ export default function QnAPage() {
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {statCards.map((stat) => (
-                <Card key={stat.label} className="border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500">{stat.label}</div>
-                    <div
-                      className={`flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 ${stat.tone}`}
-                    >
-                      {stat.icon}
+              <ErrorBoundary>
+                {statCards.map((stat) => (
+                  <Card key={stat.label} className="border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm text-gray-500">{stat.label}</div>
+                      <div
+                        className={`flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 ${stat.tone}`}
+                      >
+                        {stat.icon}
+                      </div>
                     </div>
-                  </div>
-                  <div className="mt-4 text-2xl font-semibold">
-                    {stat.value}
-                  </div>
-                </Card>
-              ))}
+                    <div className="mt-4 text-2xl font-semibold">
+                      {stat.value}
+                    </div>
+                  </Card>
+                ))}
+              </ErrorBoundary>
             </div>
 
             <div className="mt-6 space-y-4">
@@ -257,47 +260,49 @@ export default function QnAPage() {
                   질문 목록을 불러오지 못했습니다.
                 </div>
               )}
-              {!isLoading && !isError && filteredQuestions.map((question) => (
-                <Link
-                  key={question.id}
-                  to={`/qna/${question.id}`}
-                  className="block"
-                >
-                  <Card className="border-gray-100">
-                    <div className="flex flex-wrap items-center gap-2 text-xs">
-                      <span className="rounded-full border border-gray-200 px-2 py-0.5 text-gray-600">
-                        {question.category}
-                      </span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 font-semibold ${STATUS_TONE[question.status]
-                          }`}
-                      >
-                        {question.status}
-                      </span>
-                    </div>
-                    <h3 className="mt-3 text-base font-semibold text-gray-900">
-                      {question.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-500">
-                      {question.excerpt}
-                    </p>
-                    <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-gray-400">
-                      <span className="flex items-center gap-1">
-                        <span className="h-4 w-4 rounded-full bg-gray-100" />
-                        {question.author}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="h-4 w-4 rounded-full bg-gray-100" />
-                        {question.date}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="h-4 w-4 rounded-full bg-gray-100" />
-                        답변 {question.replies}개
-                      </span>
-                    </div>
-                  </Card>
-                </Link>
-              ))}
+              <ErrorBoundary>
+                {!isLoading && !isError && filteredQuestions.map((question) => (
+                  <Link
+                    key={question.id}
+                    to={`/qna/${question.id}`}
+                    className="block"
+                  >
+                    <Card className="border-gray-100">
+                      <div className="flex flex-wrap items-center gap-2 text-xs">
+                        <span className="rounded-full border border-gray-200 px-2 py-0.5 text-gray-600">
+                          {question.category}
+                        </span>
+                        <span
+                          className={`rounded-full px-2 py-0.5 font-semibold ${STATUS_TONE[question.status]
+                            }`}
+                        >
+                          {question.status}
+                        </span>
+                      </div>
+                      <h3 className="mt-3 text-base font-semibold text-gray-900">
+                        {question.title}
+                      </h3>
+                      <p className="mt-2 text-sm text-gray-500">
+                        {question.excerpt}
+                      </p>
+                      <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <span className="h-4 w-4 rounded-full bg-gray-100" />
+                          {question.author}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="h-4 w-4 rounded-full bg-gray-100" />
+                          {question.date}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="h-4 w-4 rounded-full bg-gray-100" />
+                          답변 {question.replies}개
+                        </span>
+                      </div>
+                    </Card>
+                  </Link>
+                ))}
+              </ErrorBoundary>
             </div>
 
             {filteredQuestions.length === 0 && (

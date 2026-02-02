@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 export default function ProductManagementPage() {
   const navigate = useNavigate();
@@ -117,132 +118,139 @@ export default function ProductManagementPage() {
         {/* 통계 카드 섹션 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {stats.map((stat, idx) => (
-            <Card
-              key={idx}
-              className="flex h-32 flex-col justify-between border-gray-200 shadow-sm bg-white p-6"
-            >
-              <div className="flex items-start justify-between">
-                <span className="text-sm font-medium text-gray-500">
-                  {stat.title}
-                </span>
-                <stat.icon size={20} className="text-blue-400" strokeWidth={2} />
-              </div>
-              <div className="text-3xl font-bold text-[#111827] tabular-nums">
-                {stat.value}
-              </div>
-            </Card>
+            <ErrorBoundary key={idx}>
+              <Card className="flex h-32 flex-col justify-between border-gray-200 shadow-sm bg-white p-6">
+                <div className="flex items-start justify-between">
+                  <span className="text-sm font-medium text-gray-500">
+                    {stat.title}
+                  </span>
+                  <stat.icon
+                    size={20}
+                    className="text-blue-400"
+                    strokeWidth={2}
+                  />
+                </div>
+                <div className="text-3xl font-bold text-[#111827] tabular-nums">
+                  {stat.value}
+                </div>
+              </Card>
+            </ErrorBoundary>
           ))}
         </div>
 
+        <ErrorBoundary>
+          <Card className="border-gray-200 shadow-sm p-8 overflow-hidden bg-white">
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-[#111827] mb-1">
+                제품 목록
+              </h3>
+              <p className="text-sm text-gray-400">
+                등록된 모든 제품을 확인하고 관리하세요
+              </p>
+            </div>
 
+            <div className="mb-8 bg-gray-100 rounded-lg flex items-center px-4 py-3">
+              <Search className="text-gray-400 mr-3" size={20} />
+              <input
+                type="text"
+                placeholder="제품을 검색해주세요"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-transparent border-none outline-none text-sm w-full placeholder:text-gray-400 text-gray-700"
+              />
+            </div>
 
-        <Card className="border-gray-200 shadow-sm p-8 overflow-hidden bg-white">
-          <div className="mb-6">
-            <h3 className="text-lg font-bold text-[#111827] mb-1">제품 목록</h3>
-            <p className="text-sm text-gray-400">
-              등록된 모든 제품을 확인하고 관리하세요
-            </p>
-          </div>
-
-          <div className="mb-8 bg-gray-100 rounded-lg flex items-center px-4 py-3">
-            <Search className="text-gray-400 mr-3" size={20} />
-            <input
-              type="text"
-              placeholder="제품을 검색해주세요"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-transparent border-none outline-none text-sm w-full placeholder:text-gray-400 text-gray-700"
-            />
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[15%]">
-                    제품명
-                  </th>
-                  <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[15%]">
-                    카테고리
-                  </th>
-                  <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[25%]">
-                    설명
-                  </th>
-                  <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[10%]">
-                    가격
-                  </th>
-                  <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[10%]">
-                    상태
-                  </th>
-                  <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[15%]">
-                    등록일
-                  </th>
-                  <th className="py-4 font-bold text-gray-500 text-xs px-4 text-center w-[10%]">
-                    관리
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map((product) => (
-                  <tr
-                    key={product.id}
-                    className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
-                    onClick={() => navigate(`/dashboard/products/${product.id}`)}
-                  >
-                    <td className="py-4 px-4 text-sm font-medium text-gray-900">
-                      {product.name}
-                    </td>
-                    <td className="py-4 px-4 text-sm text-gray-600">/</td>
-                    <td className="py-4 px-4 text-sm text-gray-600 block line-clamp-1">
-                      /
-                    </td>
-                    <td className="py-4 px-4 text-sm text-gray-600">
-                      {/* 가격 부분을 / 로 숨김 */}
-                      /
-                    </td>
-                    <td className="py-4 px-4">
-                      {product.status === "활성" ? (
-                        <span className="bg-cyan-50 text-cyan-600 px-2.5 py-1 rounded text-xs font-bold">
-                          활성
-                        </span>
-                      ) : (
-                        <span className="bg-gray-100 text-gray-500 px-2.5 py-1 rounded text-xs font-bold">
-                          비활성
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-sm text-gray-600 font-medium">
-                      {product.date}
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="flex justify-center gap-2">
-                        <button
-                          onClick={(e) => handleEditOpen(e, product)}
-                          className="text-gray-400 hover:text-gray-600 transition-colors"
-                        >
-                          <Edit2 size={18} />
-                        </button>
-                        <button
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-red-400 hover:text-red-500 transition-colors"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[15%]">
+                      제품명
+                    </th>
+                    <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[15%]">
+                      카테고리
+                    </th>
+                    <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[25%]">
+                      설명
+                    </th>
+                    <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[10%]">
+                      가격
+                    </th>
+                    <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[10%]">
+                      상태
+                    </th>
+                    <th className="py-4 font-bold text-gray-500 text-xs px-4 w-[15%]">
+                      등록일
+                    </th>
+                    <th className="py-4 font-bold text-gray-500 text-xs px-4 text-center w-[10%]">
+                      관리
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((product) => (
+                    <tr
+                      key={product.id}
+                      className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() =>
+                        navigate(`/dashboard/products/${product.id}`)
+                      }
+                    >
+                      <td className="py-4 px-4 text-sm font-medium text-gray-900">
+                        {product.name}
+                      </td>
+                      <td className="py-4 px-4 text-sm text-gray-600">/</td>
+                      <td className="py-4 px-4 text-sm text-gray-600 block line-clamp-1">
+                        /
+                      </td>
+                      <td className="py-4 px-4 text-sm text-gray-600">
+                        {/* 가격 부분을 / 로 숨김 */}
+                        /
+                      </td>
+                      <td className="py-4 px-4">
+                        {product.status === "활성" ? (
+                          <span className="bg-cyan-50 text-cyan-600 px-2.5 py-1 rounded text-xs font-bold">
+                            활성
+                          </span>
+                        ) : (
+                          <span className="bg-gray-100 text-gray-500 px-2.5 py-1 rounded text-xs font-bold">
+                            비활성
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-4 px-4 text-sm text-gray-600 font-medium">
+                        {product.date}
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={(e) => handleEditOpen(e, product)}
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                            <Edit2 size={18} />
+                          </button>
+                          <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-red-400 hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-            {/* 결과 없음 처리 */}
-            {filteredProducts.length === 0 && (
-              <div className="py-20 text-center">
-                <p className="text-gray-400 text-sm">검색 결과가 없습니다</p>
-              </div>
-            )}
-          </div>
-        </Card>
+              {/* 결과 없음 처리 */}
+              {filteredProducts.length === 0 && (
+                <div className="py-20 text-center">
+                  <p className="text-gray-400 text-sm">검색 결과가 없습니다</p>
+                </div>
+              )}
+            </div>
+          </Card>
+        </ErrorBoundary>
       </Container>
 
       {/* 추가 모달 */}

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProductDetailStore } from "@/stores/productDetailStore";
 import { useProductImageQuery } from "@/services/queries/useProductImageQuery";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 export default function ProductDetailPage() {
   const { productId } = useParams();
@@ -127,55 +128,57 @@ export default function ProductDetailPage() {
               </div>
 
               <div className="flex h-105 items-center justify-center">
-                {/* ✅ HELLO 모드 UI */}
-                {isHelloMode ? (
-                  <div className="w-full px-6">
-                    {helloLoading && (
-                      <div className="text-sm text-gray-600">
-                        hello 호출 중...
-                      </div>
-                    )}
+                <ErrorBoundary>
+                  {/* ✅ HELLO 모드 UI */}
+                  {isHelloMode ? (
+                    <div className="w-full px-6">
+                      {helloLoading && (
+                        <div className="text-sm text-gray-600">
+                          hello 호출 중...
+                        </div>
+                      )}
 
-                    {helloError && (
-                      <div className="text-sm text-red-600">
-                        hello 실패: {helloError.message}
-                      </div>
-                    )}
+                      {helloError && (
+                        <div className="text-sm text-red-600">
+                          hello 실패: {helloError.message}
+                        </div>
+                      )}
 
-                    {!helloLoading && !helloError && helloResult && (
-                      <pre className="whitespace-pre-wrap rounded-lg bg-white p-4 text-sm">
-                        {JSON.stringify(helloResult, null, 2)}
-                      </pre>
-                    )}
+                      {!helloLoading && !helloError && helloResult && (
+                        <pre className="whitespace-pre-wrap rounded-lg bg-white p-4 text-sm">
+                          {JSON.stringify(helloResult, null, 2)}
+                        </pre>
+                      )}
 
-                    {!helloLoading && !helloError && !helloResult && (
-                      <div className="text-sm text-gray-600">결과 없음</div>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    {/* 기존 이미지 로딩 UI */}
-                    {isLoading && (
-                      <div className="text-sm text-gray-600">
-                        불러오는 중...
-                      </div>
-                    )}
+                      {!helloLoading && !helloError && !helloResult && (
+                        <div className="text-sm text-gray-600">결과 없음</div>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      {/* 기존 이미지 로딩 UI */}
+                      {isLoading && (
+                        <div className="text-sm text-gray-600">
+                          불러오는 중...
+                        </div>
+                      )}
 
-                    {isError && (
-                      <div className="text-sm text-red-600">
-                        이미지 로드 실패: {error?.message}
-                      </div>
-                    )}
+                      {isError && (
+                        <div className="text-sm text-red-600">
+                          이미지 로드 실패: {error?.message}
+                        </div>
+                      )}
 
-                    {!isLoading && !isError && objectUrl && (
-                      <img
-                        src={objectUrl}
-                        alt={selectedType}
-                        className="h-full w-full object-contain"
-                      />
-                    )}
-                  </>
-                )}
+                      {!isLoading && !isError && objectUrl && (
+                        <img
+                          src={objectUrl}
+                          alt={selectedType}
+                          className="h-full w-full object-contain"
+                        />
+                      )}
+                    </>
+                  )}
+                </ErrorBoundary>
               </div>
             </div>
           </div>

@@ -17,6 +17,7 @@ import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
 import { Field } from "@/components/common/Field";
 import { PrimaryButton } from "@/components/common/PrimaryButton";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 export default function SnsManagementPage() {
   const [activeTab, setActiveTab] = useState("scheduled");
@@ -105,9 +106,11 @@ export default function SnsManagementPage() {
         </div>
 
         <Card className="min-h-125 border-gray-200 p-10">
-          {activeTab === "scheduled" && <ScheduledSection />}
-          {activeTab === "published" && <PublishedSection />}
-          {activeTab === "analytics" && <AnalyticsSection />}
+          <ErrorBoundary>
+            {activeTab === "scheduled" && <ScheduledSection />}
+            {activeTab === "published" && <PublishedSection />}
+            {activeTab === "analytics" && <AnalyticsSection />}
+          </ErrorBoundary>
         </Card>
       </Container>
 

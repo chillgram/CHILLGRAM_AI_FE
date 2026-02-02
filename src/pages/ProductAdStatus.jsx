@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import Container from "@/components/common/Container";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 export default function ProductAdStatusPage() {
   const { productId } = useParams();
@@ -114,41 +115,43 @@ export default function ProductAdStatusPage() {
 
         {/* 프로젝트 그리드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map((project) => (
-            <div
-              key={project.id}
-              className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group cursor-pointer"
-            >
-              <div className="mb-8">
-                <span
-                  className={`inline-block px-3 py-1.5 rounded-lg text-xs font-black mb-4 ${
-                    project.type === "ad"
-                      ? "bg-purple-50 text-purple-600"
-                      : "bg-blue-50 text-blue-600"
-                  }`}
-                >
-                  {project.badge}
-                </span>
-                <h3 className="text-xl font-black text-[#111827] mb-2 group-hover:text-blue-500 transition-colors">
-                  {project.title}
-                </h3>
-                <div className="flex items-center gap-2 text-gray-400 text-xs font-bold">
-                  <Calendar size={14} /> {project.date}
+          <ErrorBoundary>
+            {filteredProjects.map((project) => (
+              <div
+                key={project.id}
+                className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group cursor-pointer"
+              >
+                <div className="mb-8">
+                  <span
+                    className={`inline-block px-3 py-1.5 rounded-lg text-xs font-black mb-4 ${
+                      project.type === "ad"
+                        ? "bg-purple-50 text-purple-600"
+                        : "bg-blue-50 text-blue-600"
+                    }`}
+                  >
+                    {project.badge}
+                  </span>
+                  <h3 className="text-xl font-black text-[#111827] mb-2 group-hover:text-blue-500 transition-colors">
+                    {project.title}
+                  </h3>
+                  <div className="flex items-center gap-2 text-gray-400 text-xs font-bold">
+                    <Calendar size={14} /> {project.date}
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-center justify-between pt-6 border-t border-gray-50">
-                <div className="flex items-center gap-1.5 text-gray-500 text-xs font-bold">
-                  <ImageIcon size={14} />
-                  {project.contentCount}개 콘텐츠
-                </div>
-                <div className="flex items-center gap-1.5 text-[#111827] text-xs font-black group-hover:text-blue-500 transition-colors">
-                  <Eye size={14} />
-                  상세보기
+                <div className="flex items-center justify-between pt-6 border-t border-gray-50">
+                  <div className="flex items-center gap-1.5 text-gray-500 text-xs font-bold">
+                    <ImageIcon size={14} />
+                    {project.contentCount}개 콘텐츠
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[#111827] text-xs font-black group-hover:text-blue-500 transition-colors">
+                    <Eye size={14} />
+                    상세보기
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </ErrorBoundary>
         </div>
       </Container>
     </div>
