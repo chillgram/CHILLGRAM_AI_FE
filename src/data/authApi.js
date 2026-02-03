@@ -1,8 +1,14 @@
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
 async function parseError(res) {
-  const payload = await res.json().catch(() => ({}));
-  return payload?.message || payload?.error?.message || "요청에 실패했습니다.";
+  const text = await res.text();
+  console.error(`[AuthApi] Error ${res.status}:`, text);
+  try {
+    const payload = JSON.parse(text);
+    return payload?.message || payload?.error?.message || "요청에 실패했습니다.";
+  } catch {
+    return "요청에 실패했습니다. (서버 응답 파싱 불가)";
+  }
 }
 
 export async function loginApi({ email, password }) {

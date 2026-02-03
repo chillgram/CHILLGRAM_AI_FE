@@ -15,6 +15,7 @@ import HomePage from "@/pages/HomePage";
 import QnAPage from "@/pages/qna/QnAPage";
 import QnaWritePage from "@/pages/qna/QnaWritePage";
 import QnaDetailPage from "@/pages/qna/QnaDetailPage";
+import QnaEditPage from "@/pages/qna/QnaEditPage";
 
 import DashboardPage from "@/pages/DashboardPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
@@ -28,6 +29,8 @@ import AnalyticsReportPage from "@/pages/AnalyticsReportPage";
 import ProjectAdDetail from "@/pages/ProjectAdDetail";
 import ProjectDesignDetail from "@/pages/ProjectDesignDetail";
 
+import { parseJwt } from "@/utils/jwt";
+
 export default function App() {
   const login = useAuthStore((s) => s.login);
   const setBootstrapped = useAuthStore((s) => s.setBootstrapped);
@@ -36,7 +39,10 @@ export default function App() {
   useEffect(() => {
     (async () => {
       try {
-        const { accessToken, user } = await refreshApi();
+        const { accessToken } = await refreshApi();
+        // 토큰 디코딩하여 유저 정보 복원
+        const user = parseJwt(accessToken);
+        console.log("[App] Silent Refresh 성공 - User 복원:", user);
         login(accessToken, user);
       } catch {
         // refresh 없으면 비로그인
@@ -61,6 +67,7 @@ export default function App() {
           {/* 로그인 라우트 */}
           <Route element={<PrivateRoute />}>
             <Route path="/qna/new" element={<QnaWritePage />} />
+            <Route path="/qna/:questionId/edit" element={<QnaEditPage />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/dashboard/sns" element={<SnsManagementPage />} />

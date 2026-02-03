@@ -207,6 +207,7 @@ export default function QnaWritePage() {
                         onChange={(event) => {
                           const file = event.target.files?.[0];
                           setFileName(file ? file.name : "");
+                          setFile(file); // 파일 상태 업데이트 추가
                         }}
                       />
                     </label>
