@@ -3,8 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Container from "@/components/common/Container";
 import Button from "@/components/common/Button";
+import { Field } from "@/components/common/Field";
+import { SelectField } from "@/components/common/SelectField";
 import { createQuestion } from "@/services/api/qnaApi";
 import { useAuthStore } from "@/stores/authStore";
+
+const CATEGORY_OPTIONS = [
+  { value: "1", label: "이용 방법" },
+  { value: "2", label: "기술 지원" },
+  { value: "3", label: "결제/환불" },
+  { value: "4", label: "기능 제안" },
+  { value: "5", label: "버그 리포트" },
+  { value: "6", label: "기타" },
+];
 
 export default function QnaWritePage() {
   const navigate = useNavigate();
@@ -41,30 +52,6 @@ export default function QnaWritePage() {
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900">
-      <div className="border-b bg-white">
-        <Container className="flex h-14 items-center justify-between text-xs text-gray-500">
-          <Link
-            to="/qna"
-            className="flex items-center gap-2 font-medium text-gray-600 hover:text-gray-800"
-          >
-            <span className="text-base">←</span>
-            Q&amp;A로 돌아가기
-          </Link>
-          <span className="text-base font-semibold text-green-500">
-            CHILL GRAM
-          </span>
-          <div className="flex items-center gap-3">
-            <span className="text-gray-400">메뉴</span>
-            <Link
-              to="/"
-              className="rounded-md border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-600"
-            >
-              메인으로
-            </Link>
-          </div>
-        </Container>
-      </div>
-
       <main className="py-10">
         <Container>
           <div className="mx-auto max-w-3xl">
@@ -82,49 +69,34 @@ export default function QnaWritePage() {
                     질문 정보
                   </p>
 
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-xs font-medium text-gray-600">
-                        카테고리 <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        className="mt-2 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm text-gray-700 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                      >
-                        <option value="">카테고리를 선택하세요.</option>
-                        <option value="1">이용 방법</option>
-                        <option value="2">기술 지원</option>
-                        <option value="3">결제/환불</option>
-                        <option value="4">기능 제안</option>
-                        <option value="5">버그 리포트</option>
-                        <option value="6">기타</option>
-                      </select>
+                  <div className="space-y-5">
+                    <SelectField
+                      label="카테고리"
+                      required
+                      placeholder="카테고리를 선택하세요."
+                      value={category}
+                      onChange={setCategory}
+                      options={CATEGORY_OPTIONS}
+                    />
+
+                    <Field
+                      label="제목"
+                      required
+                      placeholder="질문 제목을 입력하세요."
+                      value={title}
+                      onChange={(val) => setTitle(val.slice(0, 100))}
+                    />
+                    <div className="text-right text-xs text-gray-400">
+                      {title.length} / 100
                     </div>
 
                     <div>
-                      <label className="text-xs font-medium text-gray-600">
-                        제목 <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        className="mt-2 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm text-gray-700 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100"
-                        placeholder="질문 제목을 입력하세요."
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value.slice(0, 100))}
-                        maxLength={100}
-                      />
-                      <div className="mt-1 text-right text-xs text-gray-400">
-                        {title.length} / 100
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-medium text-gray-600">
-                        내용 <span className="text-red-500">*</span>
+                      <label className="mb-3 block text-sm font-semibold text-black">
+                        내용 <span className="text-black">*</span>
                       </label>
                       <textarea
                         rows={6}
-                        className="mt-2 w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100"
+                        className="w-full resize-none rounded-lg border border-gray-200 bg-primary/5 px-6 py-4 text-sm text-gray-700 outline-none ring-0 focus:ring-2 focus:ring-primary"
                         placeholder="질문 내용을 자세히 입력해주세요."
                         value={content}
                         onChange={(e) => setContent(e.target.value.slice(0, 2000))}
@@ -161,7 +133,7 @@ export default function QnaWritePage() {
                   <p className="text-xs font-medium text-gray-600">
                     이미지 첨부 (선택)
                   </p>
-                  <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                  <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-8 text-center hover:border-primary/50 transition-colors">
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-400 shadow-sm">
                       <svg viewBox="0 0 24 24" className="h-5 w-5">
                         <path
@@ -197,7 +169,7 @@ export default function QnaWritePage() {
                     <p className="mt-1 text-xs text-gray-400">
                       PNG, JPG, GIF 형식 지원, 파일당 최대 5MB
                     </p>
-                    <label className="mt-4 inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border border-gray-200 bg-white px-3 text-xs font-semibold text-gray-600">
+                    <label className="mt-4 inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border border-gray-200 bg-white px-3 text-xs font-semibold text-gray-600 hover:text-primary hover:border-primary/50 transition-colors">
                       <span className="text-sm">+</span>
                       파일 선택
                       <input
@@ -227,7 +199,7 @@ export default function QnaWritePage() {
                     취소
                   </Link>
                   <Button
-                    className="h-9 bg-green-400 px-5 text-xs font-semibold text-white hover:bg-green-500 focus:ring-green-400 disabled:opacity-50"
+                    className="h-9 bg-primary px-5 text-xs font-semibold text-white hover:bg-primary/90 focus:ring-primary disabled:opacity-50"
                     onClick={handleSubmit}
                     disabled={mutation.isPending || !isFormValid}
                   >

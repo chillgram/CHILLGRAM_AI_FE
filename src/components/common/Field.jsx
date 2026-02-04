@@ -12,7 +12,7 @@ export function Field({
 
   return (
     <label className="block">
-      <div className="mb-3 text-lg font-semibold text-black">
+      <div className="mb-3 text-sm font-semibold text-black">
         {label} {required ? <span className="text-black">*</span> : null}
       </div>
 
@@ -22,12 +22,12 @@ export function Field({
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
         className={[
-          "h-16 w-full rounded-lg px-6 text-lg outline-none ring-0",
-          "bg-[#E9FBE4]",
+          "h-16 w-full rounded-lg px-6 text-sm outline-none ring-0",
+          "bg-primary/5",
           "focus:ring-2",
           showError
             ? "ring-2 ring-red-400 focus:ring-red-400"
-            : "focus:ring-[#66FF2A]",
+            : "focus:ring-primary",
         ].join(" ")}
         aria-invalid={showError ? "true" : "false"}
       />

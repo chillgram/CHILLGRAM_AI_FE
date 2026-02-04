@@ -4,6 +4,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
+import { Field } from "@/components/common/Field";
+import { SelectField } from "@/components/common/SelectField";
 import { fetchQuestion, updateQuestion } from "@/services/api/qnaApi";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -69,31 +71,18 @@ export default function QnaEditPage() {
         });
     };
 
+    const categoryOptions = CATEGORIES.map((c) => ({
+        value: c.id,
+        label: c.name,
+    }));
+
     return (
         <div className="min-h-screen bg-gray-100 text-gray-900">
-            <div className="border-b bg-white">
-                <Container className="flex h-14 items-center justify-between text-xs text-gray-500">
-                    <Link
-                        to={`/qna/${questionId}`}
-                        className="flex items-center gap-2 font-medium text-gray-600 hover:text-gray-800"
-                    >
-                        <span className="text-base">←</span>
-                        취소
-                    </Link>
-                    <span className="text-base font-semibold text-green-500">
-                        CHILL GRAM
-                    </span>
-                    <div className="w-16" />
-                </Container>
-            </div>
-
             <main className="py-10">
                 <Container>
                     <div className="mx-auto max-w-3xl">
                         <Card className="border-gray-100">
-                            <h1 className="text-xl font-semibold text-gray-900">
-                                질문 수정
-                            </h1>
+                            <h1 className="text-xl font-semibold text-gray-900">질문 수정</h1>
 
                             {isLoading && (
                                 <p className="mt-4 text-sm text-gray-500">
@@ -110,40 +99,24 @@ export default function QnaEditPage() {
                             {question && (
                                 <form onSubmit={handleSubmit} className="mt-6 space-y-6">
                                     {/* 카테고리 선택 */}
-                                    <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                                            카테고리
-                                        </label>
-                                        <select
-                                            value={categoryId}
-                                            onChange={(e) => setCategoryId(Number(e.target.value))}
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
-                                        >
-                                            {CATEGORIES.map((cat) => (
-                                                <option key={cat.id} value={cat.id}>
-                                                    {cat.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                    <SelectField
+                                        label="카테고리"
+                                        value={categoryId}
+                                        onChange={(val) => setCategoryId(Number(val))}
+                                        options={categoryOptions}
+                                    />
 
                                     {/* 제목 입력 */}
-                                    <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                                            제목
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={title}
-                                            onChange={(e) => setTitle(e.target.value)}
-                                            placeholder="질문 제목을 입력하세요"
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
-                                        />
-                                    </div>
+                                    <Field
+                                        label="제목"
+                                        value={title}
+                                        onChange={setTitle}
+                                        placeholder="질문 제목을 입력하세요"
+                                    />
 
                                     {/* 내용 입력 */}
                                     <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                                        <label className="mb-3 block text-sm font-semibold text-black">
                                             내용
                                         </label>
                                         <textarea
@@ -151,7 +124,7 @@ export default function QnaEditPage() {
                                             onChange={(e) => setContent(e.target.value)}
                                             placeholder="질문 내용을 입력하세요"
                                             rows={8}
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                            className="w-full rounded-lg border border-gray-200 bg-primary/5 px-6 py-4 text-sm text-gray-700 outline-none ring-0 focus:ring-2 focus:ring-primary"
                                         />
                                     </div>
 
@@ -163,7 +136,7 @@ export default function QnaEditPage() {
                                         <input
                                             type="file"
                                             onChange={(e) => setFile(e.target.files[0])}
-                                            className="w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-green-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-green-700 hover:file:bg-green-100"
+                                            className="w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-primary/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20"
                                         />
                                     </div>
 
@@ -179,7 +152,7 @@ export default function QnaEditPage() {
                                         </Button>
                                         <Button
                                             type="submit"
-                                            className="h-10 bg-green-500 px-6 text-sm font-semibold text-white hover:bg-green-600"
+                                            className="h-10 bg-primary px-6 text-sm font-semibold text-white hover:bg-primary/90"
                                             disabled={updateMutation.isPending}
                                         >
                                             {updateMutation.isPending ? "수정 중..." : "수정 완료"}

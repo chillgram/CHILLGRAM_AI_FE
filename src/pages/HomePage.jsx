@@ -46,7 +46,7 @@ export default function HomePage() {
         <section className="pt-20 pb-14">
           <Container className="text-center">
             <h1 className="text-3xl font-extrabold leading-tight md:text-4xl">
-              <span className="text-green-500">식품 광고부터 SNS 운영까지</span>
+              <span className="text-primary">식품 광고부터 SNS 운영까지</span>
               <br />
               AI가 한 번에
             </h1>
@@ -55,9 +55,6 @@ export default function HomePage() {
               <br />
               SNS 게시부터 성과 분석까지 한 번에 관리하는 올인원 플랫폼
             </p>
-            <Button className="mt-8 h-9 bg-[#5bf22f] px-5 text-xs font-semibold text-black hover:brightness-95 focus:ring-[#5bf22f]">
-              무료로 시작하기
-            </Button>
           </Container>
         </section>
 
@@ -74,7 +71,7 @@ export default function HomePage() {
               {FEATURES.map((feature) => (
                 <Card
                   key={feature.title}
-                  className="border-green-100 bg-green-50 py-6 text-center"
+                  className="border-primary/10 bg-primary/5 py-6 text-center"
                 >
                   <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-white text-lg">
                     {feature.icon}
@@ -105,7 +102,7 @@ export default function HomePage() {
             <ol className="mx-auto mt-10 flex max-w-2xl flex-col gap-8">
               {STEPS.map((step, index) => (
                 <li key={step.title} className="flex gap-5">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold text-gray-700">
                     {index + 1}
                   </div>
                   <div className="text-left">
@@ -120,15 +117,12 @@ export default function HomePage() {
           </Container>
         </section>
 
-        <section className="bg-green-50 py-20">
+        <section className="bg-primary/5 py-20">
           <Container className="text-center">
             <h2 className="text-2xl font-bold">지금 바로 시작하세요</h2>
             <p className="mt-2 text-xs text-gray-500">
               5분이면 첫 번째 패키지 디자인을 완성할 수 있습니다
             </p>
-            <Button className="mt-6 h-9 bg-[#5bf22f] px-5 text-xs font-semibold text-black hover:brightness-95 focus:ring-[#5bf22f]">
-              무료로 시작하기
-            </Button>
           </Container>
         </section>
       </main>

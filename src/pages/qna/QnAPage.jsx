@@ -192,11 +192,11 @@ export default function QnAPage() {
           <section className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
             <div className="flex flex-col gap-6 border-b border-gray-100 pb-8 md:flex-row md:items-start md:justify-between">
               <div>
-                <p className="text-sm font-semibold text-green-500">CHILL GRAM</p>
+
                 <h1 className="mt-3 text-2xl font-bold">Q&amp;A 게시판</h1>
                 <p className="mt-2 text-sm text-gray-500">궁금한 점을 질문하고 답변을 받아보세요.</p>
               </div>
-              <Button className="h-10 gap-2 bg-green-500 px-5 text-white hover:bg-green-600 focus:ring-green-500" onClick={handleAskQuestion}>
+              <Button className="h-10 gap-2 bg-primary px-5 text-white hover:bg-primary/90 focus:ring-primary" onClick={handleAskQuestion}>
                 <span className="flex h-5 w-5 items-center justify-center rounded-full border border-white">+</span>질문하기
               </Button>
             </div>
@@ -207,7 +207,9 @@ export default function QnAPage() {
                   <Card key={stat.label} className="border-gray-100">
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-gray-500">{stat.label}</div>
-                      <div className={`flex h - 7 w - 7 items - center justify - center rounded - full bg - gray - 100 ${stat.tone} `}>{stat.icon}</div>
+                      <div className={`flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 ${stat.tone}`}>
+                        {stat.icon}
+                      </div>
                     </div>
                     <div className="mt-4 text-2xl font-semibold">{stat.value}</div>
                   </Card>
@@ -224,7 +226,7 @@ export default function QnAPage() {
                   </svg>
                 </span>
                 <input
-                  className="h-10 w-full rounded-full border border-gray-200 bg-gray-50 pl-11 text-sm text-gray-700 placeholder:text-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100"
+                  className="h-10 w-full rounded-full border border-gray-200 bg-gray-50 pl-11 text-sm text-gray-700 placeholder:text-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   placeholder="질문을 검색하세요."
                   value={searchQuery}
                   onChange={(e) => {
@@ -239,7 +241,17 @@ export default function QnAPage() {
                   const isActive = filter.key === activeFilter;
                   const countLabel = filter.key === "all" ? stats.total : filter.key === "pending" ? stats.pending : stats.done;
                   return (
-                    <button key={filter.key} onClick={() => { setActiveFilter(filter.key); setPage(0); }} className={`rounded-full px-3 py-1 text-xs font-medium transition ${isActive ? "border border-gray-200 bg-white text-gray-700 shadow-sm" : "text-gray-500"}`}>
+                    <button
+                      key={filter.key}
+                      onClick={() => {
+                        setActiveFilter(filter.key);
+                        setPage(0);
+                      }}
+                      className={`rounded-full px-3 py-1 text-xs font-medium transition ${isActive
+                          ? "border border-primary bg-primary text-white shadow-sm"
+                          : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
+                        }`}
+                    >
                       {filter.label} ({countLabel})
                     </button>
                   );
@@ -253,12 +265,12 @@ export default function QnAPage() {
               <ErrorBoundary>
                 {!isLoading && !isError && mappedQuestions.map((question) => (
                   <Link key={question.questionId} to={`/qna/${question.questionId}`} className="block">
-                    <Card className="border-gray-100">
+                    <Card className="border-gray-100 hover:border-primary/50 transition-colors">
                       <div className="flex flex-wrap items-center gap-2 text-xs">
                         <span className="rounded-full border border-gray-200 px-2 py-0.5 text-gray-600">{question.categoryLabel}</span>
                         <span className={`rounded-full px-2 py-0.5 font-semibold ${STATUS_TONE[question.statusLabel]}`}>{question.statusLabel}</span>
                       </div>
-                      <h3 className="mt-3 text-base font-semibold text-gray-900">{question.title}</h3>
+                      <h3 className="mt-3 text-base font-semibold text-gray-900 group-hover:text-primary transition-colors">{question.title}</h3>
                       <p className="mt-2 text-sm text-gray-500">{question.excerpt}</p>
                       <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-gray-400">
                         <span className="flex items-center gap-1.5"><User size={14} className="text-gray-300" />{question.authorLabel}</span>
@@ -273,7 +285,7 @@ export default function QnAPage() {
                 <div className="mt-8 flex justify-center gap-2">
                   <Button variant="secondary" className="h-8 w-8 p-0 border border-gray-200 bg-white disabled:opacity-50" onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0}>&lt;</Button>
                   {Array.from({ length: totalPages }, (_, i) => (
-                    <Button key={i} variant={i === page ? "primary" : "secondary"} className={`h - 8 w - 8 p - 0 ${i === page ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"} `} onClick={() => setPage(i)}>{i + 1}</Button>
+                    <Button key={i} variant={i === page ? "primary" : "secondary"} className={`h-8 w-8 p-0 ${i === page ? "bg-primary text-white border-primary" : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"}`} onClick={() => setPage(i)}>{i + 1}</Button>
                   ))}
                   <Button variant="secondary" className="h-8 w-8 p-0 border border-gray-200 bg-white disabled:opacity-50" onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1}>&gt;</Button>
                 </div>

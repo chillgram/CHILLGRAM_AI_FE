@@ -13,7 +13,7 @@ export default function Button({
     "inline-flex items-center justify-center rounded-lg font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
 
   const variants = {
-    primary: "bg-black text-white hover:bg-black/90 focus:ring-black",
+    primary: "bg-primary text-white hover:bg-primary/90 focus:ring-primary",
     secondary:
       "bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-300",
     ghost: "bg-transparent text-gray-900 hover:bg-gray-100 focus:ring-gray-300",

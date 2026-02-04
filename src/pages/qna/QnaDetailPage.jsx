@@ -35,87 +35,63 @@ const CATEGORY_MAP = {
   5: "버그 리포트",
   6: "기타",
 };
+import { apiFetch } from "@/lib/apiFetch"; // apiFetch 임포트
 
-// 이미지 로드 실패 시 다양한 경로를 시도하는 컴포넌트 (인증 토큰 사용)
-const SmartImage = ({ src, alt, className }) => {
-  const [currentSrc, setCurrentSrc] = useState(null);
-  const { accessToken } = useAuthStore(); // 토큰 가져오기
 
-  // 시도할 경로 패턴들
-  const candidates = useMemo(() => {
-    if (!src) return [];
-    if (src.startsWith("http")) return [src];
 
-    // 경로 정규화 (앞에 /가 없으면 붙임)
-    const originalPath = src.startsWith("/") ? src : `/${src}`;
-
-    // 만약 이미 /api/qs/qna/.. 형태라면 그대로 사용
-    if (src.startsWith("/api")) return [originalPath];
-
-    // 여러 가능성을 순차적으로 시도 (Vite Proxy 설정을 따름)
-    return [
-      originalPath,                 // 1순위: /qna/... (Spring Boot 기본 정적 리소스)
-      `/static${originalPath}`,     // 2순위: /static/qna/...
-      `/api/qs${originalPath}`,     // 3순위: /api/qs/qna/... 
-      `/api${originalPath}`,        // 4순위: /api/qna/...
-      `/uploads${originalPath}`     // 5순위: /uploads/qna/...
-    ];
-  }, [src]);
+// 인증 토큰이 필요한 이미지를 불러오는 컴포넌트
+const AuthImage = ({ src, alt, className }) => {
+  const [blobUrl, setBlobUrl] = useState(null);
 
   useEffect(() => {
+    if (!src) return;
+
     let active = true;
-    let blobUrl = null;
+    (async () => {
+      // 1. 첫 번째 시도: 원본 URL 그대로
+      const candidates = [src];
 
-    const fetchImage = async (index) => {
-      if (!active) return;
-
-      if (index >= candidates.length) {
-        // 모든 경로 실패 시, 엑박 표시를 위해 마지막 후보를 그냥 src로 설정하거나 로드 실패 로그 남김
-        console.error("모든 경로에서 이미지 로드 실패");
-        return;
-      }
-
-      const url = candidates[index];
+      // URL 보정 후보 추가 (백엔드가 경로를 잘못 줄 경우 대비)
       try {
-        const headers = {};
-        if (accessToken) {
-          headers["Authorization"] = `Bearer ${accessToken}`;
+        const urlObj = new URL(src);
+        // 만약 /qna/... 로 시작하면 -> /api/qna/..., /api/uploads/qna/... 시도
+        if (urlObj.pathname.startsWith("/qna/")) {
+          candidates.push(src.replace("/qna/", "/api/qna/"));
+          candidates.push(src.replace("/qna/", "/api/uploads/qna/"));
         }
-
-        const res = await fetch(url, { headers });
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-
-        const blob = await res.blob();
-        if (active) {
-          if (blobUrl) URL.revokeObjectURL(blobUrl); // 이전 URL 해제
-          blobUrl = URL.createObjectURL(blob);
-          setCurrentSrc(blobUrl);
-        }
-      } catch (err) {
-        console.warn(`이미지 로드 실패 (${url}):`, err);
-        if (active) fetchImage(index + 1); // 다음 후보 시도
+      } catch (e) {
+        // 상대 경로 등 에러 무시
       }
-    };
 
-    if (candidates.length > 0) {
-      fetchImage(0);
-    }
+      for (const url of candidates) {
+        try {
+          console.log(`[AuthImage] Trying: ${url}`);
+          const res = await apiFetch(url);
+          if (res.status === 404) continue; // 404면 다음 후보 시도
+          if (!res.ok) throw new Error(`Image load failed: ${res.status}`);
+
+          const blob = await res.blob();
+          if (active) {
+            const newUrl = URL.createObjectURL(blob);
+            setBlobUrl(newUrl);
+          }
+          return; // 성공하면 종료
+        } catch (err) {
+          console.warn(`[AuthImage] Load error for ${url}:`, err);
+        }
+      }
+      console.error("[AuthImage] All candidates failed");
+    })();
 
     return () => {
       active = false;
       if (blobUrl) URL.revokeObjectURL(blobUrl);
     };
-  }, [candidates, accessToken]);
+  }, [src]);
 
-  if (!currentSrc) return <div className="h-48 w-full animate-pulse rounded-lg bg-gray-100" />;
+  if (!blobUrl) return <div className="h-48 w-full animate-pulse rounded-lg bg-gray-100" />;
 
-  return (
-    <img
-      src={currentSrc}
-      alt={alt}
-      className={className}
-    />
-  );
+  return <img src={blobUrl} alt={alt} className={className} />;
 };
 
 export default function QnaDetailPage() {
@@ -302,29 +278,7 @@ export default function QnaDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900">
-      <div className="border-b bg-white">
-        <Container className="flex h-14 items-center justify-between text-xs text-gray-500">
-          <Link
-            to="/qna"
-            className="flex items-center gap-2 font-medium text-gray-600 hover:text-gray-800"
-          >
-            <span className="text-base">←</span>
-            Q&amp;A로 돌아가기
-          </Link>
-          <span className="text-base font-semibold text-green-500">
-            CHILL GRAM
-          </span>
-          <div className="flex items-center gap-3">
-            <span className="text-gray-400">메뉴</span>
-            <Link
-              to="/"
-              className="rounded-md border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-600"
-            >
-              메인으로
-            </Link>
-          </div>
-        </Container>
-      </div>
+
 
       <main className="py-10">
         <Container>
@@ -342,7 +296,7 @@ export default function QnaDetailPage() {
                   질문을 불러오지 못했습니다.
                 </p>
                 <Button
-                  className="mt-4 h-9 bg-green-500 px-4 text-xs font-semibold text-white hover:bg-green-600 focus:ring-green-500"
+                  className="mt-4 h-9 bg-primary px-4 text-xs font-semibold text-white hover:bg-primary/90 focus:ring-primary"
                   onClick={() => navigate("/qna")}
                 >
                   목록으로 돌아가기
@@ -355,7 +309,7 @@ export default function QnaDetailPage() {
                   요청하신 질문을 찾을 수 없습니다.
                 </p>
                 <Button
-                  className="mt-4 h-9 bg-green-500 px-4 text-xs font-semibold text-white hover:bg-green-600 focus:ring-green-500"
+                  className="mt-4 h-9 bg-primary px-4 text-xs font-semibold text-white hover:bg-primary/90 focus:ring-primary"
                   onClick={() => navigate("/qna")}
                 >
                   목록으로 돌아가기
@@ -386,10 +340,8 @@ export default function QnaDetailPage() {
                   <div className="mt-3 flex flex-wrap items-center gap-5 text-xs text-gray-400">
                     <span className="flex items-center gap-1.5">
                       <User size={14} className="text-gray-300" />
-                      {(() => {
-                        const name = question.createdByName || question.name || question.nickname || question.authorName || question.user?.name;
-                        return name || question.author || "익명";
-                      })()}
+                      {/* 백엔드에서 제공하는 createdByName 사용 */}
+                      {question.createdByName || question.author || "익명"}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <Calendar size={14} className="text-gray-300" />
@@ -402,10 +354,10 @@ export default function QnaDetailPage() {
 
                   {/* 첨부 이미지 표시 */}
                   {/* 1. 단일 필드로 오는 경우 */}
-                  {(question.imageUrl || question.fileUrl || question.filePath || question.file) && (
+                  {(question.imageUrl || question.fileUrl) && (
                     <div className="mt-4">
-                      <SmartImage
-                        src={question.imageUrl || question.fileUrl || question.filePath || question.file}
+                      <AuthImage
+                        src={question.imageUrl || question.fileUrl}
                         alt="첨부 이미지"
                         className="max-h-96 max-w-full rounded-lg object-contain border border-gray-200"
                       />
@@ -417,8 +369,8 @@ export default function QnaDetailPage() {
                     <div className="mt-4 space-y-4">
                       {question.attachments.map((att, index) => (
                         <div key={index}>
-                          <SmartImage
-                            src={att.fileUrl || att.filePath || att.url || att}
+                          <AuthImage
+                            src={att.fileUrl || att.url}
                             alt={`첨부 이미지 ${index + 1}`}
                             className="max-h-96 max-w-full rounded-lg object-contain border border-gray-200"
                           />
@@ -506,7 +458,7 @@ export default function QnaDetailPage() {
                               <textarea
                                 value={editContent}
                                 onChange={(e) => setEditContent(e.target.value)}
-                                className="w-full rounded-md border border-gray-300 p-2 text-sm focus:border-green-500 focus:outline-none"
+                                className="w-full rounded-md border border-gray-300 p-2 text-sm focus:border-primary focus:outline-none"
                                 rows={3}
                               />
                               <div className="mt-2 flex justify-end gap-2">
@@ -548,13 +500,13 @@ export default function QnaDetailPage() {
                   </h2>
                   <textarea
                     rows={4}
-                    className="mt-4 w-full resize-none rounded-xl border border-gray-100 bg-gray-50/50 p-4 text-sm text-gray-700 focus:border-green-200 focus:outline-none focus:ring-4 focus:ring-green-50/50 transition-all"
+                    className="mt-4 w-full resize-none rounded-xl border border-gray-100 bg-gray-50/50 p-4 text-sm text-gray-700 focus:border-primary/50 focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all"
                     placeholder="답변을 작성해주세요..."
                     value={answerContent}
                     onChange={(e) => setAnswerContent(e.target.value)}
                   />
                   <Button
-                    className="mt-4 h-12 w-full rounded-xl bg-[#80EEB0] text-[15px] font-black text-white hover:bg-[#6DDE9F] transition-all disabled:opacity-50 shadow-sm"
+                    className="mt-4 h-12 w-full rounded-xl bg-primary text-[15px] font-black text-white hover:bg-primary/90 transition-all disabled:opacity-50 shadow-sm"
                     onClick={handleSubmitAnswer}
                     disabled={answerMutation.isPending || !answerContent.trim()}
                   >
