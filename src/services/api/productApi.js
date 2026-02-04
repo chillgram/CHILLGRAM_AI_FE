@@ -1,0 +1,92 @@
+import { apiFetch } from "@/lib/apiFetch";
+
+/**
+ * 제품 목록 조회
+ * GET /api/products
+ */
+export async function fetchProducts({ page = 0, size = 10 } = {}) {
+    const params = new URLSearchParams({ page, size });
+    const res = await apiFetch(`/api/products?${params.toString()}`);
+    if (!res.ok) throw new Error("제품 목록을 불러오지 못했습니다.");
+    return res.json();
+}
+
+/**
+ * 제품 상세 조회
+ * GET /api/products/{id}
+ */
+export async function fetchProduct(id) {
+    const res = await apiFetch(`/api/products/${id}`);
+    if (!res.ok) throw new Error("제품 정보를 불러오지 못했습니다.");
+    return res.json();
+}
+
+/**
+ * 제품 등록
+ * POST /api/products
+ * Payload: { name, category, description, isActive }
+ */
+export async function createProduct(payload) {
+    // JSON 방식으로 전송 (400 에러 해결 시도)
+    const bodyData = {
+        name: payload.name,
+        category: payload.category,
+        description: payload.description || payload.desc || "",
+        isActive: payload.isActive !== undefined ? payload.isActive : true, // boolean 값 전송
+    };
+
+    const res = await apiFetch("/api/products", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+    });
+    if (!res.ok) throw new Error("제품 등록에 실패했습니다.");
+    return res.json();
+}
+
+/**
+ * 제품 수정
+ * PUT /api/products/{id}
+ */
+export async function updateProduct(id, payload) {
+    const bodyData = {
+        name: payload.name,
+        category: payload.category,
+        description: payload.description || payload.desc || "",
+        isActive: payload.isActive !== undefined ? payload.isActive : true, // boolean 값 전송
+    };
+
+    const res = await apiFetch(`/api/products/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+    });
+    if (!res.ok) throw new Error("제품 수정에 실패했습니다.");
+    return res.json();
+}
+
+/**
+ * 제품 삭제
+ * DELETE /api/products/{id}
+ */
+export async function deleteProduct(id) {
+    const res = await apiFetch(`/api/products/${id}`, {
+        method: "DELETE",
+    });
+    if (!res.ok) throw new Error("제품 삭제에 실패했습니다.");
+    return res;
+}
+
+/**
+ * 제품 통계 조회
+ * GET /api/products/stats
+ */
+export async function fetchProductStats() {
+    const res = await apiFetch("/api/products/stats");
+    if (!res.ok) throw new Error("제품 통계를 불러오지 못했습니다.");
+    return res.json();
+}

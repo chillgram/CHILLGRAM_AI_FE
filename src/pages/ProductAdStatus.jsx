@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProduct } from "@/services/api/productApi";
+import { useAuthStore } from "@/stores/authStore";
 import {
   ArrowLeft,
   FileText,
@@ -16,15 +19,19 @@ export default function ProductAdStatusPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("전체");
+  const bootstrapped = useAuthStore((s) => s.bootstrapped);
 
-  // Mock Data
-  const productHeaders = {
-    1: { name: "프리미엄 초콜릿", sub: "제품의 광고 생성 프로젝트 목록" },
-    2: { name: "유기농 쿠키", sub: "제품의 광고 생성 프로젝트 목록" },
-    3: { name: "과일 캔디", sub: "제품의 광고 생성 프로젝트 목록" },
+  // 제품 상세 조회
+  const { data: product } = useQuery({
+    queryKey: ["product", productId],
+    queryFn: () => fetchProduct(productId),
+    enabled: !!productId && bootstrapped,
+  });
+
+  const currentHeader = {
+    name: product?.name || "제품",
+    sub: product?.description || "제품의 광고 생성 프로젝트 목록",
   };
-
-  const currentHeader = productHeaders[productId] || productHeaders["1"];
 
   const projects = [
     {
@@ -110,11 +117,10 @@ export default function ProductAdStatusPage() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
-                activeTab === tab
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${activeTab === tab
                   ? "bg-[#60A5FA] border-[#60A5FA] text-white shadow-md"
                   : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-              }`}
+                }`}
             >
               {tab}
             </button>
@@ -131,11 +137,10 @@ export default function ProductAdStatusPage() {
               >
                 <div className="mb-8">
                   <span
-                    className={`inline-block px-3 py-1.5 rounded-lg text-xs font-black mb-4 ${
-                      project.type === "ad"
+                    className={`inline-block px-3 py-1.5 rounded-lg text-xs font-black mb-4 ${project.type === "ad"
                         ? "bg-purple-50 text-purple-600"
                         : "bg-blue-50 text-blue-600"
-                    }`}
+                      }`}
                   >
                     {project.badge}
                   </span>
