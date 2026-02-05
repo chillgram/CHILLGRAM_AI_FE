@@ -20,16 +20,38 @@ export const STEP_LABELS = [
 ];
 
 export const AD_GOAL_OPTIONS = [
-  { value: "brand", label: "브랜드 인지도 강화" },
-  { value: "sales", label: "구매 전환 증대" },
-  { value: "repeat", label: "재구매 유도" },
+  {
+    value: "ATTENTION",
+    label: "인지/주목 유도 (시즌·이벤트 시작 알림)",
+    description: "이벤트나 시즌을 알리며 사용자의 관심을 유도합니다.",
+  },
+  {
+    value: "EMPATHY",
+    label: "공감/응원 메시지 (상황에 감정적으로 연결)",
+    description: "특정 상황에 공감하며 감정적인 연결을 만듭니다.",
+  },
+  {
+    value: "REWARD",
+    label: "보상/위로 메시지 (끝난 뒤 휴식·리프레시)",
+    description: "노력 이후의 감정을 위로하고 휴식을 제안합니다.",
+  },
+  {
+    value: "ENGAGE",
+    label: "참여 유도 (댓글·공유·이벤트 참여 유도)",
+    description: "콘텐츠 참여나 이벤트 행동을 자연스럽게 유도합니다.",
+  },
+  {
+    value: "CONVERT",
+    label: "행동 유도 (상품 확인·구매/방문 유도)",
+    description: "상품 확인 또는 구매 행동을 유도합니다.",
+  },
 ];
+
 
 export const CONTENT_TIP =
   "여러 타입을 선택하여 다양한 채널에 맞는 광고를 한 번에 생성할 수 있습니다.";
 
-export const TREND_SUMMARY =
-  "현재 식품 업계의 트렌드를 분석하여 최적의 키워드를 추천합니다.";
+export const TREND_SUMMARY = "현재 시즌에 맞는 이벤트를 분석해 광고에 활용할 키워드를 추천합니다.";
 
 // trend관련 데이터(TREND_KEYWORDS TREND_HASHTAGS TREND_STYLE_SUMMARY TREND_AI_GUIDE_OPTIONS)는 trend 데이터로 분리
 

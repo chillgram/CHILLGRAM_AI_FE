@@ -1,3 +1,5 @@
+import { httpJson } from "./http";
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 /**
@@ -48,4 +50,34 @@ export async function createAd({
   }
 
   return response.json();
+}
+
+export async function fetchAdTrends({ productId, date }) {
+  const body = date ? { date } : {};
+  
+  return httpJson(`/api/products/${productId}/ad-trends`, {
+    method: "POST",
+    body,
+  });
+}
+
+export function fetchAdGuides(payload) {
+  return httpJson(`/api/products/${payload.productId}/ad-guides`, {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export function fetchAdCopies(payload) {
+  return httpJson(`/api/products/${payload.productId}/ad-copies`, {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export function createAdContents(payload) {
+  return httpJson(`/api/products/${payload.productId}/ads`, {
+    method: "POST",
+    body: payload,
+  });
 }

@@ -24,8 +24,6 @@ export default function ADStepLayout({
         </button>
       </div>
       <div className="space-y-10 pb-24 border border-gray-200 bg-white rounded-3xl p-5 shadow-lg">
-        <h3 className="font-bold text-xl">AI 광고 생성</h3>
-        <p className="-mt-8 text-sm text-gray-400">제품 정보를 입력하세요</p>
         {children}
       </div>
 
