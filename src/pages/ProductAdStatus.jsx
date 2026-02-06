@@ -140,7 +140,14 @@ export default function ProductAdStatusPage() {
             {!isProjectsLoading && !isProjectsError && filteredProjects.map((project) => (
               <div
                 key={project.id}
-                className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group"
+                onClick={() => {
+                  const detailPath =
+                    project.type === "design"
+                      ? `./projectDesignDetail/${project.id}`
+                      : `./projectAdDetail/${project.id}`;
+                  navigate(detailPath, { state: { projectName: project.title } });
+                }}
+                className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group cursor-pointer"
               >
                 <div className="mb-8">
                   <span
@@ -163,20 +170,6 @@ export default function ProductAdStatusPage() {
                   <div className="flex items-center gap-1.5 text-gray-500 text-xs font-bold">
                     <ImageIcon size={14} />
                     {project.contentCount}개 콘텐츠
-                  </div>
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const detailPath =
-                        project.type === "design"
-                          ? `./projectDesignDetail/${project.id}`
-                          : `./projectAdDetail/${project.id}`;
-                      navigate(detailPath, { state: { projectName: project.title } });
-                    }}
-                    className="flex items-center gap-1.5 text-[#111827] text-xs font-black group-hover:text-blue-500 transition-colors cursor-pointer hover:underline"
-                  >
-                    <Eye size={14} />
-                    상세보기
                   </div>
                 </div>
               </div>
