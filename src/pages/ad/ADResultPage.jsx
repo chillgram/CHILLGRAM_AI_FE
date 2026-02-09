@@ -16,6 +16,7 @@ import {
 
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
+import loadingGif from "@/assets/Loding.gif";
 
 const TYPE_CONFIG = {
   product: { label: "제품 이미지", icon: ImageIcon },
@@ -84,9 +85,10 @@ const DUMMY_RESULTS = [
     size: "1080 x 1920",
     format: "MP4",
     date: "2024-01-18",
-    status: "활성",
+    status: "생성중",
     platform: "YouTube",
     stats: { views: 28400, likes: 1523, shares: 445 },
+    isGenerating: true, // 영상 생성 중 상태
   },
   {
     id: "banner-1",
@@ -228,14 +230,26 @@ export default function ADResultPage() {
                 key={item.id}
                 className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm h-full flex flex-col"
               >
-                {/* 이미지 영역 - edge to edge */}
+                {/* 이미지/영상 영역 */}
                 <div
                   className={`aspect-[4/3] w-full flex items-center justify-center ${isVideo
                     ? "bg-gray-800"
                     : "bg-gradient-to-br from-[#F9FAFB] to-[#E5E7EB]"
                     }`}
                 >
-                  {isVideo ? (
+                  {item.isGenerating ? (
+                    // 생성 중일 때 로딩 GIF 표시
+                    <div className="flex flex-col items-center justify-center">
+                      <img
+                        src={loadingGif}
+                        alt="생성 중..."
+                        className="w-24 h-24 animate-spin"
+                        style={{ mixBlendMode: "screen" }}
+                      />
+                      <p className="mt-2 text-sm font-bold text-gray-400">영상 생성 중...</p>
+                      <p className="text-xs text-gray-500">(최대 10분)</p>
+                    </div>
+                  ) : isVideo ? (
                     <Video className="h-12 w-12 text-gray-400" />
                   ) : (
                     <FileImage className="h-10 w-10 text-gray-300" />
