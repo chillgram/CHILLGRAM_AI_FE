@@ -30,16 +30,13 @@ export async function httpJson(path, { method = "GET", body, headers } = {}) {
   // 204 No Content 같은 케이스 안전 처리
   const data = await res.json().catch(() => null);
 
+  
   if (!res.ok) {
-    // 401이면 인증 깨진 상태로 보고 store 정리(선택)
-    if (res.status === 401) {
-      useAuthStore.getState().logout();
-      // UI에서 로그인 모달을 띄우는 로직이 따로 있으면 여기서 openAuthModal 호출도 가능
-      // useAuthStore.getState().openAuthModal(location.pathname);
-    }
-
-    const msg = (data && (data.message || data.msg)) || `HTTP ${res.status} ${res.statusText}`;
-    throw new Error(msg);
+    const err = new Error(data?.message || `HTTP ${res.status}`);
+    err.status = res.status;
+    err.code = data?.code;
+    err.details = data?.details;
+    throw err;
   }
 
   return data;

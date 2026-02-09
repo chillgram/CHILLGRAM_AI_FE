@@ -1,67 +1,50 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
-const useSnsStore = create(
-    persist(
-        (set) => ({
-            // Instagram 계정 상태
-            instagramAccount: {
-                connected: false,
-                username: "",
-                followers: 0,
-            },
+const initialState = {
+  instagramAccount: {
+    connected: false,
+    username: "",
+    followers: 0,
+  },
+  youtubeAccount: {
+    connected: false,
+    channelName: "",
+    subscribers: 0,
+  },
+};
 
-            // YouTube 계정 상태
-            youtubeAccount: {
-                connected: false,
-                channelName: "",
-                subscribers: 0,
-            },
+const normalizeIg = (ig) => ({
+  connected: Boolean(ig?.connected),
+  username: ig?.username || ig?.accountLabel || "",
+  followers: Number(ig?.followers || 0),
+});
 
-            // Instagram 연결
-            connectInstagram: (username, followers = 0) =>
-                set({
-                    instagramAccount: {
-                        connected: true,
-                        username,
-                        followers,
-                    },
-                }),
+const normalizeYt = (yt) => ({
+  connected: Boolean(yt?.connected),
+  channelName: yt?.accountLabel || yt?.channelName || "",
+  subscribers: Number(yt?.subscribers || 0),
+});
 
-            // Instagram 연결 해제
-            disconnectInstagram: () =>
-                set({
-                    instagramAccount: {
-                        connected: false,
-                        username: "",
-                        followers: 0,
-                    },
-                }),
+const useSnsStore = create((set) => ({
+  ...initialState,
 
-            // YouTube 연결
-            connectYoutube: (channelName, subscribers = 0) =>
-                set({
-                    youtubeAccount: {
-                        connected: true,
-                        channelName,
-                        subscribers,
-                    },
-                }),
+  /**
+   * payload
+   * {
+   *   youtube: { connected, accountLabel, subscribers },
+   *   instagram: { connected, username, followers }
+   * }
+   */
+  setAccountsFromServer: (payload) =>
+    set(() => ({
+      instagramAccount: normalizeIg(payload?.instagram),
+      youtubeAccount: normalizeYt(payload?.youtube),
+    })),
 
-            // YouTube 연결 해제
-            disconnectYoutube: () =>
-                set({
-                    youtubeAccount: {
-                        connected: false,
-                        channelName: "",
-                        subscribers: 0,
-                    },
-                }),
-        }),
-        {
-            name: "sns-account-storage",
-        }
-    )
-);
+  /**
+   * 선택: 강제 초기화
+   */
+  resetAccounts: () => set({ ...initialState }),
+}));
 
 export default useSnsStore;

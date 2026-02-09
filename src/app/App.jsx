@@ -31,6 +31,7 @@ import AnalyticsReportPage from "@/pages/AnalyticsReportPage";
 import ProjectDesignDetail from "@/pages/ProjectDesignDetail";
 
 import { parseJwt } from "@/utils/jwt";
+import YoutubeCallbackPage from "../pages/oauth/YoutubeCallbackPage";
 
 export default function App() {
   const login = useAuthStore((s) => s.login);
@@ -105,6 +106,7 @@ export default function App() {
               path="/dashboard/analytics"
               element={<AnalyticsReportPage />}
             />
+            <Route path="/login/oauth/youtube" element={<YoutubeCallbackPage />} />
           </Route>
         </Routes>
       </ErrorBoundary>
