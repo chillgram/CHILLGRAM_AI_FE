@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #61AFFE;
-  --color-primary-foreground: #FFFFFF;
+  --color-primary: #FFD600;
+  --color-primary-foreground: #333333;
 }
 
 :root {
@@ -12,7 +12,7 @@
 
   color-scheme: light dark;
   color: #111827;
-  background-color: #f5f7fa;
+  background-color: #F3F3F3;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -27,9 +27,8 @@
 }
 a:hover {
   color: #9ca3af;
-} */ */
-
-body {
+} */
+*/ body {
   display: block;
   background: #f5f7fa;
   color: #111827;
@@ -70,4 +69,4 @@ button:focus-visible {
   button {
     background-color: #5bf22f;
   } */
-} 
+}

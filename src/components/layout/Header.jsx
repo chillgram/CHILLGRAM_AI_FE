@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from "react";
-import Logo from "@/assets/image/chillgram_logo_sv.png";
+import Logo from "@/assets/image/logo.png";
 import { Brand } from "@/components/common/Brand";
 import { NavMenu } from "@/components/common/NavMenu";
 import { CtaButton } from "@/components/common/CtaButton";

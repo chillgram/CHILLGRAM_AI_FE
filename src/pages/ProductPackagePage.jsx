@@ -13,6 +13,7 @@ import {
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import { PRODUCTS } from "@/data/products";
+import Button from "../components/common/Button";
 
 const PRODUCT_IMAGES = [
   {
@@ -156,17 +157,18 @@ export default function DesignPage() {
         </div>
         {/* 하단 플로팅 액션바 스타일 버튼 */}
         <div className="mt-12 flex flex-col items-center">
-          <button
+          <Button
+            variant="secondary"
             onClick={handleGenerate}
             className={`flex items-center gap-3 rounded-lg text-sm px-4 py-2 font-bold shadow-sm transition-all active:scale-95 ${
               isUploaded
-                ? "bg-[#60A5FA] text-white hover:bg-blue-500 shadow-green-100"
-                : "bg-[#F2F4F7] text-[#98A2B3] cursor-not-allowed"
+                ? "bg-primary hover:bg-yellow-500 shadow-yellow-100"
+                : "bg-[#F3F3F3] text-[#98A2B3] cursor-not-allowed"
             }`}
           >
             <Sparkles size={22} />
             목업 생성하기
-          </button>
+          </Button>
           {!isUploaded && (
             <div className="mt-4 flex items-center gap-2 text-sm text-[#F04438] font-medium">
               <AlertCircle size={16} />

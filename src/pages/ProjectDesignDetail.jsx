@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     ArrowLeft,
@@ -15,7 +14,7 @@ import Button from "@/components/common/Button";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 export default function ProjectDesignDetail() {
-    const { productId, projectId } = useParams();
+
     const navigate = useNavigate();
 
     // 더미 데이터

@@ -65,13 +65,14 @@ export default function ProductManagementPage() {
 
       await Promise.all(
         products.map(async (product) => {
-          const productId = product.productId || product.product_id || product.id;
+          const productId =
+            product.productId || product.product_id || product.id;
           try {
             const projectsData = await fetchProjectsByProduct(productId);
             // API 응답이 배열 또는 { projects: [...] } 형태일 수 있음
             const rawProjects = Array.isArray(projectsData)
               ? projectsData
-              : (projectsData?.projects || projectsData?.content || []);
+              : projectsData?.projects || projectsData?.content || [];
 
             // 프로젝트가 1개 이상 있으면 활성
             if (rawProjects.length > 0) {
@@ -80,7 +81,7 @@ export default function ProductManagementPage() {
           } catch (e) {
             // 프로젝트 조회 실패 시 비활성으로 처리
           }
-        })
+        }),
       );
 
       setProductsWithProjects(activeProductIds);
@@ -172,7 +173,8 @@ export default function ProductManagementPage() {
     const matchesSearch = product.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    const matchesTab = activeTab === "전체" ||
+    const matchesTab =
+      activeTab === "전체" ||
       (activeTab === "활성" && hasProjects(productId)) ||
       (activeTab === "비활성" && !hasProjects(productId));
     return matchesSearch && matchesTab;
@@ -203,12 +205,13 @@ export default function ProductManagementPage() {
               제품을 등록하고 관리하세요
             </p>
           </div>
-          <button
+          <Button
+            variant="primary"
             onClick={() => setIsAddModalOpen(true)}
-            className="bg-[#60A5FA] hover:brightness-95 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 font-bold text-sm shadow-sm transition-all active:scale-95"
+            className="rounded-lg flex items-center gap-2 shadow-sm transition-all active:scale-95"
           >
             <Plus size={18} strokeWidth={2.5} /> 제품 추가
-          </button>
+          </Button>
         </div>
 
         {/* 통계 카드 섹션 */}
@@ -306,7 +309,10 @@ export default function ProductManagementPage() {
                     filteredProducts.map((product) => {
                       const productId =
                         product.productId || product.product_id || product.id; // ID 호환성
-                      const reviewUrl = product.reviewUrl || product.review_url || product.product_url;
+                      const reviewUrl =
+                        product.reviewUrl ||
+                        product.review_url ||
+                        product.product_url;
                       const isStatusActive = hasProjects(productId);
                       const dateStr = (
                         product.createdAt ||
@@ -329,7 +335,10 @@ export default function ProductManagementPage() {
                             {product.category}
                           </td>
                           <td className="py-4 px-4 max-w-[200px]">
-                            <div className="text-sm text-gray-600 truncate" title={product.description || ""}>
+                            <div
+                              className="text-sm text-gray-600 truncate"
+                              title={product.description || ""}
+                            >
                               {product.description || "-"}
                             </div>
                           </td>
@@ -349,7 +358,9 @@ export default function ProductManagementPage() {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  navigate(`/dashboard/analytics?tab=리뷰분석&productId=${productId}`);
+                                  navigate(
+                                    `/dashboard/analytics?tab=리뷰분석&productId=${productId}`,
+                                  );
                                 }}
                                 className="flex items-center gap-1 text-blue-500 hover:text-blue-600 text-xs font-bold transition-colors"
                               >
@@ -357,7 +368,9 @@ export default function ProductManagementPage() {
                                 분석 보기
                               </button>
                             ) : (
-                              <span className="text-gray-400 text-xs">미등록</span>
+                              <span className="text-gray-400 text-xs">
+                                미등록
+                              </span>
                             )}
                           </td>
                           <td className="py-4 px-4 text-sm text-gray-600 font-medium">
@@ -537,19 +550,23 @@ function ProductModal({
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-semibold text-sm hover:bg-gray-50 transition-colors"
+              className="rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
             >
               취소
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-lg bg-[#60A5FA] text-white font-semibold text-sm hover:bg-blue-500 shadow-sm transition-all disabled:opacity-50"
+              className="rounded-lg hover:bg-blue-500 shadow-sm transition-all disabled:opacity-50"
             >
               {isSubmitting ? "처리 중..." : confirmLabel}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

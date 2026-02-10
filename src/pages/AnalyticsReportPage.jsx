@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -157,12 +157,13 @@ export default function AnalyticsReportPage() {
             >
               <Download size={18} /> Excel 다운로드
             </Button>
-            <button
+            <Button
               onClick={handleDownloadPDF}
-              className="bg-[#5BF22F] text-black px-6 h-12 rounded-xl font-black flex gap-2 items-center hover:brightness-95 transition-all shadow-sm"
+              variant="primary"
+              className="px-6 h-12 rounded-xl font-black flex gap-2 items-center hover:brightness-95 transition-all shadow-sm"
             >
               <FileText size={18} /> PDF 리포트
-            </button>
+            </Button>
           </div>
         </div>
 

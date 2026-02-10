@@ -16,6 +16,7 @@ import {
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import loadingGif from "@/assets/Loding.gif";
+import Button from "../../components/common/Button";
 
 const TYPE_CONFIG = {
   product: { label: "제품 이미지", icon: ImageIcon },
@@ -156,12 +157,14 @@ export default function ADResultPage() {
         {/* 뒤로가기 버튼 (프로젝트 상세 모드일 때만) */}
         {isProjectDetailMode && (
           <div className="mb-6">
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 text-gray-500 hover:text-[#111827] font-bold px-0 hover:bg-transparent transition-colors"
+              className="flex items-center gap-2flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 text-sm font-bold hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50"
             >
-              <ArrowLeft size={20} /> 프로젝트 목록으로
-            </button>
+              <ArrowLeft size={20} /> 프로젝트 목록
+            </Button>
           </div>
         )}
 
@@ -175,7 +178,7 @@ export default function ADResultPage() {
             </p>
           </div>
           {/* 새 광고 생성 버튼 */}
-          <button
+          <Button
             onClick={() =>
               navigate(
                 isProjectDetailMode
@@ -183,11 +186,12 @@ export default function ADResultPage() {
                   : "./../",
               )
             }
-            className="bg-[#60A5FA] hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95 text-sm"
+            variant="primary"
+            className="px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95 text-sm"
           >
-            <PlusCircle className="h-4 w-4 text-white" />{" "}
+            <PlusCircle className="h-4 w-4" />{" "}
             {isProjectDetailMode ? "광고 생성" : "새 광고 생성"}
-          </button>
+          </Button>
         </div>
 
         {/* 광고 생성 완료 배너 (프로젝트 상세에서는 숨김) */}
