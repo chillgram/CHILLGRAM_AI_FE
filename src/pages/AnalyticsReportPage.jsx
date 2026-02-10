@@ -187,28 +187,12 @@ export default function AnalyticsReportPage() {
               광고 성과를 분석하고 리포트를 다운로드하세요
             </p>
           </div>
-          <div className="flex gap-3">
-            <Button
-              variant="secondary"
-              className="bg-white border flex gap-2 font-bold px-5 h-12"
-            >
-              <Download size={18} /> Excel 다운로드
-            </Button>
-            <Button
-              onClick={handleDownloadPDF}
-              variant="primary"
-              className="px-6 h-12 rounded-xl font-black flex gap-2 items-center hover:brightness-95 transition-all shadow-sm"
-              disabled={!selectedProductId}
-            >
-              <FileText size={18} /> PDF 리포트
-            </Button>
-            <Button 
-              onClick={checkApiStatus}
-              className="text-sm font-bold bg-gray-800 hover:bg-gray-700 h-12"
-            >
-              🔌 API 연결 테스트
-            </Button>
-          </div>
+          <Button 
+            onClick={checkApiStatus}
+            className="text-sm font-bold bg-gray-800 hover:bg-gray-700 h-12"
+          >
+            🔌 API 연결 테스트
+          </Button>
         </div>
 
         {/* 상단 통계 카드 */}
@@ -337,8 +321,7 @@ export default function AnalyticsReportPage() {
                 </h3>
                 <Button
                   onClick={handleDownloadPDF}
-                  disabled={!selectedProductId}
-                  className={selectedProductId ? "bg-[#61AFFE] text-white hover:brightness-95" : "bg-gray-200 text-gray-400"}
+                  className="bg-[#FFBB28] text-white hover:brightness-95 shadow-sm"
                   size="sm"
                 >
                   <FileText size={16} className="mr-1" /> PDF 다운로드
@@ -401,17 +384,12 @@ export default function AnalyticsReportPage() {
                   </select>
                   
                   {/* PDF 다운로드 버튼 */}
-                  <button
+                  <Button
                     onClick={handleDownloadPDF}
-                    disabled={!selectedProductId}
-                    className={`px-6 py-2 rounded-xl font-black flex gap-2 items-center transition-all shadow-sm ${
-                        selectedProductId
-                          ? "bg-[#61AFFE] text-white hover:brightness-95"
-                          : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      }`}
+                    className="px-6 py-2 rounded-xl font-black flex gap-2 items-center transition-all shadow-sm bg-[#FFBB28] text-white hover:brightness-95"
                   >
                     <FileText size={18} /> PDF 다운로드
-                  </button>
+                  </Button>
                 </div>
               </Card>
 
