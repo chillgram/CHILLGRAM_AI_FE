@@ -17,6 +17,8 @@ import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
+import { Field } from "@/components/common/Field";
+import { TextAreaField } from "@/components/common/TextAreaField";
 import {
   fetchProducts,
   createProduct,
@@ -39,6 +41,8 @@ export default function ProductManagementPage() {
   // 검색 및 필터 상태 관리
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("전체");
+  const [page, setPage] = useState(0); // 현재 페이지 상태 추가
+  const pageSize = 10;
 
   // 1. 제품 목록 조회
   const {
@@ -46,12 +50,14 @@ export default function ProductManagementPage() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["products"],
-    queryFn: () => fetchProducts({ page: 0, size: 10 }),
+    queryKey: ["products", page], // 페이지 변경 시 재조회
+    queryFn: () => fetchProducts({ page, size: pageSize }),
     enabled: bootstrapped,
+    keepPreviousData: true, // 로딩 중 깜빡임 방지
   });
 
   const products = productsData?.content || [];
+  const totalPages = productsData?.totalPages || 1; // 전체 페이지 수
 
   // 프로젝트가 있는 제품 ID Set (활성 상태 판단용)
   const [productsWithProjects, setProductsWithProjects] = useState(new Set());
@@ -408,6 +414,38 @@ export default function ProductManagementPage() {
                 </tbody>
               </table>
             </div>
+            {/* 페이지네이션 UI */}
+            {!isLoading && !isError && products.length > 0 && (
+              <div className="mt-8 flex justify-center gap-2">
+                <button
+                  className="h-8 w-8 rounded-lg border border-gray-200 bg-white text-gray-500 disabled:opacity-50 hover:bg-gray-50 flex items-center justify-center transition-colors"
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                >
+                  &lt;
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    className={`h-8 w-8 rounded-lg text-sm font-bold transition-all ${
+                      i === page
+                        ? "bg-[#60A5FA] text-white shadow-sm"
+                        : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+                    }`}
+                    onClick={() => setPage(i)}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  className="h-8 w-8 rounded-lg border border-gray-200 bg-white text-gray-500 disabled:opacity-50 hover:bg-gray-50 flex items-center justify-center transition-colors"
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={page === totalPages - 1}
+                >
+                  &gt;
+                </button>
+              </div>
+            )}
           </Card>
         </ErrorBoundary>
       </Container>
@@ -485,85 +523,63 @@ function ProductModal({
         </div>
 
         <div className="space-y-5">
-          {/* 제품명 */}
-          <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-900">
-              제품명
-            </label>
-            <input
-              type="text"
-              placeholder="프리미엄 초콜릿"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              className="w-full bg-gray-100 hover:bg-gray-50 focus:bg-white border-0 rounded-lg px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 transition-all font-medium text-sm"
-            />
-          </div>
+          <Field
+            label="제품명"
+            placeholder="프리미엄 초콜릿"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="w-full"
+          />
 
-          {/* 카테고리 */}
-          <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-900">
-              카테고리
-            </label>
-            <input
-              type="text"
-              placeholder="초콜릿"
-              value={formData.category}
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
-              }
-              className="w-full bg-gray-100 hover:bg-gray-50 focus:bg-white border-0 rounded-lg px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 transition-all font-medium text-sm"
-            />
-          </div>
+          <Field
+            label="카테고리"
+            placeholder="초콜릿"
+            value={formData.category}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            className="w-full"
+          />
 
-          {/* 리뷰사이트 URL */}
-          <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-900">
-              리뷰사이트 URL
-            </label>
-            <input
-              type="text"
-              placeholder="https://example.com/reviews"
-              value={formData.reviewUrl}
-              onChange={(e) =>
-                setFormData({ ...formData, reviewUrl: e.target.value })
-              }
-              className="w-full bg-gray-100 hover:bg-gray-50 focus:bg-white border-0 rounded-lg px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 transition-all font-medium text-sm"
-            />
-          </div>
+          <Field
+            label="리뷰사이트 URL"
+            placeholder="https://example.com/reviews"
+            value={formData.reviewUrl}
+            onChange={(e) => setFormData({ ...formData, reviewUrl: e.target.value })}
+            className="w-full"
+          />
 
-          {/* 설명 */}
-          <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-900">
-              설명
-            </label>
-            <textarea
-              rows={3}
-              placeholder={isEdit ? "" : "제품에 대한 설명을 입력하세요"}
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              className="w-full bg-gray-100 hover:bg-gray-50 focus:bg-white border-0 rounded-lg px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 transition-all font-medium text-sm resize-none"
-            />
-          </div>
+          <TextAreaField
+            label="설명"
+            rows={3}
+            placeholder={isEdit ? "" : "제품에 대한 설명을 입력하세요"}
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            className="w-full"
+          />
 
           <div className="flex justify-end gap-2 pt-4">
             <Button
               variant="secondary"
+<<<<<<< Updated upstream
               size="sm"
               onClick={onClose}
               className="rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+=======
+              onClick={onClose}
+>>>>>>> Stashed changes
             >
               취소
             </Button>
             <Button
+<<<<<<< Updated upstream
               variant="primary"
               size="sm"
               onClick={handleSubmit}
               disabled={isSubmitting}
               className="rounded-lg hover:bg-blue-500 shadow-sm transition-all disabled:opacity-50"
+=======
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+>>>>>>> Stashed changes
             >
               {isSubmitting ? "처리 중..." : confirmLabel}
             </Button>

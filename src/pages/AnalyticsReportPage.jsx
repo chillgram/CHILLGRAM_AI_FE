@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 import { useState, useEffect } from "react";
+=======
+import React, { useState, useEffect, useRef } from "react";
+>>>>>>> Stashed changes
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -11,6 +15,7 @@ import {
   TrendingUp,
   MousePointer2,
   Users,
+  X,
 } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -36,6 +41,8 @@ import Button from "@/components/common/Button";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 import { fetchProducts } from "@/services/api/productApi";
 import { useAuthStore } from "@/stores/authStore";
+import { apiFetch } from "@/lib/apiFetch";
+import { analyzeProduct } from "@/services/api/crawlerApi";
 
 // --- 로컬 실행을 위한 완결된 더미 데이터 ---
 const lineData = [
@@ -57,21 +64,14 @@ const barData = [
   { name: "6월", 매출: 7800, 광고비: 3200 },
 ];
 
-const pieData = [
-  { name: "Instagram", value: 35, color: "#E1306C" },
-  { name: "Facebook", value: 28, color: "#1877F2" },
-  { name: "Twitter", value: 22, color: "#1DA1F2" },
-  { name: "YouTube", value: 15, color: "#FF0000" },
-];
-
 // ... (imports)
-import { useRef } from "react";
-// ... (other code)
+
 export default function AnalyticsReportPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const reportRef = useRef(null);
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "전체 개요");
   const [selectedProductId, setSelectedProductId] = useState(searchParams.get("productId") || "");
+  const [isPdfOpen, setIsPdfOpen] = useState(false); // PDF 팝업 상태
   const bootstrapped = useAuthStore((s) => s.bootstrapped);
 
   // URL 파라미터에서 탭 설정
@@ -79,7 +79,11 @@ export default function AnalyticsReportPage() {
     const tab = searchParams.get("tab");
     const productId = searchParams.get("productId");
     if (tab) setActiveTab(tab);
-    if (productId) setSelectedProductId(productId);
+    if (productId) {
+        setSelectedProductId(productId);
+        // 제품 ID가 URL에 있으면 팝업 띄우기 (약간의 지연 후)
+        setTimeout(() => setIsPdfOpen(true), 500);
+    }
   }, [searchParams]);
 
   // 제품 목록 조회 (리뷰 분석용)
@@ -122,19 +126,56 @@ export default function AnalyticsReportPage() {
   ];
 
   const handleDownloadPDF = async () => {
-    if (!reportRef.current) return;
+    if (!selectedProductId) return;
     try {
-      const canvas = await html2canvas(reportRef.current, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("Analytics_Report.pdf");
+      // 백엔드 API를 통해 PDF 생성 및 다운로드
+      const blob = await analyzeProduct(selectedProductId);
+      
+      // Blob을 URL로 변환하여 다운로드 트리거
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Analytics_Report_${selectedProductId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("PDF download failed:", error);
-      alert("PDF 다운로드 중 오류가 발생했습니다.");
+      alert(`PDF 다운로드 실패: ${error.message}`);
     }
+  };
+  
+  // API 연결 테스트 핸들러 (분석/크롤러 엔드포인트 체크)
+  const checkApiStatus = async () => {
+    try {
+      // 분석 요청 테스트 (잘못된 ID를 보내서 연결 여부만 확인)
+      const res = await apiFetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ product_id: "test_connection" })
+      });
+      
+      if (res.ok || res.status === 400 || res.status === 404 || res.status === 500) {
+        // 400/404/500이 뜬다는 건 서버 엔드포인트에 도달했다는 뜻
+        const contentType = res.headers.get("content-type");
+        alert(`✅ 분석 서버 연결 확인됨!\n경로: /api/analyze\n응답 코드: ${res.status}\n응답 타입: ${contentType}`);
+      } else {
+        alert(`⚠️ 서버 연결 불안정\n상태 코드: ${res.status}`);
+      }
+    } catch (error) {
+      alert(`❌ 서버 연결 실패: ${error.message}\n백엔드 주소나 프록시 설정을 확인해주세요.`);
+    }
+  };
+
+
+  // 제품 선택 핸들러
+  const handleProductSelect = (e) => {
+      const pid = e.target.value;
+      setSelectedProductId(pid);
+      if (pid) {
+          setIsPdfOpen(true); // 제품 선택 시 팝업 오픈
+      }
   };
 
   return (
@@ -150,6 +191,7 @@ export default function AnalyticsReportPage() {
               광고 성과를 분석하고 리포트를 다운로드하세요
             </p>
           </div>
+<<<<<<< Updated upstream
           <div className="flex gap-3">
             <Button
               variant="secondary"
@@ -165,6 +207,14 @@ export default function AnalyticsReportPage() {
               <FileText size={18} /> PDF 리포트
             </Button>
           </div>
+=======
+          <Button 
+            onClick={checkApiStatus}
+            className="text-sm font-bold bg-gray-800 hover:bg-gray-700"
+          >
+            🔌 API 연결 테스트
+          </Button>
+>>>>>>> Stashed changes
         </div>
 
         {/* 상단 통계 카드 */}
@@ -197,9 +247,9 @@ export default function AnalyticsReportPage() {
           ))}
         </div>
 
-        {/* 탭 메뉴 */}
+        {/* 탭 메뉴 (축소됨) */}
         <div className="flex gap-2 mb-8 bg-gray-200/50 p-1.5 rounded-2xl w-fit font-bold text-sm">
-          {["전체 개요", "트렌드 분석", "플랫폼 비교", "제품별 성과", "리뷰 분석"].map(
+          {["전체 개요", "트렌드 분석", "리뷰 분석"].map(
             (tab) => (
               <button
                 key={tab}
@@ -287,9 +337,19 @@ export default function AnalyticsReportPage() {
 
           {activeTab === "트렌드 분석" && (
             <Card className="p-6 border-gray-200 shadow-sm">
-              <h3 className="text-xl font-black mb-2">
-                월별 매출 & ROI 트렌드
-              </h3>
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="text-xl font-black">
+                  월별 매출 & ROI 트렌드
+                </h3>
+                <Button
+                  onClick={handleDownloadPDF}
+                  disabled={!selectedProductId}
+                  className={selectedProductId ? "bg-[#61AFFE] text-white hover:brightness-95" : "bg-gray-200 text-gray-400"}
+                  size="sm"
+                >
+                  <FileText size={16} className="mr-1" /> PDF 다운로드
+                </Button>
+              </div>
               <p className="text-[#9CA3AF] font-medium mb-10">
                 최근 6개월간의 매출, 광고비 추이
               </p>
@@ -322,122 +382,7 @@ export default function AnalyticsReportPage() {
               </ErrorBoundary>
             </Card>
           )}
-
-          {activeTab === "플랫폼 비교" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="p-6 border-gray-200 shadow-sm">
-                <h3 className="text-xl font-black mb-8 text-center">
-                  플랫폼별 참여도
-                </h3>
-                <ErrorBoundary>
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={pieData}
-                          innerRadius={80}
-                          outerRadius={120}
-                          paddingAngle={5}
-                          dataKey="value"
-                          animationDuration={1000}
-                        >
-                          {pieData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                        <Legend
-                          verticalAlign="middle"
-                          align="right"
-                          layout="vertical"
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                </ErrorBoundary>
-              </Card>
-              <Card className="p-6 border-gray-200 shadow-sm space-y-6 flex flex-col justify-center">
-                <h3 className="text-xl font-black mb-4">주요 지표 요약</h3>
-                <ErrorBoundary>
-                  <MetricBar
-                    label="평균 체류 시간"
-                    value="2분 34초"
-                    icon={TrendingUp}
-                    color="bg-blue-50 text-blue-500"
-                  />
-                  <MetricBar
-                    label="클릭률 (CTR)"
-                    value="3.2%"
-                    icon={MousePointer2}
-                    color="bg-green-50 text-green-500"
-                  />
-                  <MetricBar
-                    label="신규 방문자"
-                    value="1,847명"
-                    icon={Users}
-                    color="bg-purple-50 text-purple-500"
-                  />
-                </ErrorBoundary>
-              </Card>
-            </div>
-          )}
-
-          {activeTab === "제품별 성과" && (
-            <Card className="p-6 border-gray-200 shadow-sm">
-              <h3 className="text-xl font-black mb-6">제품별 판매 성과</h3>
-              <ErrorBoundary>
-                <div className="space-y-8">
-                  {[
-                    {
-                      name: "초콜릿",
-                      value: 75,
-                      change: "+12%",
-                      color: "bg-[#5BF22F]",
-                    },
-                    {
-                      name: "쿠키",
-                      value: 62,
-                      change: "+8%",
-                      color: "bg-blue-500",
-                    },
-                    {
-                      name: "캔디",
-                      value: 35,
-                      change: "-2%",
-                      color: "bg-red-500",
-                    },
-                    {
-                      name: "스낵",
-                      value: 48,
-                      change: "+15%",
-                      color: "bg-purple-500",
-                    },
-                  ].map((item, i) => (
-                    <div key={i}>
-                      <div className="flex justify-between font-bold mb-3">
-                        <span>
-                          {item.name}{" "}
-                          <span
-                            className={`ml-2 text-xs font-black ${item.change.startsWith("+") ? "text-green-500" : "text-red-500"}`}
-                          >
-                            {item.change}
-                          </span>
-                        </span>
-                        <span>{item.value}%</span>
-                      </div>
-                      <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-                        <div
-                          className={`${item.color} h-full transition-all duration-1000`}
-                          style={{ width: `${item.value}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ErrorBoundary>
-            </Card>
-          )}
-
+          
           {activeTab === "리뷰 분석" && (
             <div className="space-y-6">
               {/* 제품 선택 */}
@@ -447,8 +392,8 @@ export default function AnalyticsReportPage() {
                   <label className="text-sm font-bold text-gray-600">제품 선택:</label>
                   <select
                     value={selectedProductId}
-                    onChange={(e) => setSelectedProductId(e.target.value)}
-                    className="px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm font-bold focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={handleProductSelect}
+                    className="px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm font-bold focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[200px]"
                   >
                     <option value="">제품을 선택하세요</option>
                     {products.filter(p => p.reviewUrl).map((product) => {
@@ -460,8 +405,46 @@ export default function AnalyticsReportPage() {
                       );
                     })}
                   </select>
+                  
+                  {/* PDF 다운로드 버튼 */}
+                  <button
+                    onClick={handleDownloadPDF}
+                    disabled={!selectedProductId}
+                    className={`px-6 py-2 rounded-xl font-black flex gap-2 items-center transition-all shadow-sm ${
+                        selectedProductId
+                          ? "bg-[#61AFFE] text-white hover:brightness-95"
+                          : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      }`}
+                  >
+                    <FileText size={18} /> PDF 다운로드
+                  </button>
                 </div>
               </Card>
+
+              {/* 더미 PDF 팝업 */}
+              {isPdfOpen && selectedProductId && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+                  <div className="bg-white rounded-2xl w-full max-w-4xl h-[85vh] relative shadow-2xl flex flex-col animate-in zoom-in-95 duration-200">
+                    <div className="flex justify-between items-center p-4 border-b border-gray-100">
+                        <h3 className="text-lg font-bold text-gray-900">PDF 리포트 (미리보기)</h3>
+                        <button
+                        onClick={() => setIsPdfOpen(false)}
+                        className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+                        >
+                        <X size={24} />
+                        </button>
+                    </div>
+                    <div className="flex-1 bg-gray-50 p-4 overflow-hidden rounded-b-2xl flex items-center justify-center">
+                        <div className="text-center text-gray-500">
+                            <FileText size={48} className="mx-auto mb-4 opacity-20" />
+                            <p className="text-xl font-bold mb-2">분석 리포트가 준비되었습니다</p>
+                            <p className="text-sm">이 영역에 실제 PDF 뷰어가 표시될 예정입니다.</p>
+                            <p className="text-xs text-gray-400 mt-2">(현재는 더미 화면입니다)</p>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {selectedProductId ? (
                 <>
@@ -483,6 +466,8 @@ export default function AnalyticsReportPage() {
                       <div className="text-sm font-bold text-gray-500">부정 리뷰</div>
                     </Card>
                   </div>
+
+
 
                   {/* 키워드 분석 */}
                   <Card className="p-6 border-gray-200 shadow-sm">
@@ -550,27 +535,5 @@ export default function AnalyticsReportPage() {
   );
 }
 
-// 상세 지표 요약용 서브 컴포넌트
-function MetricBar({ label, value, icon: Icon, color }) {
-  // color 문자열 분리 시 발생할 수 있는 에러 방어
-  const colors = color ? color.split(" ") : ["bg-gray-100", "text-gray-500"];
 
-  return (
-    <div
-      className={`flex items-center justify-between p-6 rounded-2xl ${colors[0]}`}
-    >
-      <div className="flex items-center gap-4">
-        <div className={`p-3 rounded-xl bg-white shadow-sm ${colors[1]}`}>
-          {Icon && <Icon size={20} />}
-        </div>
-        <div>
-          <div className="text-xs font-bold text-gray-400 mb-1 tracking-tight">
-            {label}
-          </div>
-          <div className="text-xl font-black text-black">{value}</div>
-        </div>
-      </div>
-      <TrendingUp size={24} className="opacity-10" />
-    </div>
-  );
-}
+

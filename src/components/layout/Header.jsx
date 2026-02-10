@@ -35,9 +35,23 @@ export function Header() {
     }
   };
 
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = 
+    // true || // 개발용! 이 줄 주석 해제하면 관리자 모드 강제 적용 됩니다
+    user?.role === "ADMIN" || 
+    user?.email === "admin@chillgram.com";
+
   const links = [
+    ...(isAdmin
+      ? [
+          {
+            label: "관리자 대시보드",
+            href: "/admin",
+          },
+        ]
+      : []),
     {
-      label: "대시보드",
+      label: isAdmin ? "운영자 대시보드" : "대시보드",
       href: isAuthenticated ? "/dashboard" : "#",
       onClick: handleDashboardClick,
     },
