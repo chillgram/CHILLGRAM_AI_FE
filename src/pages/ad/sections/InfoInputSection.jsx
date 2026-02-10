@@ -21,7 +21,7 @@ export default function InfoInputSection({
   setAdFocus,
   attachedFile,
   setAttachedFile,
-  setBaseDate, 
+  setBaseDate,
 }) {
   const { data, isLoading, isError, error, refetch } = useAdTrends({
     productId,
@@ -33,8 +33,20 @@ export default function InfoInputSection({
   const hashtags = data?.hashtags ?? [];
   const styleSummary = data?.styleSummary ?? "";
 
-  const baseDateText = data?.baseDate != null ? String(data.baseDate) : baseDate != null ? String(baseDate) : "";
-  console.log("productId", productId, "enabled", Boolean(productId), "baseDate", baseDate);
+  const baseDateText =
+    data?.baseDate != null
+      ? String(data.baseDate)
+      : baseDate != null
+        ? String(baseDate)
+        : "";
+  console.log(
+    "productId",
+    productId,
+    "enabled",
+    Boolean(productId),
+    "baseDate",
+    baseDate,
+  );
 
   const TITLE_MAX = 200;
 
@@ -65,7 +77,7 @@ export default function InfoInputSection({
             <div className="flex justify-between text-xs text-gray-400">
               <span>프로젝트를 식별할 이름을 입력하세요.</span>
               <span>
-                {(projectTitle?.length ?? 0)}/{TITLE_MAX}
+                {projectTitle?.length ?? 0}/{TITLE_MAX}
               </span>
             </div>
           </div>
@@ -121,7 +133,7 @@ export default function InfoInputSection({
                 />
               </label>
               {attachedFile && (
-                <span className="text-sm text-gray-500 truncate max-w-[200px]">
+                <span className="text-sm text-gray-500 truncate max-w-50">
                   {attachedFile.name}
                 </span>
               )}
@@ -139,26 +151,27 @@ export default function InfoInputSection({
           AI 이벤트 트렌드 분석
         </h2>
 
-          {/* 기준일 선택 (Month Selector) */}
-          <div className="mt-1">
-            <SelectField
-              label="기준일"
-              value={baseDate || ""}
-              onChange={setBaseDate}
-              options={Array.from({ length: 12 }).map((_, i) => { // 몇개월까지 보일 지 여기서 조정하시면 됩니다
-                const d = new Date();
-                d.setMonth(d.getMonth() - i);
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, "0");
-                return {
-                  value: `${y}-${m}`,
-                  label: `${y}년 ${m}월`,
-                };
-              })}
-              placeholder="기준일을 선택하세요"
-              variant="neutral"
-            />
-          </div>
+        {/* 기준일 선택 (Month Selector) */}
+        <div className="mt-1">
+          <SelectField
+            label="기준일"
+            value={baseDate || ""}
+            onChange={setBaseDate}
+            options={Array.from({ length: 12 }).map((_, i) => {
+              // 몇개월까지 보일 지 여기서 조정하시면 됩니다
+              const d = new Date();
+              d.setMonth(d.getMonth() - i);
+              const y = d.getFullYear();
+              const m = String(d.getMonth() + 1).padStart(2, "0");
+              return {
+                value: `${y}-${m}`,
+                label: `${y}년 ${m}월`,
+              };
+            })}
+            placeholder="기준일을 선택하세요"
+            variant="neutral"
+          />
+        </div>
         {/* </p> 제거 */}
 
         {/* 파란 요약 박스 */}
@@ -283,7 +296,9 @@ export default function InfoInputSection({
             인기 &amp; 스타일
           </p>
           <p className="mt-2 text-sm leading-6 text-gray-500">
-            {isLoading ? "불러오는 중..." : styleSummary || "요약 정보가 없습니다."}
+            {isLoading
+              ? "불러오는 중..."
+              : styleSummary || "요약 정보가 없습니다."}
           </p>
         </div>
       </Card>

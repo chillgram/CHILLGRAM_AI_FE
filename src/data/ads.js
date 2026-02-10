@@ -89,3 +89,16 @@ export const AD_CONTENT_TYPE_OPTIONS = [
   { title: "숏츠 AI", description: "짧은 영상 콘텐츠", icon: Clapperboard },
   { title: "배너 이미지 AI", description: "광고 배너 이미지", icon: ImageUp },
 ];
+
+export const BANNER_RATIOS = [
+  {idx: 1, value:"1:1"},
+  {idx: 2, value:"2:3"},
+  {idx: 3, value:"3:2"},
+  {idx: 4, value:"3:4"},
+  {idx: 5, value:"4:3"},
+  {idx: 6, value:"4:5"},
+  {idx: 7, value:"5:4"},
+  {idx: 8, value:"9:16"},
+  {idx: 9, value:"16:9"},
+  {idx: 10, value:"21:9"},
+];

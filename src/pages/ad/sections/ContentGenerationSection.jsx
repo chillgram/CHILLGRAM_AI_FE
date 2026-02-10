@@ -1,5 +1,6 @@
 import { Lightbulb, Image, Sparkles } from "lucide-react";
 import Card from "@/components/common/Card";
+import { BANNER_RATIOS } from "@/data/ads";
 
 export default function ContentGenerationSection({
   contentTypes,
@@ -52,7 +53,7 @@ export default function ContentGenerationSection({
                 setSelectedTypes((prev) =>
                   prev.includes(type.title)
                     ? prev.filter((t) => t !== type.title)
-                    : [...prev, type.title]
+                    : [...prev, type.title],
                 )
               }
               className={[
@@ -71,19 +72,39 @@ export default function ContentGenerationSection({
       {/* 배너 이미지 AI 선택 시 사이즈 입력 노출 */}
       {isBannerSelected && (
         <div className="mt-6 rounded-xl border border-blue-200 bg-blue-50 p-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            배너 사이즈 입력
-          </label>
-          <input
-            type="text"
-            value={bannerSize}
-            onChange={(e) => setBannerSize(e.target.value)}
-            placeholder="예: 1200x628, 300x250"
-            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-400"
-          />
-          <p className="mt-2 text-xs text-gray-500">
-            원하는 배너 크기를 입력하세요 (가로x세로, 예: 1200x628)
+          <p className="mb-10 text-sm font-semibold text-gray-700">
+            배너 이미지 비율 선택
           </p>
+          <div className="grid grid-cols-5 gap-10">
+            {BANNER_RATIOS.map((ratio) => {
+              const ratioText = ratio.value;
+              const [w, h] = ratioText.split(":").map(Number);
+              const selected = bannerSize === ratioText;
+
+              return (
+                <button
+                  key={ratio.idx}
+                  type="button"
+                  onClick={() => setBannerSize(ratioText)}
+                  className={[
+                    "relative rounded-xl border-2 p-2 transition flex flex-col justify-items-start",
+                    selected
+                      ? "border-blue-500 text-blue-500"
+                      : "border-gray-200 text-gray-500 hover:border-gray-500 hover:text-gray-500",
+                  ].join(" ")}
+                >
+                  <div
+                    className="w-full rounded-md bg-gray-200"
+                    style={{ aspectRatio: `${w} / ${h}` }}
+                  />
+
+                  <span className="absolute -top-6 left-0 w-full text-center text-xs font-semibold">
+                    {ratioText}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 

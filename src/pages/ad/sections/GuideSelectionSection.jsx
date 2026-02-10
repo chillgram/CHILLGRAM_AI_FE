@@ -22,7 +22,8 @@ export default function GuideSelectionSection({
             {isLoading ? "AI 가이드 생성 중..." : "AI 가이드 생성 완료"}
           </p>
           <p className="mt-1 text-sm">
-            추천: <span className="font-semibold">{recommendedGuideId || "-"}</span>
+            추천:{" "}
+            <span className="font-semibold">{recommendedGuideId || "-"}</span>
           </p>
         </div>
       </div>

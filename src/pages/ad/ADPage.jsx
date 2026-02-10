@@ -13,11 +13,13 @@ import GuideSelectionSection from "./sections/GuideSelectionSection";
 import CopySelectionSection from "./sections/CopySelectionSection";
 import ContentGenerationSection from "./sections/ContentGenerationSection";
 
-import { fetchAdGuides, fetchAdCopies, createAdContents } from "../../services/api/ad";
+import {
+  fetchAdGuides,
+  fetchAdCopies,
+  createAdContents,
+} from "../../services/api/ad";
 
-// --------------------
 // util: 선택된 guide/copy 객체 추출
-// --------------------
 function pickSelectedGuide(guideResponse, selectedGuideId) {
   const guides = guideResponse?.guides ?? [];
   return guides.find((g) => String(g.id) === String(selectedGuideId)) ?? null;
@@ -25,7 +27,8 @@ function pickSelectedGuide(guideResponse, selectedGuideId) {
 
 function pickSelectedCopy(copyResponse, selectedCopyId) {
   const copies = copyResponse?.copies ?? [];
-  const found = copies.find((c) => String(c.id) === String(selectedCopyId)) ?? null;
+  const found =
+    copies.find((c) => String(c.id) === String(selectedCopyId)) ?? null;
 
   if (!found) return null;
 
@@ -114,7 +117,11 @@ export default function ADPage() {
           badge: "전환형",
           score: 91,
           rationale: "로컬 더미(비용 절감)",
-          key_points: { tone: ["명확함"], structure: "benefit-proof-cta", cta: "direct" },
+          key_points: {
+            tone: ["명확함"],
+            structure: "benefit-proof-cta",
+            cta: "direct",
+          },
         },
         {
           id: "local-g2",
@@ -123,25 +130,49 @@ export default function ADPage() {
           badge: "브랜드형",
           score: 78,
           rationale: "로컬 더미(비용 절감)",
-          key_points: { tone: ["공감"], structure: "problem-solution", cta: "soft" },
+          key_points: {
+            tone: ["공감"],
+            structure: "problem-solution",
+            cta: "soft",
+          },
         },
       ],
     }),
-    []
+    [],
   );
 
   const LOCAL_COPY_RESPONSE = useMemo(
     () => ({
       recommendedCopyId: "c3",
       copies: [
-        { id: "c1", title: "행복한 순간", body: "작은 행복이 모여 큰 추억이 됩니다.\n당신의 특별한 순간을 더 달콤하게." },
-        { id: "c2", title: "따뜻한 마음", body: "마음을 담아 정성스럽게 만든 달콤함.\n소중한 사람과 함께 나누세요." },
-        { id: "c3", title: "일상의 여유", body: "바쁜 하루 속 작은 쉼표.\n달콤한 여유로 일상을 채워보세요." },
-        { id: "c4", title: "오늘의 리셋", body: "지친 하루를 가볍게 리셋.\n한 입으로 기분까지 환해집니다." },
-        { id: "c5", title: "선물 같은 한입", body: "특별한 날이 아니어도 좋아요.\n오늘을 선물처럼 만드는 한 입." },
+        {
+          id: "c1",
+          title: "행복한 순간",
+          body: "작은 행복이 모여 큰 추억이 됩니다.\n당신의 특별한 순간을 더 달콤하게.",
+        },
+        {
+          id: "c2",
+          title: "따뜻한 마음",
+          body: "마음을 담아 정성스럽게 만든 달콤함.\n소중한 사람과 함께 나누세요.",
+        },
+        {
+          id: "c3",
+          title: "일상의 여유",
+          body: "바쁜 하루 속 작은 쉼표.\n달콤한 여유로 일상을 채워보세요.",
+        },
+        {
+          id: "c4",
+          title: "오늘의 리셋",
+          body: "지친 하루를 가볍게 리셋.\n한 입으로 기분까지 환해집니다.",
+        },
+        {
+          id: "c5",
+          title: "선물 같은 한입",
+          body: "특별한 날이 아니어도 좋아요.\n오늘을 선물처럼 만드는 한 입.",
+        },
       ],
     }),
-    []
+    [],
   );
 
   const guideMutation = useMutation({
@@ -203,7 +234,9 @@ export default function ADPage() {
 
         const guides = resp?.guides ?? [];
         if (!Array.isArray(guides) || guides.length === 0) {
-          throw new Error("가이드라인이 생성되지 않았습니다. (guides 비어있음)");
+          throw new Error(
+            "가이드라인이 생성되지 않았습니다. (guides 비어있음)",
+          );
         }
 
         setGuideResponse(resp);
@@ -222,7 +255,8 @@ export default function ADPage() {
       if (!USE_COPY_API) {
         setCopyResponse(LOCAL_COPY_RESPONSE);
         setSelectedCopyId(
-          LOCAL_COPY_RESPONSE.recommendedCopyId || LOCAL_COPY_RESPONSE.copies[0].id
+          LOCAL_COPY_RESPONSE.recommendedCopyId ||
+            LOCAL_COPY_RESPONSE.copies[0].id,
         );
         setCurrentStep(3);
         return;
@@ -231,7 +265,7 @@ export default function ADPage() {
       try {
         const resp = await copyMutation.mutateAsync({
           productId,
-          baseDate, 
+          baseDate,
           projectTitle,
           adGoal,
           requestText,
