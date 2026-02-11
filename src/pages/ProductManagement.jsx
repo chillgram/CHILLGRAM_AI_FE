@@ -527,7 +527,7 @@ function ProductModal({
             label="제품명"
             placeholder="프리미엄 초콜릿"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={(val) => setFormData({ ...formData, name: val })}
             className="w-full"
           />
 
@@ -535,7 +535,7 @@ function ProductModal({
             label="카테고리"
             placeholder="초콜릿"
             value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            onChange={(val) => setFormData({ ...formData, category: val })}
             className="w-full"
           />
 
@@ -543,7 +543,7 @@ function ProductModal({
             label="리뷰사이트 URL"
             placeholder="https://example.com/reviews"
             value={formData.reviewUrl}
-            onChange={(e) => setFormData({ ...formData, reviewUrl: e.target.value })}
+            onChange={(val) => setFormData({ ...formData, reviewUrl: val })}
             className="w-full"
           />
 
@@ -552,7 +552,7 @@ function ProductModal({
             rows={3}
             placeholder={isEdit ? "" : "제품에 대한 설명을 입력하세요"}
             value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onChange={(val) => setFormData({ ...formData, description: val })}
             className="w-full"
           />
 
