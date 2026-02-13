@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
@@ -8,6 +8,7 @@ import { MessageSquare, User, Calendar } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { useQnaStore } from "@/stores/qnaStore";
 import { apiFetch } from "@/lib/apiFetch";
+import { maskName } from "../../utils/masking";
 
 const STATUS_MAP = {
   WAITING: "답변 대기",
@@ -64,7 +65,7 @@ const AuthImage = ({ src, alt, className }) => {
             candidates.push(src.replace("/qna/", "/api/uploads/qna/"));
           }
         }
-      } catch (e) { }
+      } catch (e) {}
 
       for (const url of candidates) {
         try {
@@ -108,7 +109,6 @@ export default function QnaDetailPage() {
     fetchQuestion,
     createAnswer,
     updateAnswer,
-    deleteAnswer,
     updateQuestion,
   } = useQnaStore();
 
@@ -244,7 +244,7 @@ export default function QnaDetailPage() {
   const validAnswers = useMemo(() => {
     if (!question || !question.answers) return [];
     return question.answers.filter(
-      (a) => a.body !== "[DELETED]" && a.content !== "[DELETED]"
+      (a) => a.body !== "[DELETED]" && a.content !== "[DELETED]",
     );
   }, [question]);
 
@@ -252,7 +252,7 @@ export default function QnaDetailPage() {
     <div className="min-h-screen bg-gray-100 text-gray-900">
       <main className="py-10">
         <Container>
-          <div className="mx-auto max-w-3xl space-y-6">
+          <div className="mx-auto w-full max-w-5xl px-4">
             {isLoading && !question && (
               <Card className="border-gray-100 text-center">
                 <p className="text-sm text-gray-500">질문을 불러오는 중...</p>
@@ -303,10 +303,11 @@ export default function QnaDetailPage() {
                       })()}
                     </span>
                     <span
-                      className={`rounded-full px-2 py-0.5 font-semibold ${STATUS_TONE[
-                        STATUS_MAP[question.status] || question.status
+                      className={`rounded-full px-2 py-0.5 font-semibold ${
+                        STATUS_TONE[
+                          STATUS_MAP[question.status] || question.status
                         ] || "bg-gray-100 text-gray-700"
-                        }`}
+                      }`}
                     >
                       {STATUS_MAP[question.status] ||
                         question.status ||
@@ -319,7 +320,7 @@ export default function QnaDetailPage() {
                   <div className="mt-3 flex flex-wrap items-center gap-5 text-xs text-gray-400">
                     <span className="flex items-center gap-1.5">
                       <User size={14} className="text-gray-300" />
-                      {question.createdByName || question.author || "익명"}
+                      {maskName(question.createdByName || question.author)}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <Calendar size={14} className="text-gray-300" />
@@ -395,16 +396,18 @@ export default function QnaDetailPage() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-bold text-gray-800">
-                                {answer.answeredByName ||
-                                  answer.author ||
-                                  answer.name ||
-                                  "익명"}
+                                {maskName(
+                                  answer.answeredByName ||
+                                    answer.author ||
+                                    answer.name,
+                                )}
                               </span>
                               {answer.role && (
                                 <span
-                                  className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold ${ROLE_TONE[answer.role] ||
+                                  className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold ${
+                                    ROLE_TONE[answer.role] ||
                                     "bg-gray-400 text-white"
-                                    }`}
+                                  }`}
                                 >
                                   {answer.role}
                                 </span>
@@ -476,7 +479,7 @@ export default function QnaDetailPage() {
                   )}
                 </div>
 
-                <Card className="border-gray-100 p-6">
+                <Card className="border-gray-100">
                   <h2 className="text-sm font-bold text-gray-800">답변 작성</h2>
                   <textarea
                     rows={4}

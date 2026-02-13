@@ -3,7 +3,7 @@ export default function Card({ onClick, className = "", children }) {
     <article
       onClick={onClick}
       className={[
-        "rounded-[28px] border border-gray-300 bg-white px-12 py-10",
+        "rounded-[28px]",
         onClick ? "cursor-pointer hover:bg-gray-50" : "",
         className,
       ].join(" ")}
