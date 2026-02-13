@@ -28,11 +28,13 @@ import {
 } from "@/services/api/productApi";
 import { fetchProjectsByProduct } from "@/services/api/projectApi";
 import { useAuthStore } from "@/stores/authStore";
+import { useProductDetailStore } from "@/stores/productDetailStore";
 
 export default function ProductManagementPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const bootstrapped = useAuthStore((s) => s.bootstrapped);
+  const setProduct = useProductDetailStore((s) => s.setProduct);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -64,6 +66,9 @@ export default function ProductManagementPage() {
 
   // 제품 목록이 로드되면 각 제품의 프로젝트 존재 여부 확인
   useEffect(() => {
+    // 🚨 [API 과부하 방지] 제품 하나하나마다 프로젝트 조회를 하면(N+1 문제) 서버가 멈춥니다(504 Error).
+    // 백엔드에서 리스트 조회 시 활성 여부를 같이 주도록 개선될 때까지 끕니다.
+    /*
     if (products.length === 0) return;
 
     const checkProjects = async () => {
@@ -94,6 +99,7 @@ export default function ProductManagementPage() {
     };
 
     checkProjects();
+    */
   }, [products]);
 
   // 제품에 프로젝트가 있는지 확인하는 함수
@@ -138,7 +144,10 @@ export default function ProductManagementPage() {
   // 제품 추가 Mutation
   const createMutation = useMutation({
     mutationFn: createProduct,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      const newId = data?.id || data?.productId || data?.product_id;
+      const newName = data?.name || "";
+      if (newId) setProduct(newId, newName);
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["productStats"] });
       setIsAddModalOpen(false);
@@ -330,9 +339,10 @@ export default function ProductManagementPage() {
                         <tr
                           key={productId}
                           className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
-                          onClick={() =>
-                            navigate(`/dashboard/products/${productId}`)
-                          }
+                          onClick={() => {
+                            setProduct(productId, product.name);
+                            navigate(`/dashboard/products/${productId}`);
+                          }}
                         >
                           <td className="py-4 px-4 text-sm font-medium text-gray-900">
                             {product.name}
@@ -427,11 +437,10 @@ export default function ProductManagementPage() {
                 {Array.from({ length: totalPages }, (_, i) => (
                   <button
                     key={i}
-                    className={`h-8 w-8 rounded-lg text-sm font-bold transition-all ${
-                      i === page
-                        ? "bg-[#60A5FA] text-white shadow-sm"
-                        : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
-                    }`}
+                    className={`h-8 w-8 rounded-lg text-sm font-bold transition-all ${i === page
+                      ? "bg-[#60A5FA] text-white shadow-sm"
+                      : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+                      }`}
                     onClick={() => setPage(i)}
                   >
                     {i + 1}
