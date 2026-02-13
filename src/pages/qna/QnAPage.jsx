@@ -243,7 +243,7 @@ export default function QnAPage() {
         <Container>
           <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="flex flex-col gap-6 border-b border-gray-100 pb-8 md:flex-row md:items-start md:justify-between">
-              <div>
+              <div cl>
                 <h1 className="mt-2 text-xl font-bold">Q&amp;A 게시판</h1>
                 <p className="mt-1 text-sm text-gray-500">
                   궁금한 점을 질문하고 답변을 받아보세요.
@@ -263,7 +263,7 @@ export default function QnAPage() {
             <div className="mt-5 grid gap-4 md:grid-cols-3">
               <ErrorBoundary>
                 {statCards.map((stat) => (
-                  <Card key={stat.label} className="border-gray-100">
+                  <Card key={stat.label} className="border-gray-100 border shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-gray-500">{stat.label}</div>
                       <div
