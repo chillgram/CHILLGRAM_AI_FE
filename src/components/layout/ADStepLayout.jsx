@@ -21,7 +21,7 @@ export default function ADStepLayout({
           className="flex items-center gap-1.5 px-4 py-2 bg-white rounded-lg border border-gray-200 text-gray-500 text-sm font-bold hover:bg-gray-50 transition-colors shadow-sm"
         >
           <ArrowLeft size={20} />
-          제품 상세 페이지
+          프로젝트 목록
         </button>
       </div>
       <div className="space-y-10 pb-24 border border-gray-200 bg-white rounded-3xl p-5 shadow-lg">
