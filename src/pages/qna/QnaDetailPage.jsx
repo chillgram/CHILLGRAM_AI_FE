@@ -479,7 +479,7 @@ export default function QnaDetailPage() {
                   )}
                 </div>
 
-                <Card className="border-gray-100">
+                <Card className="border-gray-100 mt-10">
                   <h2 className="text-sm font-bold text-gray-800">답변 작성</h2>
                   <textarea
                     rows={4}
