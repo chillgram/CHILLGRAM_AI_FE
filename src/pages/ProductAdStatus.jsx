@@ -16,6 +16,7 @@ import {
 import Container from "@/components/common/Container";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 import Button from "../components/common/Button";
+import Card from "@/components/common/Card";
 
 export default function ProductAdStatusPage() {
   const { productId } = useParams();
@@ -121,79 +122,115 @@ export default function ProductAdStatusPage() {
               variant="primary"
               size="sm"
               onClick={() => setActiveTab(tab)}
-              className={`rounded-xl transition-all border ${
-                activeTab === tab
-                  ? "bg-[#60A5FA] border-[#60A5FA] shadow-md"
-                  : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-              }`}
+              className={`rounded-xl transition-all border ${activeTab === tab
+                ? "bg-[#60A5FA] border-[#60A5FA] shadow-md"
+                : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                }`}
             >
               {tab}
             </Button>
           ))}
         </div>
 
-        {/* 프로젝트 그리드 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* 프로젝트 목록 테이블 */}
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
           <ErrorBoundary>
-            {isProjectsLoading && (
-              <div className="col-span-full py-20 text-center text-gray-400 text-sm">
-                로딩 중...
-              </div>
-            )}
-            {isProjectsError && (
-              <div className="col-span-full py-20 text-center text-red-400 text-sm">
-                프로젝트 목록을 불러오지 못했습니다.
-              </div>
-            )}
-            {!isProjectsLoading &&
-              !isProjectsError &&
-              filteredProjects.length === 0 && (
-                <div className="col-span-full py-20 text-center text-gray-400 text-sm">
-                  아직 생성된 프로젝트가 없습니다.
-                </div>
-              )}
-            {!isProjectsLoading &&
-              !isProjectsError &&
-              filteredProjects.map((project) => (
-                <div
-                  key={project.id}
-                  onClick={() => {
-                    const detailPath =
-                      project.type === "design"
-                        ? `./projectDesignDetail/${project.id}`
-                        : `./projectAdDetail/${project.id}`;
-                    navigate(detailPath, {
-                      state: { projectName: project.title },
-                    });
-                  }}
-                  className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group cursor-pointer"
-                >
-                  <div className="mb-8">
-                    <span
-                      className={`inline-block px-3 py-1.5 rounded-lg text-xs font-black mb-4 ${
-                        project.type === "ad"
-                          ? "bg-purple-50 text-purple-600"
-                          : "bg-blue-50 text-blue-600"
-                      }`}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="py-5 font-bold text-gray-400 text-xs px-4 w-[12%] whitespace-nowrap">
+                      구분
+                    </th>
+                    <th className="py-5 font-bold text-gray-400 text-xs px-4 w-[43%]">
+                      프로젝트명
+                    </th>
+                    <th className="py-5 font-bold text-gray-400 text-xs px-4 w-[12%] whitespace-nowrap">
+                      콘텐츠 수
+                    </th>
+                    <th className="py-5 font-bold text-gray-400 text-xs px-4 w-[18%] whitespace-nowrap">
+                      등록일
+                    </th>
+                    <th className="py-5 font-bold text-gray-400 text-xs px-4 text-center w-[15%] whitespace-nowrap">
+                      상세보기
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {isProjectsLoading && (
+                    <tr>
+                      <td colSpan="5" className="py-20 text-center text-gray-400 text-sm">
+                        로딩 중...
+                      </td>
+                    </tr>
+                  )}
+                  {isProjectsError && (
+                    <tr>
+                      <td colSpan="5" className="py-20 text-center text-red-400 text-sm">
+                        프로젝트 목록을 불러오지 못했습니다.
+                      </td>
+                    </tr>
+                  )}
+                  {!isProjectsLoading && !isProjectsError && filteredProjects.length === 0 && (
+                    <tr>
+                      <td colSpan="5" className="py-20 text-center text-gray-400 text-sm">
+                        아직 생성된 프로젝트가 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                  {!isProjectsLoading && !isProjectsError && filteredProjects.map((project) => (
+                    <tr
+                      key={project.id}
+                      onClick={() => {
+                        const detailPath =
+                          project.type === "design"
+                            ? `./projectDesignDetail/${project.id}`
+                            : `./projectAdDetail/${project.id}`;
+                        navigate(detailPath, {
+                          state: { projectName: project.title },
+                        });
+                      }}
+                      className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer group"
                     >
-                      {project.badge}
-                    </span>
-                    <h3 className="text-xl font-black text-[#111827] mb-2 group-hover:text-blue-500 transition-colors">
-                      {project.title}
-                    </h3>
-                    <div className="flex items-center gap-2 text-gray-400 text-xs font-bold">
-                      <Calendar size={14} /> {project.date}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-6 border-t border-gray-50">
-                    <div className="flex items-center gap-1.5 text-gray-500 text-xs font-bold">
-                      <ImageIcon size={14} />
-                      {project.contentCount}개 콘텐츠
-                    </div>
-                  </div>
-                </div>
-              ))}
+                      <td className="py-6 px-4 whitespace-nowrap">
+                        <span
+                          className={`inline-block px-3 py-1.5 rounded-lg text-[10px] font-black ${project.type === "ad"
+                            ? "bg-purple-50 text-purple-600"
+                            : "bg-blue-50 text-blue-600"
+                            }`}
+                        >
+                          {project.badge}
+                        </span>
+                      </td>
+                      <td className="py-6 px-4">
+                        <div className="text-base font-bold text-[#111827] group-hover:text-blue-500 transition-colors">
+                          {project.title}
+                        </div>
+                      </td>
+                      <td className="py-6 px-4 whitespace-nowrap">
+                        <div className="flex items-center gap-1.5 text-gray-500 text-sm font-bold">
+                          <ImageIcon size={14} className="text-gray-400" />
+                          {project.contentCount}개
+                        </div>
+                      </td>
+                      <td className="py-6 px-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2 text-gray-400 text-sm font-medium">
+                          <Calendar size={14} /> {project.date}
+                        </div>
+                      </td>
+                      <td className="py-6 px-4 whitespace-nowrap">
+                        <div className="flex justify-center">
+                          <button className="flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black hover:bg-blue-100 transition-all active:scale-95">
+                            <Eye size={14} />
+                            상세보기
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </ErrorBoundary>
         </div>
       </Container>
