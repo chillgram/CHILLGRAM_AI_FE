@@ -63,8 +63,7 @@ export default function ProductManagementPage() {
 
   // 제품의 활성 상태 확인 (API 응답 필드 사용)
   const isProductActive = (product) => {
-    if (product.isActive !== undefined) return product.isActive;
-    return product.status === "활성";
+    return product.isActive;
   };
 
   // 2. 통계 데이터 조회
@@ -468,7 +467,7 @@ function ProductModal({
     category: initialData?.category || "",
     reviewUrl: initialData?.reviewUrl || initialData?.review_url || "",
     description: initialData?.description || initialData?.desc || "",
-    isActive: initialData ? initialData.status === "활성" : true,
+    isActive: initialData ? !!initialData.isActive : undefined,
   });
 
   const isEdit = !!initialData;

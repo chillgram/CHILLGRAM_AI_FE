@@ -32,7 +32,7 @@ export async function createProduct(payload) {
         name: payload.name,
         category: payload.category,
         description: payload.description || payload.desc || "",
-        isActive: payload.isActive !== undefined ? payload.isActive : true,
+        isActive: payload.isActive,
     };
     // reviewUrl이 있을 때만 포함 (snake_case + camelCase 호환)
     if (payload.reviewUrl && payload.reviewUrl.trim() !== "") {
@@ -60,7 +60,10 @@ export async function updateProduct(id, payload) {
         name: payload.name,
         category: payload.category,
         description: payload.description || payload.desc || "",
-        isActive: payload.isActive !== undefined ? payload.isActive : true,
+        name: payload.name,
+        category: payload.category,
+        description: payload.description || payload.desc || "",
+        isActive: payload.isActive,
     };
     // reviewUrl이 있을 때만 포함 (snake_case + camelCase 호환)
     if (payload.reviewUrl && payload.reviewUrl.trim() !== "") {
