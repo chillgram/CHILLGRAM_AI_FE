@@ -78,19 +78,19 @@ export default function ProductManagementPage() {
   const stats = [
     {
       title: "전체 제품",
-      value: statsData?.totalProducts || products.length,
+      value: statsData?.totalCount ?? products.length,
       icon: Package,
       color: "text-blue-500",
     },
     {
       title: "활성 제품",
-      value: products.filter((p) => isProductActive(p)).length,
+      value: statsData?.activeCount ?? products.filter((p) => isProductActive(p)).length,
       icon: CheckCircle,
       color: "text-green-500",
     },
     {
       title: "비활성 제품",
-      value: products.filter((p) => !isProductActive(p)).length,
+      value: statsData?.inactiveCount ?? products.filter((p) => !isProductActive(p)).length,
       icon: XCircle,
       color: "text-gray-400",
     },
