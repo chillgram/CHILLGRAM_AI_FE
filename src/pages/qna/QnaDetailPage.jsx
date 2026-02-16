@@ -44,11 +44,18 @@ const AuthImage = ({ src, alt, className }) => {
   useEffect(() => {
     if (!src) return;
 
+    // GCS URL이거나 외부 URL인 경우 apiFetch(헤더 포함)를 사용하면 CORS 에러 발생 가능
+    // 따라서 직접 src를 사용하도록 처리
+    if (src.includes("storage.googleapis.com") || src.startsWith("http")) {
+      setBlobUrl(src);
+      return;
+    }
+
     let active = true;
     (async () => {
       const candidates = [];
 
-      if (src && !src.startsWith("http") && !src.startsWith("data:")) {
+      if (!src.startsWith("data:")) {
         const cleanSrc = src.startsWith("/") ? src.slice(1) : src;
         if (!cleanSrc.startsWith("images/")) {
           candidates.push(`/images/${cleanSrc}`);
@@ -56,16 +63,6 @@ const AuthImage = ({ src, alt, className }) => {
       }
 
       candidates.push(src);
-
-      try {
-        if (src.startsWith("http")) {
-          const urlObj = new URL(src);
-          if (urlObj.pathname.startsWith("/qna/")) {
-            candidates.push(src.replace("/qna/", "/api/qna/"));
-            candidates.push(src.replace("/qna/", "/api/uploads/qna/"));
-          }
-        }
-      } catch (e) {}
 
       for (const url of candidates) {
         try {
@@ -87,7 +84,7 @@ const AuthImage = ({ src, alt, className }) => {
 
     return () => {
       active = false;
-      if (blobUrl) URL.revokeObjectURL(blobUrl);
+      if (blobUrl && !blobUrl.startsWith("http")) URL.revokeObjectURL(blobUrl);
     };
   }, [src]);
 
@@ -303,11 +300,10 @@ export default function QnaDetailPage() {
                       })()}
                     </span>
                     <span
-                      className={`rounded-full px-2 py-0.5 font-semibold ${
-                        STATUS_TONE[
-                          STATUS_MAP[question.status] || question.status
-                        ] || "bg-gray-100 text-gray-700"
-                      }`}
+                      className={`rounded-full px-2 py-0.5 font-semibold ${STATUS_TONE[
+                        STATUS_MAP[question.status] || question.status
+                      ] || "bg-gray-100 text-gray-700"
+                        }`}
                     >
                       {STATUS_MAP[question.status] ||
                         question.status ||
@@ -334,15 +330,21 @@ export default function QnaDetailPage() {
                   </div>
 
                   {/* 첨부 이미지 표시 */}
-                  {(question.imageUrl || question.fileUrl) && (
-                    <div className="mt-4">
-                      <AuthImage
-                        src={question.imageUrl || question.fileUrl}
-                        alt="첨부 이미지"
-                        className="max-h-96 max-w-full rounded-lg object-contain border border-gray-200"
-                      />
-                    </div>
-                  )}
+                  {(question.imageUrl ||
+                    question.fileUrl ||
+                    question.gcsImageUrl) && (
+                      <div className="mt-4">
+                        <AuthImage
+                          src={
+                            question.imageUrl ||
+                            question.fileUrl ||
+                            question.gcsImageUrl
+                          }
+                          alt="첨부 이미지"
+                          className="max-h-96 max-w-full rounded-lg object-contain border border-gray-200"
+                        />
+                      </div>
+                    )}
 
                   {question.attachments && question.attachments.length > 0 && (
                     <div className="mt-4 space-y-4">
@@ -398,16 +400,15 @@ export default function QnaDetailPage() {
                               <span className="text-sm font-bold text-gray-800">
                                 {maskName(
                                   answer.answeredByName ||
-                                    answer.author ||
-                                    answer.name,
+                                  answer.author ||
+                                  answer.name,
                                 )}
                               </span>
                               {answer.role && (
                                 <span
-                                  className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold ${
-                                    ROLE_TONE[answer.role] ||
+                                  className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold ${ROLE_TONE[answer.role] ||
                                     "bg-gray-400 text-white"
-                                  }`}
+                                    }`}
                                 >
                                   {answer.role}
                                 </span>
