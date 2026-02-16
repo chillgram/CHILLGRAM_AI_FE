@@ -26,24 +26,24 @@ export async function createProject(productId, payload) {
     return res.json();
 }
 
-/**
- * 프로젝트 이미지 업로드
- * POST /api/projects/{id}/images
- */
-export async function uploadProjectImages(projectId, files) {
-    const formData = new FormData();
+// /**
+//  * 프로젝트 이미지 업로드
+//  * POST /api/projects/{id}/images
+//  */
+// export async function uploadProjectImages(projectId, files) {
+//     const formData = new FormData();
 
-    // 단일 파일 또는 여러 파일 처리
-    if (Array.isArray(files)) {
-        files.forEach((file) => formData.append("images", file));
-    } else {
-        formData.append("images", files);
-    }
+//     // 단일 파일 또는 여러 파일 처리
+//     if (Array.isArray(files)) {
+//         files.forEach((file) => formData.append("images", file));
+//     } else {
+//         formData.append("images", files);
+//     }
 
-    const res = await apiFetch(`/api/projects/${projectId}/images`, {
-        method: "POST",
-        body: formData,
-    });
-    if (!res.ok) throw new Error("이미지 업로드에 실패했습니다.");
-    return res.json();
-}
+//     const res = await apiFetch(`/api/projects/${projectId}/images`, {
+//         method: "POST",
+//         body: formData,
+//     });
+//     if (!res.ok) throw new Error("이미지 업로드에 실패했습니다.");
+//     return res.json();
+// }
