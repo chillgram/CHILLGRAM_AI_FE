@@ -52,12 +52,20 @@ export async function createAdContents(formData) {
  * POST /api/projects/basic-images
  * returns: { jobId }
  */
-export async function createBasicImageJob({ payload, file }) {
+export async function createBasicImageJob({ payload, file, baseFile }) {
   const form = new FormData();
   form.append("payload", JSON.stringify(payload));
   form.append("file", file);
+  if (baseFile) {
+    form.append("base_file", baseFile);
+  }
 
-  return httpForm("/api/jobs/basic-images", { method: "POST", formData: form });
+  // NOTE: /api/jobs/basic-images 대신 /api/projects/{projectId}/basic-images 사용
+  // 그래야 projectId가 job_task 테이블에 제대로 들어가고 payload(conceptUrl 등)가 보존됨
+  return httpForm(`/api/projects/${payload.projectId}/basic-images`, {
+    method: "POST",
+    formData: form,
+  });
 }
 
 /**
@@ -77,6 +85,7 @@ export async function fetchBasicImageResult(jobId) {
   if (!job?.outputUri) throw new Error("outputUri가 없습니다.");
 
   const res = await fetch(job.outputUri);
-  if (!res.ok) throw new Error(await res.text().catch(() => "manifest fetch failed"));
+  if (!res.ok)
+    throw new Error(await res.text().catch(() => "manifest fetch failed"));
   return res.json();
 }

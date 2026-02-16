@@ -29,7 +29,8 @@ function pickSelectedGuide(guideResponse, selectedGuideId) {
 
 function pickSelectedCopy(copyResponse, selectedCopyId) {
   const copies = copyResponse?.copies ?? [];
-  const found = copies.find((c) => String(c.id) === String(selectedCopyId)) ?? null;
+  const found =
+    copies.find((c) => String(c.id) === String(selectedCopyId)) ?? null;
   if (!found) return null;
 
   if (found.result) {
@@ -60,7 +61,10 @@ function pickSelectedCopy(copyResponse, selectedCopyId) {
 }
 
 // 간단 폴링 유틸(최대 timeoutMs)
-async function pollJobUntilDone(jobId, { intervalMs = 1000, timeoutMs = 60000 } = {}) {
+async function pollJobUntilDone(
+  jobId,
+  { intervalMs = 1000, timeoutMs = 60000 } = {},
+) {
   const started = Date.now();
 
   while (true) {
@@ -141,7 +145,11 @@ export default function ADPage() {
           badge: "전환형",
           score: 91,
           rationale: "로컬 더미(비용 절감)",
-          key_points: { tone: ["명확함"], structure: "benefit-proof-cta", cta: "direct" },
+          key_points: {
+            tone: ["명확함"],
+            structure: "benefit-proof-cta",
+            cta: "direct",
+          },
         },
         {
           id: "local-g2",
@@ -150,25 +158,49 @@ export default function ADPage() {
           badge: "브랜드형",
           score: 78,
           rationale: "로컬 더미(비용 절감)",
-          key_points: { tone: ["공감"], structure: "problem-solution", cta: "soft" },
+          key_points: {
+            tone: ["공감"],
+            structure: "problem-solution",
+            cta: "soft",
+          },
         },
       ],
     }),
-    []
+    [],
   );
 
   const LOCAL_COPY_RESPONSE = useMemo(
     () => ({
       recommendedCopyId: "c3",
       copies: [
-        { id: "c1", title: "행복한 순간", body: "작은 행복이 모여 큰 추억이 됩니다.\n당신의 특별한 순간을 더 달콤하게." },
-        { id: "c2", title: "따뜻한 마음", body: "마음을 담아 정성스럽게 만든 달콤함.\n소중한 사람과 함께 나누세요." },
-        { id: "c3", title: "일상의 여유", body: "바쁜 하루 속 작은 쉼표.\n달콤한 여유로 일상을 채워보세요." },
-        { id: "c4", title: "오늘의 리셋", body: "지친 하루를 가볍게 리셋.\n한 입으로 기분까지 환해집니다." },
-        { id: "c5", title: "선물 같은 한입", body: "특별한 날이 아니어도 좋아요.\n오늘을 선물처럼 만드는 한 입." },
+        {
+          id: "c1",
+          title: "행복한 순간",
+          body: "작은 행복이 모여 큰 추억이 됩니다.\n당신의 특별한 순간을 더 달콤하게.",
+        },
+        {
+          id: "c2",
+          title: "따뜻한 마음",
+          body: "마음을 담아 정성스럽게 만든 달콤함.\n소중한 사람과 함께 나누세요.",
+        },
+        {
+          id: "c3",
+          title: "일상의 여유",
+          body: "바쁜 하루 속 작은 쉼표.\n달콤한 여유로 일상을 채워보세요.",
+        },
+        {
+          id: "c4",
+          title: "오늘의 리셋",
+          body: "지친 하루를 가볍게 리셋.\n한 입으로 기분까지 환해집니다.",
+        },
+        {
+          id: "c5",
+          title: "선물 같은 한입",
+          body: "특별한 날이 아니어도 좋아요.\n오늘을 선물처럼 만드는 한 입.",
+        },
       ],
     }),
-    []
+    [],
   );
 
   const guideMutation = useMutation({ mutationFn: fetchAdGuides });
@@ -177,7 +209,8 @@ export default function ADPage() {
 
   // ✅ BASIC 프리뷰 생성
   const generateProductImages = useCallback(async () => {
-    if (!attachedFile) throw new Error("첨부파일이 없습니다. 제품 이미지 후보 생성 불가.");
+    if (!attachedFile)
+      throw new Error("첨부파일이 없습니다. 제품 이미지 후보 생성 불가.");
 
     const previewPayload = {
       productId,
@@ -197,11 +230,28 @@ export default function ADPage() {
 
     try {
       // 1) 잡 생성
-      const { jobId } = await createBasicImageJob({ payload: previewPayload, file: attachedFile });
+      const { jobId } = await createBasicImageJob({
+        payload: previewPayload,
+        file: attachedFile,
+      });
       setPreviewJobId(jobId);
 
+      // ✅ 로컬 스토리지에 jobId 저장 (AD 프로젝트용) 목업
+      // ad_jobs_{productId} 키에 배열로 저장
+      const storageKey = `cg_ad_jobs_${productId}`;
+      const existingJobs = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      if (!existingJobs.includes(jobId)) {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify([...existingJobs, jobId]),
+        );
+      }
+
       // 2) 완료 폴링
-      const job = await pollJobUntilDone(jobId, { intervalMs: 1000, timeoutMs: 60000 });
+      const job = await pollJobUntilDone(jobId, {
+        intervalMs: 1000,
+        timeoutMs: 60000,
+      });
 
       if (job.status === "FAILED") {
         throw new Error(job.errorMessage || "제품 이미지 후보 생성 실패");
@@ -262,7 +312,8 @@ export default function ADPage() {
     }
     if (currentStep === 2) return Boolean(selectedGuideId);
     if (currentStep === 3) return Boolean(selectedCopyId);
-    if (currentStep === 4) return selectedTypes.length > 0 && Boolean(selectedProductImageId);
+    if (currentStep === 4)
+      return selectedTypes.length > 0 && Boolean(selectedProductImageId);
     return true;
   };
 
@@ -294,7 +345,8 @@ export default function ADPage() {
         });
 
         const guides = resp?.guides ?? [];
-        if (!Array.isArray(guides) || guides.length === 0) throw new Error("가이드 응답 비어있음");
+        if (!Array.isArray(guides) || guides.length === 0)
+          throw new Error("가이드 응답 비어있음");
 
         setGuideResponse(resp);
         setSelectedGuideId(resp?.recommendedGuideId || guides[0]?.id || "");
@@ -311,7 +363,10 @@ export default function ADPage() {
     if (currentStep === 2) {
       if (!USE_COPY_API) {
         setCopyResponse(LOCAL_COPY_RESPONSE);
-        setSelectedCopyId(LOCAL_COPY_RESPONSE.recommendedCopyId || LOCAL_COPY_RESPONSE.copies[0].id);
+        setSelectedCopyId(
+          LOCAL_COPY_RESPONSE.recommendedCopyId ||
+            LOCAL_COPY_RESPONSE.copies[0].id,
+        );
         setCurrentStep(3);
         return;
       }
@@ -329,7 +384,8 @@ export default function ADPage() {
         });
 
         const copies = resp?.copies ?? [];
-        if (!Array.isArray(copies) || copies.length === 0) throw new Error("문구 응답 비어있음");
+        if (!Array.isArray(copies) || copies.length === 0)
+          throw new Error("문구 응답 비어있음");
 
         setCopyResponse(resp);
         setSelectedCopyId(resp?.recommendedCopyId || copies[0].id);
@@ -358,9 +414,13 @@ export default function ADPage() {
       if (!selectedGuide || !selectedCopy) return;
       if (!attachedFile) return;
 
-      const selectedProduct = productImages.find((x) => String(x.id) === String(selectedProductImageId));
+      const selectedProduct = productImages.find(
+        (x) => String(x.id) === String(selectedProductImageId),
+      );
       if (!selectedProduct?.meta) {
-        console.error("선택된 제품 이미지 meta가 없습니다. preview 응답(meta 포함) 확인 필요");
+        console.error(
+          "선택된 제품 이미지 meta가 없습니다. preview 응답(meta 포함) 확인 필요",
+        );
         return;
       }
 
