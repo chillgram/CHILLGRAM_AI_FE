@@ -122,10 +122,11 @@ export default function ProductAdStatusPage() {
               variant="primary"
               size="sm"
               onClick={() => setActiveTab(tab)}
-              className={`rounded-xl transition-all border ${activeTab === tab
-                ? "bg-[#60A5FA] border-[#60A5FA] shadow-md"
-                : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                }`}
+              className={`rounded-xl transition-all border ${
+                activeTab === tab
+                  ? "bg-[#60A5FA] border-[#60A5FA] shadow-md"
+                  : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+              }`}
             >
               {tab}
             </Button>
@@ -159,75 +160,89 @@ export default function ProductAdStatusPage() {
                 <tbody>
                   {isProjectsLoading && (
                     <tr>
-                      <td colSpan="5" className="py-20 text-center text-gray-400 text-sm">
+                      <td
+                        colSpan="5"
+                        className="py-20 text-center text-gray-400 text-sm"
+                      >
                         로딩 중...
                       </td>
                     </tr>
                   )}
                   {isProjectsError && (
                     <tr>
-                      <td colSpan="5" className="py-20 text-center text-red-400 text-sm">
+                      <td
+                        colSpan="5"
+                        className="py-20 text-center text-red-400 text-sm"
+                      >
                         프로젝트 목록을 불러오지 못했습니다.
                       </td>
                     </tr>
                   )}
-                  {!isProjectsLoading && !isProjectsError && filteredProjects.length === 0 && (
-                    <tr>
-                      <td colSpan="5" className="py-20 text-center text-gray-400 text-sm">
-                        아직 생성된 프로젝트가 없습니다.
-                      </td>
-                    </tr>
-                  )}
-                  {!isProjectsLoading && !isProjectsError && filteredProjects.map((project) => (
-                    <tr
-                      key={project.id}
-                      onClick={() => {
-                        const detailPath =
-                          project.type === "design"
-                            ? `./projectDesignDetail/${project.id}`
-                            : `./projectAdDetail/${project.id}`;
-                        navigate(detailPath, {
-                          state: { projectName: project.title },
-                        });
-                      }}
-                      className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer group"
-                    >
-                      <td className="py-6 px-4 whitespace-nowrap">
-                        <span
-                          className={`inline-block px-3 py-1.5 rounded-lg text-[10px] font-black ${project.type === "ad"
-                            ? "bg-purple-50 text-purple-600"
-                            : "bg-blue-50 text-blue-600"
-                            }`}
+                  {!isProjectsLoading &&
+                    !isProjectsError &&
+                    filteredProjects.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan="5"
+                          className="py-20 text-center text-gray-400 text-sm"
                         >
-                          {project.badge}
-                        </span>
-                      </td>
-                      <td className="py-6 px-4">
-                        <div className="text-base font-bold text-[#111827] group-hover:text-blue-500 transition-colors">
-                          {project.title}
-                        </div>
-                      </td>
-                      <td className="py-6 px-4 whitespace-nowrap">
-                        <div className="flex items-center gap-1.5 text-gray-500 text-sm font-bold">
-                          <ImageIcon size={14} className="text-gray-400" />
-                          {project.contentCount}개
-                        </div>
-                      </td>
-                      <td className="py-6 px-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2 text-gray-400 text-sm font-medium">
-                          <Calendar size={14} /> {project.date}
-                        </div>
-                      </td>
-                      <td className="py-6 px-4 whitespace-nowrap">
-                        <div className="flex justify-center">
-                          <button className="flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black hover:bg-blue-100 transition-all active:scale-95">
-                            <Eye size={14} />
-                            상세보기
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                          아직 생성된 프로젝트가 없습니다.
+                        </td>
+                      </tr>
+                    )}
+                  {!isProjectsLoading &&
+                    !isProjectsError &&
+                    filteredProjects.map((project) => (
+                      <tr
+                        key={project.id}
+                        onClick={() => {
+                          const detailPath =
+                            project.type === "design"
+                              ? `./projectDesignDetail/${project.id}`
+                              : `./projectAdDetail/${project.id}`;
+                          navigate(detailPath, {
+                            state: { projectName: project.title },
+                          });
+                        }}
+                        className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer group"
+                      >
+                        <td className="py-6 px-4 whitespace-nowrap">
+                          <span
+                            className={`inline-block px-3 py-1.5 rounded-lg text-[10px] font-black ${
+                              project.type === "ad"
+                                ? "bg-purple-50 text-purple-600"
+                                : "bg-blue-50 text-blue-600"
+                            }`}
+                          >
+                            {project.badge}
+                          </span>
+                        </td>
+                        <td className="py-6 px-4">
+                          <div className="text-base font-bold text-[#111827] group-hover:text-blue-500 transition-colors">
+                            {project.title}
+                          </div>
+                        </td>
+                        <td className="py-6 px-4 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5 text-gray-500 text-sm font-bold">
+                            <ImageIcon size={14} className="text-gray-400" />
+                            {project.contentCount}개
+                          </div>
+                        </td>
+                        <td className="py-6 px-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2 text-gray-400 text-sm font-medium">
+                            <Calendar size={14} /> {project.date}
+                          </div>
+                        </td>
+                        <td className="py-6 px-4 whitespace-nowrap">
+                          <div className="flex justify-center">
+                            <button className="flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black hover:bg-blue-100 transition-all active:scale-95">
+                              <Eye size={14} />
+                              상세보기
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

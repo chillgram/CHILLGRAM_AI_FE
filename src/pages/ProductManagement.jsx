@@ -52,14 +52,19 @@ export default function ProductManagementPage() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["products", page], // 페이지 변경 시 재조회
-    queryFn: () => fetchProducts({ page, size: pageSize }),
+    queryKey: ["products"], // 페이지 파라미터 제외 (전체 데이터 가져오기)
+    queryFn: () => fetchProducts({ page: 0, size: 1000 }), // 충분히 큰 사이즈로 조회
     enabled: bootstrapped,
-    keepPreviousData: true, // 로딩 중 깜빡임 방지
   });
 
   const products = productsData?.content || [];
-  const totalPages = productsData?.totalPages || 1; // 전체 페이지 수
+
+  // 삭제된 제품(marker: "0" 또는 이름 없음) 제외한 목록
+  const nonDeletedProducts = products.filter((p) => {
+    const name = p.name?.trim();
+    // 이름이 "0"이거나 빈 문자열인 경우, 또는 status가 0인 경우 삭제된 것으로 간주
+    return name !== "0" && name !== "" && p.status !== 0 && p.status !== "0";
+  });
 
   // 제품의 활성 상태 확인 (API 응답 필드 사용)
   const isProductActive = (product) => {
@@ -67,30 +72,32 @@ export default function ProductManagementPage() {
   };
 
   // 2. 통계 데이터 조회
-  const { data: statsData } = useQuery({
-    queryKey: ["productStats"],
-    queryFn: fetchProductStats,
-    enabled: bootstrapped,
-    retry: false,
-  });
+  // 2. 통계 데이터 조회 (API 대신 클라이언트 데이터 사용으로 변경)
+  // const { data: statsData } = useQuery({
+  //   queryKey: ["productStats"],
+  //   queryFn: fetchProductStats,
+  //   enabled: bootstrapped,
+  //   retry: false,
+  // });
 
   // 상단 통계 수치
+  // 상단 통계 수치 (보이는 데이터 기준)
   const stats = [
     {
       title: "전체 제품",
-      value: statsData?.totalCount ?? products.length,
+      value: nonDeletedProducts.length,
       icon: Package,
       color: "text-blue-500",
     },
     {
       title: "활성 제품",
-      value: statsData?.activeCount ?? products.filter((p) => isProductActive(p)).length,
+      value: nonDeletedProducts.filter((p) => isProductActive(p)).length,
       icon: CheckCircle,
       color: "text-green-500",
     },
     {
       title: "비활성 제품",
-      value: statsData?.inactiveCount ?? products.filter((p) => !isProductActive(p)).length,
+      value: nonDeletedProducts.filter((p) => !isProductActive(p)).length,
       icon: XCircle,
       color: "text-gray-400",
     },
@@ -137,9 +144,8 @@ export default function ProductManagementPage() {
     },
   });
 
-  // 검색 및 탭에 따른 필터링 로직
-  const filteredProducts = products.filter((product) => {
-    const productId = product.productId || product.product_id || product.id;
+  // 검색 및 탭에 따른 필터링 로직 (전체)
+  const filteredProductsBase = nonDeletedProducts.filter((product) => {
     const matchesSearch = product.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
@@ -154,14 +160,22 @@ export default function ProductManagementPage() {
     return matchesSearch && matchesTab;
   });
 
+  // 클라이언트 사이드 페이지네이션 적용
+  const totalPages = Math.ceil(filteredProductsBase.length / pageSize) || 1;
+  const filteredProducts = filteredProductsBase.slice(
+    page * pageSize,
+    (page + 1) * pageSize,
+  );
+
   const handleEditOpen = (e, product) => {
     e.stopPropagation();
     setSelectedProduct(product);
     setIsEditModalOpen(true);
   };
 
-  const handleDelete = (e, id) => {
+  const handleDelete = (e, product) => {
     e.stopPropagation();
+    const id = product.productId || product.product_id || product.id;
     if (confirm("정말로 이 제품을 삭제하시겠습니까?")) {
       deleteMutation.mutate(id);
     }
@@ -363,7 +377,10 @@ export default function ProductManagementPage() {
                                 <Edit2 size={18} />
                               </button>
                               <button
-                                onClick={(e) => handleDelete(e, productId)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(e, product);
+                                }}
                                 className="text-red-400 hover:text-red-500 transition-colors"
                               >
                                 <Trash2 size={18} />
@@ -373,16 +390,18 @@ export default function ProductManagementPage() {
                         </tr>
                       );
                     })}
-                  {!isLoading && !isError && filteredProducts.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan="7"
-                        className="py-20 text-center text-gray-400 text-sm"
-                      >
-                        검색 결과가 없습니다
-                      </td>
-                    </tr>
-                  )}
+                  {!isLoading &&
+                    !isError &&
+                    filteredProductsBase.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan="7"
+                          className="py-20 text-center text-gray-400 text-sm"
+                        >
+                          검색 결과가 없습니다
+                        </td>
+                      </tr>
+                    )}
                 </tbody>
               </table>
             </div>
@@ -399,10 +418,11 @@ export default function ProductManagementPage() {
                 {Array.from({ length: totalPages }, (_, i) => (
                   <button
                     key={i}
-                    className={`h-8 w-8 rounded-lg text-sm font-bold transition-all ${i === page
-                      ? "bg-[#60A5FA] text-white shadow-sm"
-                      : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
-                      }`}
+                    className={`h-8 w-8 rounded-lg text-sm font-bold transition-all ${
+                      i === page
+                        ? "bg-[#60A5FA] text-white shadow-sm"
+                        : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+                    }`}
                     onClick={() => setPage(i)}
                   >
                     {i + 1}
@@ -410,7 +430,9 @@ export default function ProductManagementPage() {
                 ))}
                 <button
                   className="h-8 w-8 rounded-lg border border-gray-200 bg-white text-gray-500 disabled:opacity-50 hover:bg-gray-50 flex items-center justify-center transition-colors"
-                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  onClick={() =>
+                    setPage((p) => Math.min(totalPages - 1, p + 1))
+                  }
                   disabled={page === totalPages - 1}
                 >
                   &gt;
