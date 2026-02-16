@@ -36,9 +36,9 @@ export function Header() {
   };
 
   const user = useAuthStore((s) => s.user);
-  const isAdmin = 
-    // true || // 개발용! 이 줄 주석 해제하면 관리자 모드 강제 적용 됩니다
-    user?.role === "ADMIN" || 
+  const isAdmin =
+    true || // 개발용! 이 줄 주석 해제하면 관리자 모드 강제 적용 됩니다
+    user?.role === "ADMIN" ||
     user?.email === "admin@chillgram.com";
 
   const links = [
@@ -60,7 +60,7 @@ export function Header() {
 
   const handleLogout = async () => {
     await logoutApi(); // refresh 쿠키 무효화
-    logout();          // accessToken 메모리 제거
+    logout(); // accessToken 메모리 제거
     alert("로그아웃 되었습니다.");
   };
 
