@@ -44,14 +44,14 @@ export function Header() {
   const links = [
     ...(isAdmin
       ? [
-          {
-            label: "관리자 대시보드",
-            href: "/admin",
-          },
-        ]
+        {
+          label: "관리자",
+          href: "/admin",
+        },
+      ]
       : []),
     {
-      label: isAdmin ? "운영자 대시보드" : "대시보드",
+      label: isAdmin ? "운영자" : "대시보드",
       href: isAuthenticated ? "/dashboard" : "#",
       onClick: handleDashboardClick,
     },
