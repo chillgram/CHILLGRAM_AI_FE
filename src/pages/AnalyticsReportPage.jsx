@@ -312,37 +312,6 @@ export default function AnalyticsReportPage() {
     }
   };
 
-  // API 연결 테스트 핸들러 (분석/크롤러 엔드포인트 체크)
-  const checkApiStatus = async () => {
-    try {
-      // 분석 요청 테스트 (잘못된 ID를 보내서 연결 여부만 확인)
-      const res = await apiFetch("/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product_id: "test_connection" }),
-      });
-
-      if (
-        res.ok ||
-        res.status === 400 ||
-        res.status === 404 ||
-        res.status === 500
-      ) {
-        // 400/404/500이 뜬다는 건 서버 엔드포인트에 도달했다는 뜻
-        const contentType = res.headers.get("content-type");
-        alert(
-          `✅ 분석 서버 연결 확인됨!\n경로: /api/analyze\n응답 코드: ${res.status}\n응답 타입: ${contentType}`,
-        );
-      } else {
-        alert(`⚠️ 서버 연결 불안정\n상태 코드: ${res.status}`);
-      }
-    } catch (error) {
-      alert(
-        `❌ 서버 연결 실패: ${error.message}\n백엔드 주소나 프록시 설정을 확인해주세요.`,
-      );
-    }
-  };
-
   // 분석 시작 요청 핸들러
   const handleStartAnalysis = async (isForce = false) => {
     const product = products.find((p) => {
@@ -433,12 +402,6 @@ export default function AnalyticsReportPage() {
               광고 성과를 분석하고 리포트를 다운로드하세요
             </p>
           </div>
-          <Button
-            onClick={checkApiStatus}
-            className="text-sm font-bold bg-gray-800 hover:bg-gray-700 h-12"
-          >
-            🔌 API 연결 테스트
-          </Button>
         </div>
 
         {/* 상단 통계 카드 */}
@@ -619,7 +582,17 @@ export default function AnalyticsReportPage() {
                   >
                     <option value="">제품을 선택하세요</option>
                     {products
-                      .filter((p) => p.reviewUrl)
+                      .filter((p) => {
+                        // 0으로 바꾼 거 안나오게
+                        const name = p.name?.trim();
+                        return (
+                          p.reviewUrl &&
+                          name !== "0" &&
+                          name !== "" &&
+                          p.status !== 0 &&
+                          p.status !== "0"
+                        );
+                      })
                       .map((product) => {
                         // 쿠팡 URL에서 실제 상품 ID 추출 (예: .../products/6062866109 -> 6062866109)
                         const urlIdMatch =
@@ -727,14 +700,6 @@ export default function AnalyticsReportPage() {
                               className="bg-blue-600 text-white hover:bg-blue-700 w-full py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2"
                             >
                               <Sparkles size={18} /> 분석 리포트 생성 요청하기
-                            </Button>
-
-                            <Button
-                              onClick={() => handleStartAnalysis(true)}
-                              variant="ghost"
-                              className="text-red-500 hover:text-red-700 font-bold text-xs py-2 underline"
-                            >
-                              작업이 멈췄나요? 강제 재분석 시작
                             </Button>
                           </div>
                         </div>
