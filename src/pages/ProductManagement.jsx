@@ -372,7 +372,8 @@ export default function ProductManagementPage() {
                             <div className="flex justify-center gap-2">
                               <button
                                 onClick={(e) => handleEditOpen(e, product)}
-                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                                className="h-9 w-9 flex items-center justify-center rounded-lg border border-gray-100 bg-gray-50 text-gray-400 hover:bg-white hover:text-blue-500 hover:border-blue-200 hover:shadow-sm transition-all active:scale-90"
+                                title="수정"
                               >
                                 <Edit2 size={18} />
                               </button>
@@ -381,7 +382,8 @@ export default function ProductManagementPage() {
                                   e.stopPropagation();
                                   handleDelete(e, product);
                                 }}
-                                className="text-red-400 hover:text-red-500 transition-colors"
+                                className="h-9 w-9 flex items-center justify-center rounded-lg border border-red-50 bg-red-50 text-red-400 hover:bg-white hover:text-red-600 hover:border-red-200 hover:shadow-sm transition-all active:scale-90"
+                                title="삭제"
                               >
                                 <Trash2 size={18} />
                               </button>
