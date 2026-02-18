@@ -99,7 +99,7 @@ export default function ProductManagementPage() {
       title: "비활성 제품",
       value: nonDeletedProducts.filter((p) => !isProductActive(p)).length,
       icon: XCircle,
-      color: "text-gray-400",
+      color: "text-red-500",
     },
   ];
 
@@ -217,7 +217,7 @@ export default function ProductManagementPage() {
                 </div>
                 <stat.icon
                   size={35}
-                  className="text-blue-400 shrink-0"
+                  className={`${stat.color} shrink-0`}
                   strokeWidth={2}
                 />
               </Card>
@@ -518,6 +518,7 @@ function ProductModal({
         <div className="space-y-5">
           <Field
             label="제품명"
+            required={true}
             placeholder="프리미엄 초콜릿"
             value={formData.name}
             onChange={(val) => setFormData({ ...formData, name: val })}
@@ -526,6 +527,7 @@ function ProductModal({
 
           <Field
             label="카테고리"
+            required={true}
             placeholder="초콜릿"
             value={formData.category}
             onChange={(val) => setFormData({ ...formData, category: val })}
@@ -562,8 +564,8 @@ function ProductModal({
               variant="primary"
               size="sm"
               onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="rounded-lg hover:bg-blue-500 shadow-sm transition-all disabled:opacity-50"
+              disabled={isSubmitting || !formData.name.trim() || !formData.category.trim()}
+              className="rounded-lg hover:bg-blue-500 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "처리 중..." : confirmLabel}
             </Button>

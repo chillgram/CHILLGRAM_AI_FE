@@ -56,14 +56,92 @@ const lineData = [
   { name: "일", 조회수: 1800, 클릭: 520, 전환: 65 },
 ];
 
-const barData = [
-  { name: "1월", 매출: 4500, 광고비: 2100 },
-  { name: "2월", 매출: 5200, 광고비: 2400 },
-  { name: "3월", 매출: 6100, 광고비: 2800 },
-  { name: "4월", 매출: 5800, 광고비: 2500 },
-  { name: "5월", 매출: 6800, 광고비: 2900 },
-  { name: "6월", 매출: 7800, 광고비: 3200 },
-];
+const TREND_DATA_URLS = {
+  // Use proxy for JSON to avoid CORS during fetch
+  json: "/trend-data/chillgram-trend-data/results/latest/trend_keywords.json",
+  pdf: "https://storage.googleapis.com/chillgram-trend-data/results/latest/trend_report.pdf",
+  chart: "https://storage.googleapis.com/chillgram-trend-data/results/latest/charts/01_top20_keywords.png",
+};
+
+const FALLBACK_TREND_DATA = {
+  "analysis_date": "2026-02-18",
+  "updated_at": "2026-02-18 15:12:44",
+  "count": 8,
+  "keywords": [
+    {
+      "rank": 1,
+      "keyword": "말차",
+      "extended_keyword": "말차 과자",
+      "category": "트렌드맛·원료",
+      "trend": "상승",
+      "score": 0.946,
+      "reason": "트렌드 ^ 상승 + 최근급증 + Google급상승(0.7)"
+    },
+    {
+      "rank": 2,
+      "keyword": "명절",
+      "extended_keyword": "명절 선물",
+      "category": "시즌·이벤트",
+      "trend": "안정",
+      "score": 0.913,
+      "reason": "트렌드 -> 안정 + 최근급증 + Google급상승(0.8) + 네이버급상승(0.8)"
+    },
+    {
+      "rank": 3,
+      "keyword": "캐릭터",
+      "extended_keyword": "캐릭터 디자인",
+      "category": "비주얼·감성",
+      "trend": "상승",
+      "score": 0.91,
+      "reason": "트렌드 ^ 상승 + 최근급증"
+    },
+    {
+      "rank": 4,
+      "keyword": "칼로리",
+      "extended_keyword": "칼로리",
+      "category": "건강·가치소비",
+      "trend": "안정",
+      "score": 0.85,
+      "reason": "트렌드 -> 안정 + 최근급증"
+    },
+    {
+      "rank": 5,
+      "keyword": "패키지",
+      "extended_keyword": "패키지 디자인",
+      "category": "소재·구조",
+      "trend": "상승",
+      "score": 0.91,
+      "reason": "트렌드 ^ 상승 + 최근급증"
+    },
+    {
+      "rank": 6,
+      "keyword": "초콜릿",
+      "extended_keyword": "두바이 초콜릿",
+      "category": "트렌드맛·원료",
+      "trend": "시즌",
+      "score": 0.898,
+      "reason": "트렌드 ~ 시즌 + 최근급증 + Google급상승(0.7)"
+    },
+    {
+      "rank": 7,
+      "keyword": "치즈",
+      "extended_keyword": "치즈",
+      "category": "트렌드맛·원료",
+      "trend": "안정",
+      "score": 0.85,
+      "reason": "트렌드 -> 안정 + 최근급증"
+    },
+    {
+      "rank": 8,
+      "keyword": "미니",
+      "extended_keyword": "미니 두바이",
+      "category": "비주얼·감성",
+      "trend": "안정",
+      "score": 0.85,
+      "reason": "트렌드 -> 안정 + 최근급증"
+    }
+  ]
+};
 
 export default function AnalyticsReportPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -83,6 +161,36 @@ export default function AnalyticsReportPage() {
   const [analysisStatus, setAnalysisStatus] = useState("idle"); // idle, requesting, processing, completed, failed
   const [lastCheckTime, setLastCheckTime] = useState(null);
   const [statusMessage, setStatusMessage] = useState("");
+
+  // Trend Data state
+  const [trendKeywords, setTrendKeywords] = useState([]);
+  const [isLoadingTrend, setIsLoadingTrend] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "트렌드 분석") {
+      setIsLoadingTrend(true);
+      fetch(TREND_DATA_URLS.json)
+        .then((res) => {
+          if (!res.ok) throw new Error("Network response was not ok");
+          return res.json();
+        })
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setTrendKeywords(data);
+          } else if (data && data.keywords && Array.isArray(data.keywords)) {
+            setTrendKeywords(data.keywords);
+          } else if (data && typeof data === 'object') {
+            const possibleArray = Object.values(data).find(v => Array.isArray(v));
+            setTrendKeywords(possibleArray || []);
+          }
+        })
+        .catch((err) => {
+          console.warn("Using fallback data due to fetch error:", err);
+          setTrendKeywords(FALLBACK_TREND_DATA.keywords);
+        })
+        .finally(() => setIsLoadingTrend(false));
+    }
+  }, [activeTab]);
 
   const bootstrapped = useAuthStore((s) => s.bootstrapped);
 
@@ -409,7 +517,7 @@ export default function AnalyticsReportPage() {
           {stats.map((stat, i) => (
             <Card
               key={i}
-              className="flex flex-col justify-between border-gray-200 shadow-sm p-4 h-32"
+              className="flex flex-col justify-between border-gray-200 shadow-sm p-4 h-32 bg-white"
             >
               <div className="flex justify-between items-start">
                 <span className="text-xs font-bold text-[#9CA3AF]">
@@ -440,11 +548,10 @@ export default function AnalyticsReportPage() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3 rounded-xl transition-all ${
-                activeTab === tab
-                  ? "bg-white shadow-md text-black"
-                  : "text-[#9CA3AF] hover:text-black"
-              }`}
+              className={`px-6 py-3 rounded-xl transition-all ${activeTab === tab
+                ? "bg-white shadow-md text-black"
+                : "text-[#9CA3AF] hover:text-black"
+                }`}
             >
               {tab}
             </button>
@@ -523,46 +630,98 @@ export default function AnalyticsReportPage() {
 
           {activeTab === "트렌드 분석" && (
             <Card className="p-6 border-gray-200 shadow-sm">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-xl font-black">월별 매출 & ROI 트렌드</h3>
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h3 className="text-xl font-black text-gray-900">최신 트렌드 키워드 분석</h3>
+                  <p className="text-gray-500 font-medium text-sm mt-1">
+                    실시간 소셜 데이터를 기반으로 한 Top 20 키워드 및 상세 분석
+                  </p>
+                </div>
                 <Button
-                  onClick={handleDownloadPDF}
+                  onClick={() => window.open(TREND_DATA_URLS.pdf, "_blank")}
                   className="bg-[#FFBB28] text-white hover:brightness-95 shadow-sm"
                   size="sm"
                 >
-                  <FileText size={16} className="mr-1" /> PDF 다운로드
+                  <FileText size={16} className="mr-1" /> PDF 리포트 보기
                 </Button>
               </div>
-              <p className="text-[#9CA3AF] font-medium mb-10">
-                최근 6개월간의 매출, 광고비 추이
-              </p>
-              <ErrorBoundary>
-                <div className="h-[320px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={barData}>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        vertical={false}
-                        stroke="#F0F0F0"
-                      />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                      <YAxis axisLine={false} tickLine={false} />
-                      <Tooltip cursor={{ fill: "#F9FAFB" }} />
-                      <Legend wrapperStyle={{ paddingTop: "20px" }} />
-                      <Bar
-                        dataKey="매출"
-                        fill="#9CA3AF"
-                        radius={[4, 4, 0, 0]}
-                      />
-                      <Bar
-                        dataKey="광고비"
-                        fill="#4B5563"
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
+
+              <div className="flex flex-col gap-12">
+                {/* Chart Image Section */}
+                <div className="rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 p-6 flex items-center justify-center min-h-[400px]">
+                  <img
+                    src={TREND_DATA_URLS.chart}
+                    alt="Top 20 Keywords Chart"
+                    className="w-full h-auto object-contain max-h-[600px] hover:scale-[1.01] transition-transform duration-300 shadow-sm"
+                  />
                 </div>
-              </ErrorBoundary>
+
+                {/* Keywords List Section */}
+                <div className="flex flex-col w-full">
+                  <div className="flex items-center gap-3 mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                    <TrendingUp className="text-blue-600" size={24} />
+                    <div>
+                      <h4 className="text-xl font-bold text-gray-900">급상승 키워드 목록</h4>
+                      <p className="text-sm text-blue-600 font-medium mt-1">실시간 트렌드 분석 결과 순위</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {isLoadingTrend ? (
+                      <div className="col-span-full flex items-center justify-center h-40">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                      </div>
+                    ) : trendKeywords.length > 0 ? (
+                      trendKeywords.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between p-5 bg-white rounded-xl border border-gray-100 hover:border-blue-400 hover:shadow-md transition-all group"
+                        >
+                          <div className="flex items-center gap-4">
+                            <span className={`
+                                flex items-center justify-center w-10 h-10 rounded-xl font-black text-lg shadow-sm
+                                ${idx === 0 ? 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-400' :
+                                idx === 1 ? 'bg-slate-100 text-slate-700 ring-1 ring-slate-400' :
+                                  idx === 2 ? 'bg-orange-100 text-orange-700 ring-1 ring-orange-400' :
+                                    'bg-gray-50 text-gray-500 border border-gray-200'}
+                              `}>
+                              {idx + 1}
+                            </span>
+                            <div>
+                              <span className="font-bold text-gray-900 text-xl group-hover:text-blue-600 transition-colors block">
+                                {item.keyword || item.term || item}
+                              </span>
+                              {(item.category || item.extended_keyword) && (
+                                <span className="text-xs text-gray-400 font-medium mt-0.5 block">
+                                  {item.category || item.extended_keyword}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          {(item.score || item.count) && (
+                            <div className="flex flex-col items-end gap-1">
+                              <div className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
+                                {Number(item.score || item.count).toFixed(3)}
+                              </div>
+                              {item.trend && (
+                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${item.trend === '상승' ? 'bg-red-50 text-red-500' :
+                                  item.trend === '안정' ? 'bg-green-50 text-green-500' : 'bg-gray-50 text-gray-500'
+                                  }`}>
+                                  {item.trend}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-full text-center py-12 text-gray-400 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                        데이터를 불러올 수 없습니다.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </Card>
           )}
 
@@ -600,8 +759,8 @@ export default function AnalyticsReportPage() {
                         const extractedId = urlIdMatch
                           ? urlIdMatch[1]
                           : product.productId ||
-                            product.product_id ||
-                            product.id;
+                          product.product_id ||
+                          product.id;
                         const uniqueKey =
                           product.productId || product.product_id || product.id;
                         return (
@@ -634,48 +793,48 @@ export default function AnalyticsReportPage() {
                     {(isLoadingPdf ||
                       analysisStatus === "processing" ||
                       analysisStatus === "requesting") && (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 z-10 w-full h-full p-8 text-center">
-                        <div className="relative mb-6">
-                          <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-100 border-t-blue-600"></div>
-                          <Sparkles
-                            className="absolute inset-0 m-auto text-blue-400 animate-pulse"
-                            size={24}
-                          />
-                        </div>
-                        <h4 className="text-xl font-bold text-gray-900 mb-2">
-                          {analysisStatus === "processing"
-                            ? "리포트를 분석하고 있습니다"
-                            : "리포트를 불러오는 중"}
-                        </h4>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 z-10 w-full h-full p-8 text-center">
+                          <div className="relative mb-6">
+                            <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-100 border-t-blue-600"></div>
+                            <Sparkles
+                              className="absolute inset-0 m-auto text-blue-400 animate-pulse"
+                              size={24}
+                            />
+                          </div>
+                          <h4 className="text-xl font-bold text-gray-900 mb-2">
+                            {analysisStatus === "processing"
+                              ? "리포트를 분석하고 있습니다"
+                              : "리포트를 불러오는 중"}
+                          </h4>
 
-                        <p className="text-gray-500 font-medium max-w-xs mx-auto text-sm mb-8 mt-4">
-                          AI가 리뷰 데이터를 꼼꼼히 분석하고 있습니다. <br />
-                          완료되면 자동으로 화면에 표시됩니다.
-                        </p>
-
-                        {lastCheckTime && (
-                          <p className="text-[10px] text-gray-400 mb-6">
-                            최근 확인 시간: {lastCheckTime.toLocaleTimeString()}
+                          <p className="text-gray-500 font-medium max-w-xs mx-auto text-sm mb-8 mt-4">
+                            AI가 리뷰 데이터를 꼼꼼히 분석하고 있습니다. <br />
+                            완료되면 자동으로 화면에 표시됩니다.
                           </p>
-                        )}
 
-                        <div className="flex flex-col gap-2 w-full max-w-[200px]">
-                          <Button
-                            onClick={handleCancelAnalysis}
-                            variant="ghost"
-                            className="text-xs text-gray-400 hover:text-red-500 hover:bg-red-50 underline py-1"
-                          >
-                            분석 취소
-                          </Button>
-                        </div>
+                          {lastCheckTime && (
+                            <p className="text-[10px] text-gray-400 mb-6">
+                              최근 확인 시간: {lastCheckTime.toLocaleTimeString()}
+                            </p>
+                          )}
 
-                        <div className="mt-8 flex gap-2">
-                          <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                          <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                          <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                          <div className="flex flex-col gap-2 w-full max-w-[200px]">
+                            <Button
+                              onClick={handleCancelAnalysis}
+                              variant="ghost"
+                              className="text-xs text-gray-400 hover:text-red-500 hover:bg-red-50 underline py-1"
+                            >
+                              분석 취소
+                            </Button>
+                          </div>
+
+                          <div className="mt-8 flex gap-2">
+                            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {!isLoadingPdf &&
                       analysisStatus !== "processing" &&

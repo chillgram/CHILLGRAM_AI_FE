@@ -1,6 +1,7 @@
 ﻿import { useMemo, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 
 import StepProgress from "@/components/common/StepProgress";
 import ADStepLayout from "@/components/layout/ADStepLayout";
@@ -542,111 +543,130 @@ export default function ADPage() {
   const isLoadingCopies = USE_COPY_API ? copyMutation.isPending : false;
   const isCreating = saveLogMutation.isPending || createMutation.isPending; // ✅ Update loading state
 
+  const loadingMessage = useMemo(() => {
+    if (currentStep === 1 && USE_GUIDE_API && isLoadingGuides) return "가이드 생성 중...";
+    if (currentStep === 2 && USE_COPY_API && isLoadingCopies) return "광고 문구 생성 중...";
+    if (currentStep === 3 && isLoadingPreviewImages) return "제품 이미지 AI 생성 중...";
+    if (currentStep === 4 && isCreating) return "최종 광고 생성 중...";
+    return null;
+  }, [currentStep, USE_GUIDE_API, isLoadingGuides, USE_COPY_API, isLoadingCopies, isLoadingPreviewImages, isCreating]);
+
   return (
-    <ADStepLayout
-      step={currentStep}
-      onPrev={handlePrev}
-      onNext={handleNext}
-      disableNext={
-        !canProceed() ||
-        (currentStep === 1 && USE_GUIDE_API && isLoadingGuides) ||
-        (currentStep === 2 && USE_COPY_API && isLoadingCopies) ||
-        (currentStep === 3 && isLoadingPreviewImages) ||
-        (currentStep === 4 && isCreating)
-      }
-      nextLabel={
-        currentStep === 3 && isLoadingPreviewImages
-          ? "제품 이미지 생성 중..."
-          : currentStep === 4 && isCreating
-            ? "광고 생성 중..."
-            : currentStep === 4
-              ? "광고 생성 시작"
-              : "다음"
-      }
-    >
-      <div className="mb-6">
-        <h1 className="text-3xl font-black text-[#111827]">
-          AI 광고 생성{productName ? ` · ${productName}` : ""}
-        </h1>
-      </div>
-
-      <StepProgress currentStep={currentStep} steps={STEP_LABELS} />
-
-      <ErrorBoundary>
-        {invalidProductId && currentStep === 1 ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
-            유효하지 않은 productId 입니다. (URL 파라미터를 확인하세요)
+    <>
+      {loadingMessage && (
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center animate-in zoom-in-95 duration-200 min-w-[280px]">
+            <Loader2 className="h-12 w-12 text-blue-500 animate-spin mb-4" />
+            <p className="text-xl font-bold text-gray-900">{loadingMessage}</p>
+            <p className="text-sm text-gray-500 mt-2">잠시만 기다려 주세요...</p>
           </div>
-        ) : null}
+        </div>
+      )}
+      <ADStepLayout
+        step={currentStep}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        disableNext={
+          !canProceed() ||
+          (currentStep === 1 && USE_GUIDE_API && isLoadingGuides) ||
+          (currentStep === 2 && USE_COPY_API && isLoadingCopies) ||
+          (currentStep === 3 && isLoadingPreviewImages) ||
+          (currentStep === 4 && isCreating)
+        }
+        nextLabel={
+          currentStep === 3 && isLoadingPreviewImages
+            ? "제품 이미지 생성 중..."
+            : currentStep === 4 && isCreating
+              ? "광고 생성 중..."
+              : currentStep === 4
+                ? "광고 생성 시작"
+                : "다음"
+        }
+      >
+        <div className="mb-6">
+          <h1 className="text-3xl font-black text-[#111827]">
+            AI 광고 생성{productName ? ` · ${productName}` : ""}
+          </h1>
+        </div>
 
-        {createMutation.isError || saveLogMutation.isError ? ( // ✅ Update Error check
-          <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
-            {(createMutation.error || saveLogMutation.error)?.message || "최종 광고 생성 실패"}
-          </div>
-        ) : null}
+        <StepProgress currentStep={currentStep} steps={STEP_LABELS} />
 
-        {previewError ? (
-          <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
-            {previewError}
-          </div>
-        ) : null}
+        <ErrorBoundary>
+          {invalidProductId && currentStep === 1 ? (
+            <div className="rounded-2xl border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
+              유효하지 않은 productId 입니다. (URL 파라미터를 확인하세요)
+            </div>
+          ) : null}
 
-        {currentStep === 1 && !invalidProductId && (
-          <InfoInputSection
-            productId={productId}
-            adGoal={adGoal}
-            projectTitle={projectTitle}
-            setProjectTitle={setProjectTitle}
-            setAdGoal={setAdGoal}
-            requestText={requestText}
-            setRequestText={setRequestText}
-            selectedKeywords={selectedKeywords}
-            setSelectedKeywords={setSelectedKeywords}
-            adFocus={adFocus}
-            setAdFocus={setAdFocus}
-            attachedFile={attachedFile}
-            setAttachedFile={setAttachedFile}
-            baseDate={baseDate}
-            setBaseDate={setBaseDate}
-          />
-        )}
+          {createMutation.isError || saveLogMutation.isError ? ( // ✅ Update Error check
+            <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
+              {(createMutation.error || saveLogMutation.error)?.message || "최종 광고 생성 실패"}
+            </div>
+          ) : null}
 
-        {currentStep === 2 && (
-          <GuideSelectionSection
-            guides={guideResponse?.guides ?? []}
-            recommendedGuideId={guideResponse?.recommendedGuideId ?? ""}
-            selectedGuideId={selectedGuideId}
-            setSelectedGuideId={setSelectedGuideId}
-            isLoading={isLoadingGuides}
-          />
-        )}
+          {previewError ? (
+            <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
+              {previewError}
+            </div>
+          ) : null}
 
-        {currentStep === 3 && (
-          <CopySelectionSection
-            copies={copyResponse?.copies ?? []}
-            recommendedCopyId={copyResponse?.recommendedCopyId ?? ""}
-            selectedCopyId={selectedCopyId}
-            setSelectedCopyId={setSelectedCopyId}
-            isLoading={isLoadingCopies}
-          />
-        )}
+          {currentStep === 1 && !invalidProductId && (
+            <InfoInputSection
+              productId={productId}
+              adGoal={adGoal}
+              projectTitle={projectTitle}
+              setProjectTitle={setProjectTitle}
+              setAdGoal={setAdGoal}
+              requestText={requestText}
+              setRequestText={setRequestText}
+              selectedKeywords={selectedKeywords}
+              setSelectedKeywords={setSelectedKeywords}
+              adFocus={adFocus}
+              setAdFocus={setAdFocus}
+              attachedFile={attachedFile}
+              setAttachedFile={setAttachedFile}
+              baseDate={baseDate}
+              setBaseDate={setBaseDate}
+            />
+          )}
 
-        {currentStep === 4 && (
-          <ContentGenerationSection
-            contentTypes={AD_CONTENT_TYPE_OPTIONS}
-            tip={CONTENT_TIP}
-            selectedTypes={selectedTypes}
-            setSelectedTypes={setSelectedTypes}
-            bannerSize={bannerSize}
-            setBannerSize={setBannerSize}
-            productImages={productImages}
-            selectedProductImageId={selectedProductImageId}
-            setSelectedProductImageId={setSelectedProductImageId}
-            onRegenerateImages={handleRegenerateImages}
-            isLoadingImages={isLoadingPreviewImages}
-          />
-        )}
-      </ErrorBoundary>
-    </ADStepLayout>
+          {currentStep === 2 && (
+            <GuideSelectionSection
+              guides={guideResponse?.guides ?? []}
+              recommendedGuideId={guideResponse?.recommendedGuideId ?? ""}
+              selectedGuideId={selectedGuideId}
+              setSelectedGuideId={setSelectedGuideId}
+              isLoading={isLoadingGuides}
+            />
+          )}
+
+          {currentStep === 3 && (
+            <CopySelectionSection
+              copies={copyResponse?.copies ?? []}
+              recommendedCopyId={copyResponse?.recommendedCopyId ?? ""}
+              selectedCopyId={selectedCopyId}
+              setSelectedCopyId={setSelectedCopyId}
+              isLoading={isLoadingCopies}
+            />
+          )}
+
+          {currentStep === 4 && (
+            <ContentGenerationSection
+              contentTypes={AD_CONTENT_TYPE_OPTIONS}
+              tip={CONTENT_TIP}
+              selectedTypes={selectedTypes}
+              setSelectedTypes={setSelectedTypes}
+              bannerSize={bannerSize}
+              setBannerSize={setBannerSize}
+              productImages={productImages}
+              selectedProductImageId={selectedProductImageId}
+              setSelectedProductImageId={setSelectedProductImageId}
+              onRegenerateImages={handleRegenerateImages}
+              isLoadingImages={isLoadingPreviewImages}
+            />
+          )}
+        </ErrorBoundary>
+      </ADStepLayout>
+    </>
   );
 }

@@ -13,7 +13,7 @@ export function Field({
   return (
     <label className="block">
       <div className="mb-3 text-sm font-semibold text-black">
-        {label} {required ? <span className="text-black">*</span> : null}
+        {label} {required ? <span className="text-red-500">*</span> : null}
       </div>
 
       <input

@@ -223,8 +223,8 @@ export default function ADResultPage() {
   const filteredResultsBase = useMemo(() => {
     const base = selectedTypes.length
       ? mappedResults.filter((item) =>
-          selectedTypes.includes(TYPE_TITLES[item.type]),
-        )
+        selectedTypes.includes(TYPE_TITLES[item.type]),
+      )
       : mappedResults;
 
     if (activeFilter === "all") return base;
@@ -241,8 +241,8 @@ export default function ADResultPage() {
   const stats = useMemo(() => {
     const base = selectedTypes.length
       ? mappedResults.filter((item) =>
-          selectedTypes.includes(TYPE_TITLES[item.type]),
-        )
+        selectedTypes.includes(TYPE_TITLES[item.type]),
+      )
       : mappedResults;
 
     return Object.keys(TYPE_CONFIG).reduce(
@@ -326,15 +326,15 @@ export default function ADResultPage() {
 
         <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
           <StatCard label="전체" value={stats.total} icon={Sparkles} />
-          <StatCard label="도안" value={stats.design} icon={LayoutGrid} />
+          <StatCard label="도안" value={stats.design} icon={ImageIcon} />
           <StatCard
             label="제품 이미지"
             value={stats.product}
             icon={ImageIcon}
           />
-          <StatCard label="SNS 이미지" value={stats.sns} icon={Share2} />
+          <StatCard label="SNS 이미지" value={stats.sns} icon={ImageIcon} />
           <StatCard label="숏츠" value={stats.shorts} icon={Video} />
-          <StatCard label="배너" value={stats.banner} icon={Megaphone} />
+          <StatCard label="배너" value={stats.banner} icon={ImageIcon} />
         </div>
 
         {/* 결과 섹션 (탭 + 그리드) */}
@@ -356,7 +356,7 @@ export default function ADResultPage() {
           </div>
 
           {/* 데이터 매핑 (백엔드 -> 프론트엔드 UI 형식) */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 items-stretch">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 items-stretch">
             {filteredResults.map((item) => {
               const Icon = TYPE_CONFIG[item.type].icon;
               const isSnsOrShorts =
@@ -370,11 +370,10 @@ export default function ADResultPage() {
                 >
                   {/* 이미지/영상 영역 */}
                   <div
-                    className={`aspect-4/3 w-full flex items-center justify-center relative overflow-hidden ${
-                      isVideo
-                        ? "bg-gray-800"
-                        : "bg-linear-to-br from-[#F9FAFB] to-[#E5E7EB]"
-                    }`}
+                    className={`aspect-4/3 w-full flex items-center justify-center relative overflow-hidden ${isVideo
+                      ? "bg-gray-800"
+                      : "bg-linear-to-br from-[#F9FAFB] to-[#E5E7EB]"
+                      }`}
                   >
                     {item.isGenerating ? (
                       <div className="flex flex-col items-center justify-center p-4 text-center">
@@ -434,11 +433,10 @@ export default function ADResultPage() {
                       </span>
                       {item.platform && (
                         <span
-                          className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold ${
-                            item.platform === "Instagram"
-                              ? "bg-linear-to-r from-pink-100 to-purple-100 text-pink-600"
-                              : "bg-red-100 text-red-600"
-                          }`}
+                          className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold ${item.platform === "Instagram"
+                            ? "bg-linear-to-r from-pink-100 to-purple-100 text-pink-600"
+                            : "bg-red-100 text-red-600"
+                            }`}
                         >
                           {item.platform === "Instagram" ? "📷" : "▶️"}{" "}
                           {item.platform}
@@ -552,7 +550,8 @@ export default function ADResultPage() {
                 </div>
               );
             })}
-            {/* 빈 슬롯 채우기 (항상 10개 카드 높이 유지) */}
+
+            {/* 빈 슬롯 채우기 (항상 8개 카드 높이 유지) */}
             {!isLoading &&
               !isError &&
               Array.from({
@@ -560,17 +559,10 @@ export default function ADResultPage() {
               }).map((_, i) => (
                 <div
                   key={`empty-${i}`}
-                  className="overflow-hidden rounded-2xl border border-dashed border-gray-200 bg-gray-50/30 h-[500px] flex items-center justify-center"
-                >
-                  <div className="text-center">
-                    <p className="text-gray-300 text-sm font-bold">
-                      {filteredResultsBase.length === 0 && i === 4
-                        ? "생성된 콘텐츠가 없습니다."
-                        : ""}
-                    </p>
-                  </div>
-                </div>
+                  className="rounded-2xl border border-transparent h-[500px]"
+                />
               ))}
+
           </div>
 
           {/* 페이지네이션 UI */}
@@ -586,11 +578,10 @@ export default function ADResultPage() {
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i}
-                  className={`h-10 w-10 rounded-xl text-sm font-bold transition-all shadow-sm ${
-                    i === page
-                      ? "bg-[#60A5FA] text-white shadow-blue-500/20"
-                      : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
-                  }`}
+                  className={`h-10 w-10 rounded-xl text-sm font-bold transition-all shadow-sm ${i === page
+                    ? "bg-[#60A5FA] text-white shadow-blue-500/20"
+                    : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
+                    }`}
                   onClick={() => setPage(i)}
                 >
                   {i + 1}
@@ -615,8 +606,8 @@ function StatCard({ label, value, icon: Icon }) {
   return (
     <Card className="relative bg-white border-gray-200 shadow-md hover:shadow-lg hover:border-blue-300 transition-all duration-300 h-24 p-4 flex flex-col justify-end overflow-hidden group">
       {Icon && (
-        <div className="absolute top-3 right-3 p-1.5 bg-blue-50 rounded-xl group-hover:bg-blue-100 transition-colors">
-          <Icon size={16} className="text-blue-400" strokeWidth={2.5} />
+        <div className="absolute top-1/2 -translate-y-1/2 right-4 p-2.5 bg-blue-50 rounded-2xl group-hover:bg-blue-100 transition-colors">
+          <Icon size={24} className="text-blue-500" strokeWidth={2} />
         </div>
       )}
       <div className="flex flex-col text-left">
@@ -636,11 +627,10 @@ function FilterChip({ label, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${
-        active
-          ? "bg-white text-[#111827] shadow-md"
-          : "bg-gray-100 text-[#9CA3AF] hover:text-[#111827]"
-      }`}
+      className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${active
+        ? "bg-white text-[#111827] shadow-md"
+        : "bg-gray-100 text-[#9CA3AF] hover:text-[#111827]"
+        }`}
     >
       {label}
     </button>

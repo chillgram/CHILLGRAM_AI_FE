@@ -270,7 +270,7 @@ export default function QnAPage() {
             <div className="mt-5 grid gap-4 md:grid-cols-3">
               <ErrorBoundary>
                 {statCards.map((stat) => (
-                  <Card key={stat.label} className="border-gray-100 border shadow-sm">
+                  <Card key={stat.label} className="border-gray-100 border-2 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="text-lg font-medium text-gray-500">
                         {stat.label}
@@ -372,7 +372,7 @@ export default function QnAPage() {
                       to={`/qna/${question.questionId || question.id}`}
                       className="block group"
                     >
-                      <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-sm transition-all hover:border-primary/50 hover:shadow-md">
+                      <div className="rounded-2xl border-2 border-gray-300 bg-white p-5 shadow-sm transition-all hover:border-primary hover:shadow-md">
                         <div className="flex flex-wrap items-center gap-2 text-xs">
                           <span className="rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1 text-gray-600 font-medium">
                             {question.categoryLabel}
@@ -383,13 +383,13 @@ export default function QnAPage() {
                             {question.statusLabel}
                           </span>
                         </div>
-                        <h3 className="mt-4 text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
+                        <h3 className="mt-1 text-lg font-bold text-gray-900 group-hover:text-primary transition-colors">
                           {question.title}
                         </h3>
                         <p className="mt-2 line-clamp-2 text-sm text-gray-500">
                           {question.excerpt}
                         </p>
-                        <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-gray-400">
+                        <div className="mt-3 flex flex-wrap items-center justify-end gap-3 text-sm text-gray-400">
                           <span className="flex items-center gap-1.5">
                             <User size={16} className="text-gray-300" />
                             {question.authorLabel}
