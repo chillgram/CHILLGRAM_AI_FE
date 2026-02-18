@@ -59,8 +59,28 @@ const lineData = [
 const TREND_DATA_URLS = {
   // Use proxy for JSON to avoid CORS during fetch
   json: "/trend-data/chillgram-trend-data/results/latest/trend_keywords.json",
-  pdf: "https://storage.googleapis.com/chillgram-trend-data/results/latest/trend_report.pdf",
-  chart: "https://storage.googleapis.com/chillgram-trend-data/results/latest/charts/01_top20_keywords.png",
+  charts: [
+    {
+      title: "트렌드 키워드 TOP 20",
+      url: "https://storage.googleapis.com/chillgram-trend-data/results/latest/charts/01_top20_keywords.png"
+    },
+    {
+      title: "카테고리 분포",
+      url: "https://storage.googleapis.com/chillgram-trend-data/results/latest/charts/02_category_distribution.png"
+    },
+    {
+      title: "트렌드 방향 분포",
+      url: "https://storage.googleapis.com/chillgram-trend-data/results/latest/charts/03_trend_direction.png"
+    },
+    {
+      title: "워드 클라우드",
+      url: "https://storage.googleapis.com/chillgram-trend-data/results/latest/charts/04_wordcloud.png"
+    },
+    {
+      title: "월별 빈도 변화 추이",
+      url: "https://storage.googleapis.com/chillgram-trend-data/results/latest/charts/05_monthly_frequency.png"
+    }
+  ]
 };
 
 const FALLBACK_TREND_DATA = {
@@ -634,29 +654,14 @@ export default function AnalyticsReportPage() {
                 <div>
                   <h3 className="text-xl font-black text-gray-900">최신 트렌드 키워드 분석</h3>
                   <p className="text-gray-500 font-medium text-sm mt-1">
-                    실시간 소셜 데이터를 기반으로 한 Top 20 키워드 및 상세 분석
+                    실시간 소셜 데이터를 기반으로 한 Top 20 키워드 및 상세 분석 리포트
                   </p>
                 </div>
-                <Button
-                  onClick={() => window.open(TREND_DATA_URLS.pdf, "_blank")}
-                  className="bg-[#FFBB28] text-white hover:brightness-95 shadow-sm"
-                  size="sm"
-                >
-                  <FileText size={16} className="mr-1" /> PDF 리포트 보기
-                </Button>
               </div>
 
               <div className="flex flex-col gap-12">
-                {/* Chart Image Section */}
-                <div className="rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 p-6 flex items-center justify-center min-h-[400px]">
-                  <img
-                    src={TREND_DATA_URLS.chart}
-                    alt="Top 20 Keywords Chart"
-                    className="w-full h-auto object-contain max-h-[600px] hover:scale-[1.01] transition-transform duration-300 shadow-sm"
-                  />
-                </div>
 
-                {/* Keywords List Section */}
+                {/* 1. Keywords List Section (Moved to Top) */}
                 <div className="flex flex-col w-full">
                   <div className="flex items-center gap-3 mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
                     <TrendingUp className="text-blue-600" size={24} />
@@ -705,7 +710,7 @@ export default function AnalyticsReportPage() {
                               </div>
                               {item.trend && (
                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${item.trend === '상승' ? 'bg-red-50 text-red-500' :
-                                  item.trend === '안정' ? 'bg-green-50 text-green-500' : 'bg-gray-50 text-gray-500'
+                                    item.trend === '안정' ? 'bg-green-50 text-green-500' : 'bg-gray-50 text-gray-500'
                                   }`}>
                                   {item.trend}
                                 </span>
@@ -721,6 +726,26 @@ export default function AnalyticsReportPage() {
                     )}
                   </div>
                 </div>
+
+                {/* 2. Charts Section (Displayed Below) */}
+                <div className="grid grid-cols-1 gap-12">
+                  {TREND_DATA_URLS.charts.map((chart, index) => (
+                    <div key={index} className="flex flex-col gap-4">
+                      <div className="flex items-center gap-2 mb-2 px-2">
+                        <BarChart3 className="text-gray-400" size={20} />
+                        <h4 className="text-lg font-bold text-gray-800">{chart.title}</h4>
+                      </div>
+                      <div className="rounded-2xl overflow-hidden border border-gray-100 bg-white p-6 flex items-center justify-center min-h-[400px] shadow-sm hover:shadow-md transition-shadow">
+                        <img
+                          src={chart.url}
+                          alt={chart.title}
+                          className="w-full h-auto object-contain max-h-[600px]"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
               </div>
             </Card>
           )}

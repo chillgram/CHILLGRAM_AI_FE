@@ -495,7 +495,21 @@ function ProductModal({
   const isEdit = !!initialData;
 
   const handleSubmit = () => {
-    onSubmit(formData);
+    // 폼 데이터 복사
+    let finalData = { ...formData };
+
+    // 쿠팡 URL 자동 변환 로직
+    // 예: https://www.coupang.com/vp/products/8279317023?itemId=...
+    // -> https://storage.googleapis.com/chillgram-deploy-analysis-pdfs/pdfs/8279317023/latest.pdf
+    if (finalData.reviewUrl && finalData.reviewUrl.includes("coupang.com")) {
+      const match = finalData.reviewUrl.match(/\/products\/(\d+)/);
+      if (match && match[1]) {
+        const extractedId = match[1];
+        finalData.reviewUrl = `https://storage.googleapis.com/chillgram-deploy-analysis-pdfs/pdfs/${extractedId}/latest.pdf`;
+      }
+    }
+
+    onSubmit(finalData);
   };
 
   return (

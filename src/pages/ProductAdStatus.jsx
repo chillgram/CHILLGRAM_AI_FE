@@ -136,10 +136,10 @@ export default function ProductAdStatusPage() {
                     <th className="py-5 font-bold text-gray-400 text-xs px-4 w-[55%]">
                       프로젝트명
                     </th>
-                    <th className="py-5 font-bold text-gray-400 text-xs px-4 w-[12%] whitespace-nowrap">
+                    <th className="py-5 font-bold text-gray-400 text-xs px-4 text-center w-[12%] whitespace-nowrap">
                       콘텐츠 수
                     </th>
-                    <th className="py-5 font-bold text-gray-400 text-xs px-4 w-[18%] whitespace-nowrap">
+                    <th className="py-5 font-bold text-gray-400 text-xs px-4 text-center w-[18%] whitespace-nowrap">
                       등록일
                     </th>
                     <th className="py-5 font-bold text-gray-400 text-xs px-4 text-center w-[15%] whitespace-nowrap">
@@ -189,14 +189,14 @@ export default function ProductAdStatusPage() {
                             {project.title}
                           </div>
                         </td>
-                        <td className="py-6 px-4 whitespace-nowrap">
-                          <div className="flex items-center gap-1.5 text-gray-500 text-sm font-bold">
+                        <td className="py-6 px-4 text-center whitespace-nowrap">
+                          <div className="flex items-center justify-center gap-1.5 text-gray-500 text-sm font-bold">
                             <ImageIcon size={14} className="text-gray-400" />
                             {project.contentCount}개
                           </div>
                         </td>
-                        <td className="py-6 px-4 whitespace-nowrap">
-                          <div className="flex items-center gap-2 text-gray-400 text-sm font-medium">
+                        <td className="py-6 px-4 text-center whitespace-nowrap">
+                          <div className="flex items-center justify-center gap-2 text-gray-400 text-sm font-medium">
                             <Calendar size={14} /> {project.date}
                           </div>
                         </td>
