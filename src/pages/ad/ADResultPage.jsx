@@ -40,7 +40,6 @@ const TYPE_TITLES = {
   banner: "배너 이미지 AI",
 };
 
-
 export default function ADResultPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -94,7 +93,11 @@ export default function ADResultPage() {
     : "AI가 생성한 다양한 광고 및 도안 콘텐츠를 확인하세요.";
 
   // 1. 실제 데이터 조회
-  const { data: realResults = [], isLoading, isError } = useQuery({
+  const {
+    data: realResults = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["projectContents", projectId],
     queryFn: () => fetchProjectContentsWithAssets(projectId),
     enabled: !!projectId,
@@ -175,7 +178,9 @@ export default function ADResultPage() {
       if (!job) return;
 
       // 이미 DB 결과에 포함된 것이라면 패스 (outputUri 등으로 체크 가능하지만 여기선 jobId로 간단히)
-      const exists = dbResults.some((c) => String(c.id).includes(String(job.jobId)));
+      const exists = dbResults.some((c) =>
+        String(c.id).includes(String(job.jobId)),
+      );
       if (exists) return;
 
       if (job.status === "SUCCEEDED" && job.outputUri) {
@@ -218,8 +223,8 @@ export default function ADResultPage() {
   const filteredResultsBase = useMemo(() => {
     const base = selectedTypes.length
       ? mappedResults.filter((item) =>
-        selectedTypes.includes(TYPE_TITLES[item.type]),
-      )
+          selectedTypes.includes(TYPE_TITLES[item.type]),
+        )
       : mappedResults;
 
     if (activeFilter === "all") return base;
@@ -236,8 +241,8 @@ export default function ADResultPage() {
   const stats = useMemo(() => {
     const base = selectedTypes.length
       ? mappedResults.filter((item) =>
-        selectedTypes.includes(TYPE_TITLES[item.type]),
-      )
+          selectedTypes.includes(TYPE_TITLES[item.type]),
+        )
       : mappedResults;
 
     return Object.keys(TYPE_CONFIG).reduce(
@@ -275,21 +280,34 @@ export default function ADResultPage() {
               {headerDesc}
             </p>
           </div>
-          {/* 새 광고 생성 버튼 */}
-          <Button
-            onClick={() =>
-              navigate(
-                isProjectDetailMode
-                  ? `/dashboard/products/${productId}/addAD`
-                  : "./../",
-              )
-            }
-            variant="primary"
-            className="px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95 text-sm"
-          >
-            <PlusCircle className="h-4 w-4" />{" "}
-            {isProjectDetailMode ? "광고 생성" : "새 광고 생성"}
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              onClick={() =>
+                navigate(
+                  `/dashboard/products/${productId}/addPackage?projectId=${projectId}`,
+                )
+              }
+              variant="secondary"
+              className="px-6 py-3 rounded-xl font-bold flex items-center gap-2 border border-blue-100 text-blue-600 bg-blue-50 hover:bg-blue-100 transition-all active:scale-95 text-sm"
+            >
+              <LayoutGrid className="h-4 w-4" /> 도안 생성
+            </Button>
+            {/* 새 광고 생성 버튼 */}
+            <Button
+              onClick={() =>
+                navigate(
+                  isProjectDetailMode
+                    ? `/dashboard/products/${productId}/addAD`
+                    : "./../",
+                )
+              }
+              variant="primary"
+              className="px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95 text-sm"
+            >
+              <PlusCircle className="h-4 w-4" />{" "}
+              {isProjectDetailMode ? "광고 생성" : "새 광고 생성"}
+            </Button>
+          </div>
         </div>
 
         {/* 광고 생성 완료 배너 (프로젝트 상세에서는 숨김) */}
@@ -341,7 +359,8 @@ export default function ADResultPage() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 items-stretch">
             {filteredResults.map((item) => {
               const Icon = TYPE_CONFIG[item.type].icon;
-              const isSnsOrShorts = item.type === "sns" || item.type === "shorts";
+              const isSnsOrShorts =
+                item.type === "sns" || item.type === "shorts";
               const isVideo = item.type === "shorts";
 
               return (
@@ -351,28 +370,37 @@ export default function ADResultPage() {
                 >
                   {/* 이미지/영상 영역 */}
                   <div
-                    className={`aspect-4/3 w-full flex items-center justify-center relative overflow-hidden ${isVideo
-                      ? "bg-gray-800"
-                      : "bg-linear-to-br from-[#F9FAFB] to-[#E5E7EB]"
-                      }`}
+                    className={`aspect-4/3 w-full flex items-center justify-center relative overflow-hidden ${
+                      isVideo
+                        ? "bg-gray-800"
+                        : "bg-linear-to-br from-[#F9FAFB] to-[#E5E7EB]"
+                    }`}
                   >
                     {item.isGenerating ? (
                       <div className="flex flex-col items-center justify-center p-4 text-center">
                         <Loader2 className="h-10 w-10 animate-spin text-blue-500" />
                         <p className="mt-2 text-sm font-bold text-blue-500 animate-pulse">
-                          {item.type === "design" ? "AI 도안 생성 중..." : "AI 콘텐츠 생성 중..."}
+                          {item.type === "design"
+                            ? "AI 도안 생성 중..."
+                            : "AI 콘텐츠 생성 중..."}
                         </p>
                         {!isVideo && (
-                          <p className="mt-1 text-[10px] text-gray-400">잠시만 기다려 주세요.</p>
+                          <p className="mt-1 text-[10px] text-gray-400">
+                            잠시만 기다려 주세요.
+                          </p>
                         )}
                         {isVideo && (
-                          <p className="text-[10px] text-gray-500">(최대 10분)</p>
+                          <p className="text-[10px] text-gray-500">
+                            (최대 10분)
+                          </p>
                         )}
                       </div>
                     ) : item.isFailed ? (
                       <div className="flex flex-col items-center justify-center p-4 text-center">
                         <AlertCircle className="h-10 w-10 text-red-400" />
-                        <p className="mt-2 text-sm font-bold text-red-400">생성 실패</p>
+                        <p className="mt-2 text-sm font-bold text-red-400">
+                          생성 실패
+                        </p>
                         <p className="mt-1 text-[10px] text-gray-400 line-clamp-2">
                           {item.description}
                         </p>
@@ -406,10 +434,11 @@ export default function ADResultPage() {
                       </span>
                       {item.platform && (
                         <span
-                          className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold ${item.platform === "Instagram"
-                            ? "bg-linear-to-r from-pink-100 to-purple-100 text-pink-600"
-                            : "bg-red-100 text-red-600"
-                            }`}
+                          className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold ${
+                            item.platform === "Instagram"
+                              ? "bg-linear-to-r from-pink-100 to-purple-100 text-pink-600"
+                              : "bg-red-100 text-red-600"
+                          }`}
                         >
                           {item.platform === "Instagram" ? "📷" : "▶️"}{" "}
                           {item.platform}
@@ -492,7 +521,8 @@ export default function ADResultPage() {
                         <>
                           <button
                             onClick={() => {
-                              if (item.imageUrl) window.open(item.imageUrl, "_blank");
+                              if (item.imageUrl)
+                                window.open(item.imageUrl, "_blank");
                             }}
                             className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-30"
                             disabled={!item.imageUrl}
@@ -523,20 +553,24 @@ export default function ADResultPage() {
               );
             })}
             {/* 빈 슬롯 채우기 (항상 10개 카드 높이 유지) */}
-            {!isLoading && !isError &&
-              Array.from({ length: Math.max(0, pageSize - filteredResults.length) }).map((_, i) => (
+            {!isLoading &&
+              !isError &&
+              Array.from({
+                length: Math.max(0, pageSize - filteredResults.length),
+              }).map((_, i) => (
                 <div
                   key={`empty-${i}`}
                   className="overflow-hidden rounded-2xl border border-dashed border-gray-200 bg-gray-50/30 h-[500px] flex items-center justify-center"
                 >
                   <div className="text-center">
                     <p className="text-gray-300 text-sm font-bold">
-                      {filteredResultsBase.length === 0 && i === 4 ? "생성된 콘텐츠가 없습니다." : ""}
+                      {filteredResultsBase.length === 0 && i === 4
+                        ? "생성된 콘텐츠가 없습니다."
+                        : ""}
                     </p>
                   </div>
                 </div>
-              ))
-            }
+              ))}
           </div>
 
           {/* 페이지네이션 UI */}
@@ -552,10 +586,11 @@ export default function ADResultPage() {
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i}
-                  className={`h-10 w-10 rounded-xl text-sm font-bold transition-all shadow-sm ${i === page
-                    ? "bg-[#60A5FA] text-white shadow-blue-500/20"
-                    : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
-                    }`}
+                  className={`h-10 w-10 rounded-xl text-sm font-bold transition-all shadow-sm ${
+                    i === page
+                      ? "bg-[#60A5FA] text-white shadow-blue-500/20"
+                      : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
+                  }`}
                   onClick={() => setPage(i)}
                 >
                   {i + 1}
@@ -601,10 +636,11 @@ function FilterChip({ label, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${active
-        ? "bg-white text-[#111827] shadow-md"
-        : "bg-gray-100 text-[#9CA3AF] hover:text-[#111827]"
-        }`}
+      className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${
+        active
+          ? "bg-white text-[#111827] shadow-md"
+          : "bg-gray-100 text-[#9CA3AF] hover:text-[#111827]"
+      }`}
     >
       {label}
     </button>

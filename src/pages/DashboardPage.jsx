@@ -37,19 +37,19 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
           <StatItem
             title="진행 중 프로젝트"
-            value="3"
+            value="8"
             icon={LayoutGrid}
             color="text-blue-500"
           />
           <StatItem
             title="생성된 광고"
-            value="12"
+            value="18"
             icon={ImageIcon}
             color="text-green-500"
           />
           <StatItem
             title="SNS 게시 수"
-            value="24"
+            value="10"
             icon={TrendingUp}
             color="text-purple-500"
           />
