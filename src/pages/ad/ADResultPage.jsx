@@ -115,8 +115,10 @@ export default function ADResultPage() {
 
   const projectTitleFromApi = useMemo(() => {
     if (!projectList) return null;
-    const list = Array.isArray(projectList) ? projectList : (projectList.content || []);
-    const found = list.find(p => String(p.id) === String(projectId));
+    const list = Array.isArray(projectList)
+      ? projectList
+      : projectList.content || [];
+    const found = list.find((p) => String(p.id) === String(projectId));
     return found?.title || found?.name;
   }, [projectList, projectId]);
 
@@ -124,21 +126,36 @@ export default function ADResultPage() {
   const mappedResults = useMemo(() => {
     // 0. 방금 생성된 결과 (location.state)
     const tempResults = [];
+    // Case A: 광고 생성 결과
     if (location.state?.selectedCopy && location.state?.selectedProductImage) {
       const sc = location.state.selectedCopy;
       const si = location.state.selectedProductImage;
-      // 기본적으로 'sns' 타입으로 간주
+      // 기본적으로 'sns' 타입으로 간주 (UI 호환성)
       tempResults.push({
-        id: "temp-new",
+        id: "temp-new-ad",
         type: "sns",
-        title: sc.title || sc.concept || "새 광고",
+        title: sc.concept || sc.title || "새 광고",
         description: sc.finalCopy || sc.body || "방금 생성된 광고입니다.",
         date: new Date().toISOString().split("T")[0],
-        status: "활성", // 이미 생성 완료된 것으로 간주
-        platform: "Instagram", // or derived from state
+        status: "활성",
+        platform: "Instagram",
         imageUrl: si.url,
         isNew: true,
         stats: { views: 0, likes: 0, shares: 0 },
+      });
+    }
+
+    // Case B: 도안(Mockup) 생성 결과 (개발용 이미지 등 ARCHIVED 상태 대비)
+    if (location.state?.newMockup) {
+      tempResults.push({
+        id: "temp-new-mockup",
+        type: "design",
+        title: "방금 생성된 도안",
+        description: "패키지 도안 생성이 완료되었습니다.",
+        date: new Date().toISOString().split("T")[0],
+        status: "활성",
+        imageUrl: location.state.newMockup.url,
+        isNew: true,
       });
     }
 
@@ -168,9 +185,15 @@ export default function ADResultPage() {
       // Heuristic fallback based on title if type is default or ambiguous
       if (item.title) {
         if (item.title.includes("배너")) type = "banner";
-        else if (item.title.includes("SNS") || item.title.includes("인스타그램")) type = "sns";
-        else if (item.title.includes("숏츠") || item.title.includes("영상")) type = "shorts";
-        else if (item.title.includes("도안") || item.title.includes("패키지")) type = "design";
+        else if (
+          item.title.includes("SNS") ||
+          item.title.includes("인스타그램")
+        )
+          type = "sns";
+        else if (item.title.includes("숏츠") || item.title.includes("영상"))
+          type = "shorts";
+        else if (item.title.includes("도안") || item.title.includes("패키지"))
+          type = "design";
       }
 
       return {
@@ -241,14 +264,14 @@ export default function ADResultPage() {
       }
     });
 
-    return [...pollingResults, ...dbResults];
+    return [...tempResults, ...pollingResults, ...dbResults];
   }, [realResults, jobQueries]);
 
   const filteredResultsBase = useMemo(() => {
     const base = selectedTypes.length
       ? mappedResults.filter((item) =>
-        selectedTypes.includes(TYPE_TITLES[item.type]),
-      )
+          selectedTypes.includes(TYPE_TITLES[item.type]),
+        )
       : mappedResults;
 
     if (activeFilter === "all") return base;
@@ -265,8 +288,8 @@ export default function ADResultPage() {
   const stats = useMemo(() => {
     const base = selectedTypes.length
       ? mappedResults.filter((item) =>
-        selectedTypes.includes(TYPE_TITLES[item.type]),
-      )
+          selectedTypes.includes(TYPE_TITLES[item.type]),
+        )
       : mappedResults;
 
     return Object.keys(TYPE_CONFIG).reduce(
@@ -377,13 +400,19 @@ export default function ADResultPage() {
             {/* ✅ Manual Refresh Button */}
             <button
               onClick={() => {
-                queryClient.invalidateQueries({ queryKey: ["projectContents", projectId] });
-                queryClient.invalidateQueries({ queryKey: ["project", projectId] });
+                queryClient.invalidateQueries({
+                  queryKey: ["projectContents", projectId],
+                });
+                queryClient.invalidateQueries({
+                  queryKey: ["project", projectId],
+                });
               }}
               className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-colors"
               title="새로고침"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`}
+              />
               <span>새로고침</span>
             </button>
           </div>
@@ -391,13 +420,19 @@ export default function ADResultPage() {
           {/* 데이터 매핑 (백엔드 -> 프론트엔드 UI 형식) */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 items-stretch">
             {/* ✅ "Initializing..." State: Created but list empty yet */}
-            {(!isLoading && filteredResults.length === 0 && location.state?.created) && (
-              <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
-                <Loader2 className="h-12 w-12 animate-spin text-blue-500 mb-4" />
-                <h3 className="text-xl font-bold text-gray-900">프로젝트 생성 중...</h3>
-                <p className="text-gray-500 mt-2">AI가 콘텐츠를 생성하고 있습니다. 잠시만 기다려 주세요.</p>
-              </div>
-            )}
+            {!isLoading &&
+              filteredResults.length === 0 &&
+              location.state?.created && (
+                <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
+                  <Loader2 className="h-12 w-12 animate-spin text-blue-500 mb-4" />
+                  <h3 className="text-xl font-bold text-gray-900">
+                    프로젝트 생성 중...
+                  </h3>
+                  <p className="text-gray-500 mt-2">
+                    AI가 콘텐츠를 생성하고 있습니다. 잠시만 기다려 주세요.
+                  </p>
+                </div>
+              )}
 
             {filteredResults.map((item) => {
               const Icon = TYPE_CONFIG[item.type].icon;
@@ -412,10 +447,11 @@ export default function ADResultPage() {
                 >
                   {/* 이미지/영상 영역 */}
                   <div
-                    className={`aspect-4/3 w-full flex items-center justify-center relative overflow-hidden ${isVideo
-                      ? "bg-gray-800"
-                      : "bg-linear-to-br from-[#F9FAFB] to-[#E5E7EB]"
-                      }`}
+                    className={`aspect-4/3 w-full flex items-center justify-center relative overflow-hidden ${
+                      isVideo
+                        ? "bg-gray-800"
+                        : "bg-linear-to-br from-[#F9FAFB] to-[#E5E7EB]"
+                    }`}
                   >
                     {item.isGenerating ? (
                       <div className="flex flex-col items-center justify-center p-4 text-center">
@@ -475,10 +511,11 @@ export default function ADResultPage() {
                       </span>
                       {item.platform && (
                         <span
-                          className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold ${item.platform === "Instagram"
-                            ? "bg-linear-to-r from-pink-100 to-purple-100 text-pink-600"
-                            : "bg-red-100 text-red-600"
-                            }`}
+                          className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold ${
+                            item.platform === "Instagram"
+                              ? "bg-linear-to-r from-pink-100 to-purple-100 text-pink-600"
+                              : "bg-red-100 text-red-600"
+                          }`}
                         >
                           {item.platform === "Instagram" ? "📷" : "▶️"}{" "}
                           {item.platform}
@@ -604,7 +641,6 @@ export default function ADResultPage() {
                   className="rounded-2xl border border-transparent h-[500px]"
                 />
               ))}
-
           </div>
 
           {/* 페이지네이션 UI */}
@@ -620,10 +656,11 @@ export default function ADResultPage() {
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i}
-                  className={`h-10 w-10 rounded-xl text-sm font-bold transition-all shadow-sm ${i === page
-                    ? "bg-[#60A5FA] text-white shadow-blue-500/20"
-                    : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
-                    }`}
+                  className={`h-10 w-10 rounded-xl text-sm font-bold transition-all shadow-sm ${
+                    i === page
+                      ? "bg-[#60A5FA] text-white shadow-blue-500/20"
+                      : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
+                  }`}
                   onClick={() => setPage(i)}
                 >
                   {i + 1}
@@ -669,10 +706,11 @@ function FilterChip({ label, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${active
-        ? "bg-white text-[#111827] shadow-md"
-        : "bg-gray-100 text-[#9CA3AF] hover:text-[#111827]"
-        }`}
+      className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${
+        active
+          ? "bg-white text-[#111827] shadow-md"
+          : "bg-gray-100 text-[#9CA3AF] hover:text-[#111827]"
+      }`}
     >
       {label}
     </button>
