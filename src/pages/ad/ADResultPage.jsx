@@ -161,12 +161,34 @@ export default function ADResultPage() {
 
     // 1. DB에서 가져온 실제 결과 매핑
     const dbResults = realResults.map((item) => {
+      if (!item) return null; // Safety check
       const assets = item.assets || [];
       const primaryAsset =
         assets.find((a) => a.assetType === "PRIMARY") || assets[0] || {};
 
-      const imageUrl =
-        primaryAsset.fileUrl || primaryAsset.file_url || primaryAsset.url;
+      let imageUrl =
+        primaryAsset.fileUrl || primaryAsset.file_url || primaryAsset.url ||
+        item.gcsImgUrl || item.mockupImgUrl || item.fileUrl || item.file_url || item.url; // Fallback to item-level properties
+
+      // ✅ Fix: Prepend Backend URL if relative path
+      if (imageUrl && !imageUrl.startsWith("http") && !imageUrl.startsWith("blob:")) {
+        imageUrl = `http://35.190.71.4${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`;
+      }
+
+      // ✅ Video URL Extraction
+      let videoUrl = item.gcsVideoUrl || item.videoUrl || item.video_url;
+      if (!videoUrl) {
+        const videoAsset = assets.find(a => a.assetType === 'VIDEO' || (a.contentType && a.contentType.includes('video')) || (a.fileUrl && a.fileUrl.endsWith('.mp4')));
+        if (videoAsset) {
+          videoUrl = videoAsset.fileUrl || videoAsset.file_url || videoAsset.url;
+        }
+      }
+      if (videoUrl && !videoUrl.startsWith("http") && !videoUrl.startsWith("blob:")) {
+        videoUrl = `http://35.190.71.4${videoUrl.startsWith("/") ? "" : "/"}${videoUrl}`;
+      }
+
+      // Removed crashing debug log (type is not defined here)
+
       const thumbUrl = primaryAsset.thumbUrl || primaryAsset.thumb_url;
 
       let type = "sns"; // Default to sns instead of product
@@ -211,12 +233,11 @@ export default function ADResultPage() {
         },
         imageUrl,
         thumbUrl,
+        videoUrl, // Pass videoUrl to mapped item
         isGenerating:
-          item.status === "GENERATING" ||
-          item.status === "DRAFT" ||
-          (!imageUrl && item.status !== "ACTIVE"),
+          (!imageUrl && !videoUrl && (item.status === "GENERATING" || item.status === "DRAFT" || item.status === "PENDING" || !item.status)),
       };
-    });
+    }).filter(Boolean); // Filter out null items
 
     // 2. 현재 폴링 중인 잡(Job) 결과 합치기 (도안 전용)
     const pollingResults = [];
@@ -241,7 +262,9 @@ export default function ADResultPage() {
           imageUrl: job.outputUri,
           isNew: true,
         });
-      } else if (job.status === "REQUESTED" || job.status === "RUNNING") {
+      }
+      // Running job is handled by DB results (deduplication)
+      /* else if (job.status === "REQUESTED" || job.status === "RUNNING") {
         pollingResults.push({
           id: `job-${job.jobId}`,
           type: "design",
@@ -251,7 +274,7 @@ export default function ADResultPage() {
           status: "생성중",
           isGenerating: true,
         });
-      } else if (job.status === "FAILED") {
+      } */ else if (job.status === "FAILED") {
         pollingResults.push({
           id: `job-${job.jobId}`,
           type: "design",
@@ -270,8 +293,8 @@ export default function ADResultPage() {
   const filteredResultsBase = useMemo(() => {
     const base = selectedTypes.length
       ? mappedResults.filter((item) =>
-          selectedTypes.includes(TYPE_TITLES[item.type]),
-        )
+        selectedTypes.includes(TYPE_TITLES[item.type]),
+      )
       : mappedResults;
 
     if (activeFilter === "all") return base;
@@ -288,8 +311,8 @@ export default function ADResultPage() {
   const stats = useMemo(() => {
     const base = selectedTypes.length
       ? mappedResults.filter((item) =>
-          selectedTypes.includes(TYPE_TITLES[item.type]),
-        )
+        selectedTypes.includes(TYPE_TITLES[item.type]),
+      )
       : mappedResults;
 
     return Object.keys(TYPE_CONFIG).reduce(
@@ -447,11 +470,10 @@ export default function ADResultPage() {
                 >
                   {/* 이미지/영상 영역 */}
                   <div
-                    className={`aspect-4/3 w-full flex items-center justify-center relative overflow-hidden ${
-                      isVideo
-                        ? "bg-gray-800"
-                        : "bg-linear-to-br from-[#F9FAFB] to-[#E5E7EB]"
-                    }`}
+                    className={`aspect-4/3 w-full flex items-center justify-center relative overflow-hidden ${isVideo
+                      ? "bg-gray-800"
+                      : "bg-linear-to-br from-[#F9FAFB] to-[#E5E7EB]"
+                      }`}
                   >
                     {item.isGenerating ? (
                       <div className="flex flex-col items-center justify-center p-4 text-center">
@@ -466,22 +488,25 @@ export default function ADResultPage() {
                             잠시만 기다려 주세요.
                           </p>
                         )}
-                        {isVideo && (
-                          <p className="text-[10px] text-gray-500">
-                            (최대 10분)
-                          </p>
-                        )}
+                        <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-2" />
+                        <span className="text-xs text-gray-500 font-medium">
+                          {String(item.id).includes("job") ? "도안 생성 중..." : "AI 생성 중..."}
+                        </span>
                       </div>
                     ) : item.isFailed ? (
                       <div className="flex flex-col items-center justify-center p-4 text-center">
-                        <AlertCircle className="h-10 w-10 text-red-400" />
-                        <p className="mt-2 text-sm font-bold text-red-400">
-                          생성 실패
-                        </p>
-                        <p className="mt-1 text-[10px] text-gray-400 line-clamp-2">
-                          {item.description}
-                        </p>
+                        <AlertCircle className="h-8 w-8 text-red-400 mb-2" />
+                        <span className="text-xs text-red-500 font-medium">생성 실패</span>
                       </div>
+                    ) : item.videoUrl ? (
+                      // ✅ Video Player
+                      <video
+                        src={item.videoUrl}
+                        controls
+                        className="h-full w-full object-cover"
+                        poster={item.imageUrl}
+                        preload="metadata"
+                      />
                     ) : item.imageUrl ? (
                       <img
                         src={item.imageUrl}
@@ -493,11 +518,11 @@ export default function ADResultPage() {
                     ) : (
                       <FileImage className="h-10 w-10 text-gray-300" />
                     )}
-
+                    {/* ... NEW badge ... */}
                     {item.isNew && (
-                      <div className="absolute top-3 right-3 bg-blue-500 text-white text-[10px] font-black px-2 py-1 rounded-full shadow-lg animate-bounce">
+                      <span className="absolute top-2 right-2 px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full animate-pulse shadow-sm z-10">
                         NEW
-                      </div>
+                      </span>
                     )}
                   </div>
 
@@ -511,11 +536,10 @@ export default function ADResultPage() {
                       </span>
                       {item.platform && (
                         <span
-                          className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold ${
-                            item.platform === "Instagram"
-                              ? "bg-linear-to-r from-pink-100 to-purple-100 text-pink-600"
-                              : "bg-red-100 text-red-600"
-                          }`}
+                          className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold ${item.platform === "Instagram"
+                            ? "bg-linear-to-r from-pink-100 to-purple-100 text-pink-600"
+                            : "bg-red-100 text-red-600"
+                            }`}
                         >
                           {item.platform === "Instagram" ? "📷" : "▶️"}{" "}
                           {item.platform}
@@ -536,10 +560,10 @@ export default function ADResultPage() {
                       📅 {item.date}
                     </p>
 
-                    {/* 설명 */}
-                    <p className="mt-2 text-sm text-teal-600">
+                    {/* 설명 (User requested removal) */}
+                    {/* <p className="mt-2 text-sm text-teal-600">
                       {item.description}
-                    </p>
+                    </p> */}
 
                     {/* SNS/Shorts 통계 */}
                     {isSnsOrShorts && item.stats && (
@@ -656,11 +680,10 @@ export default function ADResultPage() {
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i}
-                  className={`h-10 w-10 rounded-xl text-sm font-bold transition-all shadow-sm ${
-                    i === page
-                      ? "bg-[#60A5FA] text-white shadow-blue-500/20"
-                      : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
-                  }`}
+                  className={`h-10 w-10 rounded-xl text-sm font-bold transition-all shadow-sm ${i === page
+                    ? "bg-[#60A5FA] text-white shadow-blue-500/20"
+                    : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
+                    }`}
                   onClick={() => setPage(i)}
                 >
                   {i + 1}
@@ -706,11 +729,10 @@ function FilterChip({ label, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${
-        active
-          ? "bg-white text-[#111827] shadow-md"
-          : "bg-gray-100 text-[#9CA3AF] hover:text-[#111827]"
-      }`}
+      className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${active
+        ? "bg-white text-[#111827] shadow-md"
+        : "bg-gray-100 text-[#9CA3AF] hover:text-[#111827]"
+        }`}
     >
       {label}
     </button>
