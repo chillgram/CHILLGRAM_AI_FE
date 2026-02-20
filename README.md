@@ -39,28 +39,29 @@ AD Scramble 는 **식품 브랜드를 위한 AI 기반 광고 자동 생성 및 
 
 ```
 src/
-├── api/                  # API 통신 관련 로직
-│   ├── axiosInstance.ts  # Axios 공통 설정 및 인터셉터
-│   └── services/         # 도메인별 API 호출 함수 (auth, post, ai 등)
-├── assets/               # 이미지, 아이콘, 폰트 등 정적 리소스
-├── components/           # UI 컴포넌트
-│   ├── common/           # Button, Input 등 공용 원자 컴포넌트
-│   ├── layout/           # Header, Navbar, Sidebar 등 레이아웃
-│   └── domain/           # 특정 기능 전용 컴포넌트 (PostCard, AiGenerator 등)
-├── constants/            # 에러 메시지, API 경로 등 공통 상수
-├── hooks/                # 커스텀 훅
-│   ├── queries/          # React Query (useQuery, useMutation) 관련 훅
-│   └── useAuth.ts        # 비즈니스 로직 관련 공통 훅
-├── pages/                # 라우팅 단위 페이지 컴포넌트
-│   ├── Home/             # 메인 피드 페이지
-│   ├── Create/           # AI 콘텐츠 생성 페이지
-│   └── Profile/          # 사용자 프로필 페이지
-├── store/                # Zustand 전역 상태 저장소
-│   ├── useAuthStore.ts   # 유저 인증 정보
-│   └── useUiStore.ts     # 모달, 토스트, 테마 등 UI 상태
-├── styles/               # Tailwind Config 및 Global CSS
-├── types/                # TypeScript 인터페이스 및 타입 정의
-└── utils/                # 날짜 포맷, 문자열 조작 등 순수 유틸리티 함수
+├── api/          # API 통신을 위한 기본 설정
+├── app/          # 애플리케이션의 엔트리 포인트 및 전역 Provider 설정
+├── assets/       # 이미지, 아이콘, 폰트 등 정적 리소스 파일
+├── components/   # 재사용 가능한 UI 컴포넌트 계층
+│   ├── auth/       # 인증 관련 컴포넌트
+│   ├── common/     # 공통 UI 요소 (Button, Input 등)
+│   ├── layout/     # 페이지 레이아웃 (Header, Footer 등)
+│   ├── navigation/ # 네비게이션 및 메뉴 관련 컴포넌트
+│   ├── products/   # 제품 관리 및 광고 관련 컴포넌트
+│   └── sns/        # SNS 연동 및 게시 관련 컴포넌트
+├── data/         # Mock 데이터, 상수 설정 및 정적 리스트
+├── hooks/        # 커스텀 훅 (공통 비즈니스 로직 분리)
+├── lib/          # 외부 라이브러리 커스텀 설정 및 래퍼
+├── pages/        # 서비스의 개별 페이지 단위 컴포넌트
+│   ├── ad/         # 광고 생성 및 관리 페이지 그룹
+│   ├── oauth/      # 소셜 로그인 및 인증 페이지 그룹
+│   └── qna/        # 고객 문의 및 Q&A 페이지 그룹
+├── routes/       # 라우팅 경로 정의 및 접근 권한(PrivateRoute) 관리
+├── services/     # 비즈니스 로직 및 서버 상태 관리
+│   ├── api/        # 도메인별 API 호출 함수
+│   └── queries/    # React Query(useQuery, useMutation) 정의
+├── stores/       # Zustand를 활용한 전역 상태 관리 저장소
+└── utils/        # 공통 유틸리티 함수 (포맷팅, 검증 로직 등)
 
 ```
 
