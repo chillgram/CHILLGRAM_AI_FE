@@ -3,6 +3,11 @@ import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
 import FadeInUp from "@/components/common/FadeInUp";
 import { Package, Instagram, Youtube, Wand2, ArrowRight, Leaf, ChefHat, Utensils } from "lucide-react";
+import shortsImg from "@/assets/image/shorts.png";
+import snsImg from "@/assets/image/snsimage.png";
+import bannerImg from "@/assets/image/banner_3x4.png";
+import ex1Img from "@/assets/image/ex1.png";
+import ex2Img from "@/assets/image/ex2.png";
 
 // ... FEATURES and STEPS constants remain same ...
 const FEATURES = [
@@ -189,7 +194,12 @@ export default function HomePage() {
                           </div>
                         </div>
                         <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden relative group-hover:shadow-inner transition-all">
-                          <div className="absolute inset-0 bg-gradient-to-tr from-pink-100/50 to-transparent"></div>
+                          {/* <div className="absolute inset-0 bg-gradient-to-tr from-pink-100/50 to-transparent"></div> */}
+                          <img
+                            src={snsImg}
+                            alt="SNS Content"
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                         <p className="mt-2 text-[10px] text-gray-400 font-medium">SNS 광고 소재</p>
                       </div>
@@ -202,10 +212,17 @@ export default function HomePage() {
                             <span className="text-[10px] font-bold text-gray-500">Shorts</span>
                           </div>
                         </div>
-                        <div className="aspect-square bg-gray-900 rounded-lg flex items-center justify-center text-white relative group-hover:scale-[1.02] transition-transform shadow-md">
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg"></div>
-                          <div className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
-                            <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-0.5"></div>
+                        <div className="aspect-square bg-gray-900 rounded-lg flex items-center justify-center text-white relative group-hover:scale-[1.02] transition-transform shadow-md overflow-hidden">
+                          {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg"></div> */}
+                          <img
+                            src={shortsImg}
+                            alt="Shorts Content"
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
+                              <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-0.5"></div>
+                            </div>
                           </div>
                         </div>
                         <p className="mt-2 text-[10px] text-gray-400 font-medium">숏폼 영상 생성</p>
@@ -247,10 +264,22 @@ export default function HomePage() {
                   </p>
                   <div className="absolute bottom-0 right-0 h-64 w-64 translate-x-12 translate-y-12 rounded-full bg-blue-50 opacity-50 blur-3xl transition-transform group-hover:scale-150"></div>
                   {/* Simulated UI Mockup inside card */}
-                  <div className="mt-8 flex gap-4 overflow-hidden opacity-80">
-                    <div className="h-40 w-32 rounded-xl bg-gray-100 shadow-md transform -rotate-6"></div>
-                    <div className="h-40 w-32 rounded-xl bg-blue-50 shadow-md transform rotate-3"></div>
-                    <div className="h-40 w-32 rounded-xl bg-gray-100 shadow-md transform -rotate-2"></div>
+                  <div className="mt-8 flex gap-4 overflow-hidden opacity-100 justify-center">
+                    <img
+                      src={bannerImg}
+                      alt="Ad Example 1"
+                      className="h-40 w-auto rounded-xl shadow-md transform -rotate-6 object-cover bg-white"
+                    />
+                    <img
+                      src={ex1Img}
+                      alt="Ad Example 2"
+                      className="h-40 w-auto rounded-xl shadow-md transform rotate-3 object-cover bg-white"
+                    />
+                    <img
+                      src={ex2Img}
+                      alt="Ad Example 3"
+                      className="h-40 w-auto rounded-xl shadow-md transform -rotate-2 object-cover bg-white"
+                    />
                   </div>
                 </div>
               </FadeInUp>

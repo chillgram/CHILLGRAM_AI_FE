@@ -1,6 +1,6 @@
 ﻿import { useMemo, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 
 import StepProgress from "@/components/common/StepProgress";
@@ -23,6 +23,8 @@ import {
   fetchJob,
   fetchBasicImageResult,
 } from "@/services/api/ad";
+import { fetchProjectsByProduct } from "@/services/api/projectApi";
+import { fetchProduct } from "@/services/api/productApi";
 
 function pickSelectedGuide(guideResponse, selectedGuideId) {
   const guides = guideResponse?.guides ?? [];
@@ -92,11 +94,23 @@ export default function ADPage() {
     return Number.isFinite(n) ? n : undefined;
   }, [productIdParam]);
 
+  // ✅ Fetch product details from API instead of static list
+  const { data: productData } = useQuery({ // Using useQuery from @tanstack/react-query (imported at top)
+    queryKey: ["product", productId],
+    queryFn: () => fetchProduct(productId),
+    enabled: !!productId,
+  });
+
   const productName = useMemo(() => {
-    if (productId == null) return "";
-    const product = PRODUCTS.find((p) => p.id === productId);
-    return product?.name ?? "";
-  }, [productId]);
+    // 1. Try API data first
+    if (productData?.name) return productData.name;
+    // 2. Fallback to static list (for legacy/demo ids)
+    if (productId != null) {
+      const p = PRODUCTS.find((x) => x.id === productId);
+      if (p?.name) return p.name;
+    }
+    return "";
+  }, [productData, productId]);
 
   const invalidProductId = !(Number.isFinite(productId) && productId > 0);
   const [currentStep, setCurrentStep] = useState(1);
@@ -207,10 +221,11 @@ export default function ADPage() {
     [],
   );
 
+  const queryClient = useQueryClient(); // ✅ Initialize queryClient
   const guideMutation = useMutation({ mutationFn: fetchAdGuides });
   const copyMutation = useMutation({ mutationFn: fetchAdCopies });
   const createMutation = useMutation({ mutationFn: createAdContents });
-  const saveLogMutation = useMutation({ mutationFn: saveAdLog }); // ✅ Log mutation
+  const saveLogMutation = useMutation({ mutationFn: saveAdLog });
 
   // ✅ BASIC 프리뷰 생성
   const generateProductImages = useCallback(async () => {
@@ -513,27 +528,59 @@ export default function ADPage() {
         },
       };
 
-      // ✅ Use saveAdLog instead of createAdContents for logging
+      // ✅ Use createAdContents (FormData) to trigger actual generation
       try {
-        const logData = {
-          finalCopy: payload.selectedCopy,
-          guideline: payload.selectedGuide,
-          selectionReason: "User Selected", // or add input for reason
-          // Add other metadata if backend allows extra fields, otherwise keep minimal
-          productId: payload.productId, // Just in case, though URL param covers it
-        };
+        const formData = new FormData();
+        formData.append("payload", JSON.stringify(payload));
 
-        const logResult = await saveLogMutation.mutateAsync({
+        if (attachedFile) {
+          formData.append("file", attachedFile);
+        }
+
+        const result = await createMutation.mutateAsync({
           productId,
-          data: logData
+          formData
         });
 
-        // Navigate to result page (Legacy support: passing full payload)
-        navigate("./result", { state: { ...payload, logResult, created: { success: true } } });
+        // ✅ Invalidate queries to update lists immediately
+        queryClient.invalidateQueries({ queryKey: ["projects", productId] });
+
+        // Navigate to ProjectAdDetail page if ID is available
+        // Result usually has { id, ... } or { projectId, ... }
+        let targetProjectId = result?.projectId || result?.id || result?.project_id || result?.data?.id;
+
+        if (!targetProjectId) {
+          try {
+            console.warn("Project ID missing in result, fetching latest project for product:", productId);
+            const projects = await fetchProjectsByProduct(productId);
+            const list = Array.isArray(projects) ? projects : (projects?.content || []);
+            if (list.length > 0) {
+              const sorted = list.sort((a, b) => {
+                const idA = a.id || a.projectId || 0;
+                const idB = b.id || b.projectId || 0;
+                return idB - idA;
+              });
+              targetProjectId = sorted[0].id || sorted[0].projectId;
+            }
+          } catch (e) {
+            console.error("Failed to fetch projects for fallback:", e);
+          }
+        }
+
+        if (targetProjectId) {
+          // Pre-invalidate contents for the new project
+          queryClient.invalidateQueries({ queryKey: ["projectContents", targetProjectId] });
+
+          navigate(`/dashboard/products/${productId}/projectAdDetail/${targetProjectId}`, {
+            state: { ...payload, result, created: { success: true } }
+          });
+        } else {
+          console.warn("Project ID still missing after fallback. Navigating to temporary result.");
+          navigate("./result", { state: { ...payload, result, created: { success: true } } });
+        }
 
       } catch (e) {
-        console.error("Failed to save ad log:", e);
-        // Optionally fallback to createAdContents or just show error
+        console.error("Failed to create ad contents:", e);
       }
       return;
     }

@@ -1,8 +1,9 @@
 ﻿import { useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useQuery, useQueries } from "@tanstack/react-query";
+import { useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
 import { fetchProjectContentsWithAssets } from "@/services/api/contentApi";
 import { fetchJob } from "@/services/api/ad";
+import { fetchProjectsByProduct } from "@/services/api/projectApi";
 import {
   BadgeCheck,
   Download,
@@ -17,6 +18,7 @@ import {
   LayoutGrid,
   AlertCircle,
   Loader2,
+  RefreshCw,
 } from "lucide-react";
 
 import Container from "@/components/common/Container";
@@ -26,7 +28,6 @@ import Button from "../../components/common/Button";
 
 const TYPE_CONFIG = {
   design: { label: "도안", icon: LayoutGrid },
-  product: { label: "제품 이미지", icon: ImageIcon },
   sns: { label: "SNS 이미지", icon: Share2 },
   shorts: { label: "숏츠", icon: Video },
   banner: { label: "배너", icon: Megaphone },
@@ -44,6 +45,7 @@ export default function ADResultPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { projectId, productId } = useParams();
+  const queryClient = useQueryClient();
 
   const [page, setPage] = useState(0);
   const pageSize = 10;
@@ -101,7 +103,22 @@ export default function ADResultPage() {
     queryKey: ["projectContents", projectId],
     queryFn: () => fetchProjectContentsWithAssets(projectId),
     enabled: !!projectId,
+    refetchInterval: 120000, // ✅ Poll every 2 minutes (Requested by User)
   });
+
+  // 2. 프로젝트 정보 조회 (제목 표시용) - 404 해결을 위해 목록에서 조회
+  const { data: projectList } = useQuery({
+    queryKey: ["projects", productId],
+    queryFn: () => fetchProjectsByProduct(productId),
+    enabled: !!productId,
+  });
+
+  const projectTitleFromApi = useMemo(() => {
+    if (!projectList) return null;
+    const list = Array.isArray(projectList) ? projectList : (projectList.content || []);
+    const found = list.find(p => String(p.id) === String(projectId));
+    return found?.title || found?.name;
+  }, [projectList, projectId]);
 
   // 데이터 매핑 (백엔드 -> 프론트엔드 UI 형식)
   const mappedResults = useMemo(() => {
@@ -110,12 +127,11 @@ export default function ADResultPage() {
     if (location.state?.selectedCopy && location.state?.selectedProductImage) {
       const sc = location.state.selectedCopy;
       const si = location.state.selectedProductImage;
-      // 기본적으로 'product' 타입으로 간주 (또는 bannerSize 있으면 banner 등 로직 추가 가능)
-      // 여기서는 심플하게 P-Shot 결과로 가정
+      // 기본적으로 'sns' 타입으로 간주
       tempResults.push({
         id: "temp-new",
-        type: "product",
-        title: sc.concept || sc.title || "새 광고",
+        type: "sns",
+        title: sc.title || sc.concept || "새 광고",
         description: sc.finalCopy || sc.body || "방금 생성된 광고입니다.",
         date: new Date().toISOString().split("T")[0],
         status: "활성", // 이미 생성 완료된 것으로 간주
@@ -136,7 +152,7 @@ export default function ADResultPage() {
         primaryAsset.fileUrl || primaryAsset.file_url || primaryAsset.url;
       const thumbUrl = primaryAsset.thumbUrl || primaryAsset.thumb_url;
 
-      let type = "product";
+      let type = "sns"; // Default to sns instead of product
       const contentType = (
         item.contentType ||
         item.content_type ||
@@ -148,6 +164,14 @@ export default function ADResultPage() {
       else if (contentType === "DESIGN") type = "design";
       else if (contentType === "SNS" || item.platform === "Instagram")
         type = "sns";
+
+      // Heuristic fallback based on title if type is default or ambiguous
+      if (item.title) {
+        if (item.title.includes("배너")) type = "banner";
+        else if (item.title.includes("SNS") || item.title.includes("인스타그램")) type = "sns";
+        else if (item.title.includes("숏츠") || item.title.includes("영상")) type = "shorts";
+        else if (item.title.includes("도안") || item.title.includes("패키지")) type = "design";
+      }
 
       return {
         id: item.contentId || item.id,
@@ -274,7 +298,7 @@ export default function ADResultPage() {
         <div className="mb-10 flex flex-wrap items-start justify-between gap-6">
           <div>
             <h1 className="text-4xl font-black text-[#111827] mb-3 tracking-tight">
-              {headerTitle}
+              {projectTitleFromApi || headerTitle}
             </h1>
             <p className="mt-2 text-sm font-medium text-[#9CA3AF]">
               {headerDesc}
@@ -327,11 +351,7 @@ export default function ADResultPage() {
         <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
           <StatCard label="전체" value={stats.total} icon={Sparkles} />
           <StatCard label="도안" value={stats.design} icon={ImageIcon} />
-          <StatCard
-            label="제품 이미지"
-            value={stats.product}
-            icon={ImageIcon}
-          />
+
           <StatCard label="SNS 이미지" value={stats.sns} icon={ImageIcon} />
           <StatCard label="숏츠" value={stats.shorts} icon={Video} />
           <StatCard label="배너" value={stats.banner} icon={ImageIcon} />
@@ -353,10 +373,32 @@ export default function ADResultPage() {
                 label={`${config.label} (${stats[key]})`}
               />
             ))}
+
+            {/* ✅ Manual Refresh Button */}
+            <button
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: ["projectContents", projectId] });
+                queryClient.invalidateQueries({ queryKey: ["project", projectId] });
+              }}
+              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-colors"
+              title="새로고침"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
+              <span>새로고침</span>
+            </button>
           </div>
 
           {/* 데이터 매핑 (백엔드 -> 프론트엔드 UI 형식) */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 items-stretch">
+            {/* ✅ "Initializing..." State: Created but list empty yet */}
+            {(!isLoading && filteredResults.length === 0 && location.state?.created) && (
+              <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
+                <Loader2 className="h-12 w-12 animate-spin text-blue-500 mb-4" />
+                <h3 className="text-xl font-bold text-gray-900">프로젝트 생성 중...</h3>
+                <p className="text-gray-500 mt-2">AI가 콘텐츠를 생성하고 있습니다. 잠시만 기다려 주세요.</p>
+              </div>
+            )}
+
             {filteredResults.map((item) => {
               const Icon = TYPE_CONFIG[item.type].icon;
               const isSnsOrShorts =

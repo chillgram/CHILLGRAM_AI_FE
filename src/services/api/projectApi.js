@@ -35,3 +35,13 @@ export async function fetchProjectContents(projectId) {
   if (!res.ok) throw new Error("프로젝트 콘텐츠를 불러오지 못했습니다.");
   return res.json();
 }
+
+/**
+ * 프로젝트 상세 조회
+ * GET /api/projects/{projectId}
+ */
+export async function fetchProject(projectId) {
+  const res = await apiFetch(`/api/projects/${projectId}`);
+  if (!res.ok) throw new Error("프로젝트 정보를 불러오지 못했습니다.");
+  return res.json();
+}
