@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   ImageIcon,
@@ -20,21 +20,19 @@ import {
   createProject,
   createPackageMockup,
   getContentStatus,
-  fetchProductBaseImages,
   fetchProjectsByProduct,
 } from "@/services/api/projectApi";
-// import { createBasicImageJob } from "@/services/api/ad"; // Removed as per new requirement
 import Button from "../components/common/Button";
-
-// Dummy data removed. Fetching actual images from ad projects.
 
 export default function DesignPage() {
   const navigate = useNavigate();
   const { productId } = useParams();
+  const [searchParams] = useSearchParams();
+  const projectId = searchParams.get("projectId");
   const fileInputRef = useRef(null);
   const devBaseInputRef = useRef(null);
 
-  const [selectedImage, setSelectedImage] = useState(null); // { url, candidateId, projectId }
+  const [selectedImage, setSelectedImage] = useState(null); // { url, projectId, ... }
   const [dielineFile, setDielineFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -45,8 +43,8 @@ export default function DesignPage() {
     enabled: !!productId,
   });
 
-  // 해당 제품의 프로젝트 목록 조회 (개발용 이미지용 fallback ID 용도)
-  const { data: projectsData } = useQuery({
+  // ✅ 해당 제품의 프로젝트 목록 조회 (userImgGcsUrl로 AI 제품이미지 표시)
+  const { data: projectsData, isLoading: isImagesLoading } = useQuery({
     queryKey: ["projects", productId],
     queryFn: () => fetchProjectsByProduct(productId),
     enabled: !!productId,
@@ -56,32 +54,30 @@ export default function DesignPage() {
     ? projectsData
     : projectsData?.projects || projectsData?.content || [];
 
-  // 해당 제품의 생성된 광고 이미지 목록 조회 (NEW API)
-  const { data: baseImages, isLoading: isImagesLoading } = useQuery({
-    queryKey: ["product-base-images", productId],
-    queryFn: async () => {
-      console.log(
-        `[ProductPackagePage] Base images 요청 시작. ProductID: ${productId}`,
-      );
-      try {
-        const images = await fetchProductBaseImages(productId);
-        console.log("[ProductPackagePage] Base images 응답:", images);
+  // ★ 디버깅: API 응답에서 실제 필드명 확인
+  if (rawProjects.length > 0) {
+    console.log("[ProductPackagePage] ★ rawProjects 전체 키:", rawProjects.map(p => ({
+      projectId: p.projectId || p.id,
+      title: p.title,
+      userimgGcsUrl: p.userimgGcsUrl,   // DB: userimg_gcs_url → camelCase
+      userImgGcsUrl: p.userImgGcsUrl,   // 백엔드 가이드 문서
+      keys: Object.keys(p),
+    })));
+  }
 
-        return images.map((img, idx) => ({
-          id: `img-${idx}`, // 고유 ID (없으면 idx 사용)
-          projectId: img.projectId,
-          projectTitle: `${img.jobType} Project`,
-          url: img.url,
-          label: `${img.jobType} (${new Date(img.completedAt).toLocaleDateString()})`,
-          jobType: img.jobType,
-        }));
-      } catch (e) {
-        console.error("[ProductPackagePage] Base images 조회 실패:", e);
-        throw e;
-      }
-    },
-    enabled: !!productId,
-  });
+  // ✅ 제품이미지 URL 필터 (DB컬럼: userimg_gcs_url → userimgGcsUrl)
+  const baseImages = rawProjects
+    .filter((p) => p.userimgGcsUrl || p.userImgGcsUrl || p.user_img_gcs_url || p.userimg_gcs_url)
+    .map((p) => {
+      const imgUrl = p.userimgGcsUrl || p.userImgGcsUrl || p.user_img_gcs_url || p.userimg_gcs_url;
+      return {
+        id: String(p.projectId || p.id),
+        projectId: p.projectId || p.id,
+        projectTitle: p.title || "AI 제품이미지",
+        url: imgUrl,
+        label: `${p.title || "AI 제품이미지"} (${(p.createdAt || "").split("T")[0] || "-"})`,
+      };
+    });
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -91,8 +87,8 @@ export default function DesignPage() {
   };
 
   const pollMockupResult = async (contentId) => {
-    const maxAttempts = 2; // 약 3분 대기
-    const intervalMs = 30000; // 1분 간격으로 확인
+    const maxAttempts = 60;    // 최대 60회
+    const intervalMs = 5000;   // 5초 간격 → 총 5분 대기
 
     for (let i = 0; i < maxAttempts; i++) {
       const content = await getContentStatus(contentId);
@@ -146,8 +142,8 @@ export default function DesignPage() {
       });
       const uniqueBaseFile = selectedImage.file
         ? new File([selectedImage.file], selectedImage.file.name, {
-            type: selectedImage.file.type,
-          })
+          type: selectedImage.file.type,
+        })
         : null;
 
       const targetBaseImageUrl =
@@ -220,35 +216,7 @@ export default function DesignPage() {
     }
   };
 
-  const handleFakeImageLoad = async () => {
-    try {
-      console.log("[Mock] Loading fake image...");
-      const response = await fetch("/tmp/package_input.png");
-      if (!response.ok)
-        throw new Error("Failed to load mock image " + response.statusText);
 
-      const blob = await response.blob();
-      const file = new File([blob], "package_input.png", { type: "image/png" });
-      const url = URL.createObjectURL(file);
-
-      setSelectedImage({
-        id: "dev-temp-base",
-        url: url,
-        label: "개발용 이미지",
-        projectTitle: "매뉴얼 업로드",
-        candidateId: "dev-temp-candidate",
-        isDev: true,
-        file: file,
-      });
-      console.log("[Mock] Image loaded successfully");
-    } catch (e) {
-      console.error("[Mock] Error:", e);
-      alert(
-        "테스트 이미지를 불러오는데 실패했습니다 (public/tmp/package_input.png 확인 필요): " +
-          e.message,
-      );
-    }
-  };
 
   return (
     <Container className="relative py-8">
@@ -294,10 +262,6 @@ export default function DesignPage() {
                   <select
                     className="w-full p-4 rounded-2xl border-2 border-[#F2F4F7] bg-white text-[#101828] font-bold appearance-none cursor-pointer focus:border-[#7F56D9] outline-none transition-all shadow-sm"
                     onChange={(e) => {
-                      if (e.target.value === "dev-temp-base") {
-                        handleFakeImageLoad();
-                        return;
-                      }
                       const img = baseImages?.find(
                         (i) => String(i.id) === e.target.value,
                       );
@@ -306,21 +270,13 @@ export default function DesignPage() {
                     value={selectedImage?.id || ""}
                   >
                     <option value="" disabled>
-                      이미지를 선택하세요
+                      {baseImages && baseImages.length > 0
+                        ? "이미지를 선택하세요"
+                        : "사용 가능한 제품 이미지가 없습니다"}
                     </option>
-                    {(baseImages && baseImages.length > 0
-                      ? baseImages
-                      : [
-                          {
-                            id: "dev-temp-base",
-                            projectTitle:
-                              "새우깡 도안 생성 프로젝트 (Dev)_2026. 2. 19.",
-                            label: "제품 이미지",
-                          },
-                        ]
-                    ).map((item) => (
+                    {baseImages?.map((item) => (
                       <option key={item.id} value={item.id}>
-                        {item.projectTitle} - {item.label || item.id}
+                        {item.projectTitle} ({(item.url || "").split("/").pop()?.split("?")[0] || "이미지"})
                       </option>
                     ))}
                   </select>
@@ -385,11 +341,10 @@ export default function DesignPage() {
 
             <div
               onClick={() => fileInputRef.current?.click()}
-              className={`group border-2 border-dashed rounded-3xl p-14 flex flex-col items-center justify-center transition-all cursor-pointer ${
-                dielineFile
-                  ? "border-[#60A5FA] bg-[#edf5ff]"
-                  : "border-[#EAECF0] hover:bg-[#F9FAFB] hover:border-[#D0D5DD]"
-              }`}
+              className={`group border-2 border-dashed rounded-3xl p-14 flex flex-col items-center justify-center transition-all cursor-pointer ${dielineFile
+                ? "border-[#60A5FA] bg-[#edf5ff]"
+                : "border-[#EAECF0] hover:bg-[#F9FAFB] hover:border-[#D0D5DD]"
+                }`}
             >
               <input
                 type="file"
@@ -399,11 +354,10 @@ export default function DesignPage() {
                 onChange={handleFileChange}
               />
               <div
-                className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-transform group-hover:scale-110 ${
-                  dielineFile
-                    ? "bg-[#edf5ff] text-[#60A5FA]"
-                    : "bg-[#F2F4F7] text-[#667085]"
-                }`}
+                className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-transform group-hover:scale-110 ${dielineFile
+                  ? "bg-[#edf5ff] text-[#60A5FA]"
+                  : "bg-[#F2F4F7] text-[#667085]"
+                  }`}
               >
                 {dielineFile ? (
                   <CheckCircle2 size={28} />
@@ -430,11 +384,10 @@ export default function DesignPage() {
             variant="secondary"
             onClick={handleGenerate}
             disabled={!selectedImage || !dielineFile || isUploading}
-            className={`flex items-center gap-3 rounded-lg text-sm px-4 py-2 font-bold shadow-sm transition-all active:scale-95 ${
-              selectedImage && dielineFile && !isUploading
-                ? "bg-primary hover:bg-yellow-500 shadow-yellow-100"
-                : "bg-[#F3F3F3] text-[#98A2B3] cursor-not-allowed"
-            }`}
+            className={`flex items-center gap-3 rounded-lg text-sm px-4 py-2 font-bold shadow-sm transition-all active:scale-95 ${selectedImage && dielineFile && !isUploading
+              ? "bg-primary hover:bg-yellow-500 shadow-yellow-100"
+              : "bg-[#F3F3F3] text-[#98A2B3] cursor-not-allowed"
+              }`}
           >
             {isUploading ? (
               <Loader2 size={22} className="animate-spin" />
